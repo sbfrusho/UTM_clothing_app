@@ -39,35 +39,37 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        // Customize your splash screen UI here
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              // Add your logo in the image folder and provide the path here
-              Container(
-                child: Image(
-                  image: const AssetImage("assets/logo1.png"),
-                  height: 200.h,
-                  width: 200.w,
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          // Customize your splash screen UI here
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                // Add your logo in the image folder and provide the path here
+                Container(
+                  child: Image(
+                    image: const AssetImage("assets/logo1.png"),
+                    height: 200.h,
+                    width: 200.w,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              // Add your app name here
-              Text(
-                'UTM E-COMMERCE APP\nEnhance Your Shopping Experience',
-                style: TextStyle(
-                  color: AppColor().colorRed,
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.bold,
+                const SizedBox(height: 20),
+                // Add your app name here
+                Text(
+                  'UTM E-COMMERCE APP\nEnhance Your Shopping Experience',
+                  style: TextStyle(
+                    color: AppColor().colorRed,
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColor().colorRed),
-              ),
-            ],
+                CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColor().colorRed),
+                ),
+              ],
+            ),
           ),
         ),
       ),
