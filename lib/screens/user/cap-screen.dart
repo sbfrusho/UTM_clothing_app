@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shopping_app/const/app-colors.dart';
 
+import '../../controller/cart-model.dart';
 
 class CapScreen extends StatefulWidget {
   const CapScreen({super.key});
@@ -11,7 +12,6 @@ class CapScreen extends StatefulWidget {
 }
 
 class _CapScreenState extends State<CapScreen> {
-
   List<String> imagesURL = [
     "assets/Cap/cap1.jpeg",
     "assets/Cap/cap2.png",
@@ -20,7 +20,8 @@ class _CapScreenState extends State<CapScreen> {
   ];
 
   List<bool> isCartItemClicked = List.generate(4, (index) => false);
-
+  List<CartItem> cartItems = [];
+  int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -41,17 +42,19 @@ class _CapScreenState extends State<CapScreen> {
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.search , color: Colors.white,),
-              onPressed: () {
-              },
+              icon: const Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
+              onPressed: () {},
             ),
           ],
           backgroundColor: AppColor().colorRed,
         ),
         body: Container(child: content()),
         bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: AppColor().colorRed,
-          currentIndex: 0, // Set the initial index of the selected item
+          currentIndex:
+              _selectedIndex, // Set the initial index of the selected item
           selectedItemColor: Colors.red, // Set the color of the selected item
           unselectedItemColor:
               Colors.grey, // Set the color of the unselected items
@@ -79,6 +82,10 @@ class _CapScreenState extends State<CapScreen> {
           ],
           onTap: (index) {
             // Handle the tap event for each item
+            setState(() {
+              _selectedIndex = index; // Update the selected index
+            });
+            // Perform other actions based on the tapped index
             switch (index) {
               case 0:
                 // Handle the Home item tap
@@ -103,11 +110,10 @@ class _CapScreenState extends State<CapScreen> {
   }
 
   Widget content() {
-    
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, mainAxisSpacing: 20, crossAxisSpacing: 20),
-          itemCount: imagesURL.length,
+      itemCount: imagesURL.length,
       itemBuilder: (content, index) {
         return Container(
           decoration: BoxDecoration(
@@ -125,7 +131,7 @@ class _CapScreenState extends State<CapScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      "Cap\nPrice : 100 RM",
+                      "Cap\nPrice : 10 RM",
                       style: TextStyle(color: Colors.white),
                     ),
                     IconButton(
@@ -133,12 +139,20 @@ class _CapScreenState extends State<CapScreen> {
                         Fluttertoast.showToast(msg: "Added to cart");
                         setState(() {
                           isCartItemClicked[index] = !isCartItemClicked[index];
-                        
+                          cartItems.add(CartItem(
+                            name: "Cap",
+                            price:
+                                10.0, // You can replace this with the actual price
+                            imageUrl: imagesURL[index],
+                          ));
                         });
+                        print(cartItems.length);
                       },
                       icon: Icon(
                         Icons.add_shopping_cart,
-                        color: isCartItemClicked[index] ? Colors.green : Colors.red,
+                        color: isCartItemClicked[index]
+                            ? Colors.green[400]
+                            : Colors.white,
                       ),
                     ),
                   ],
@@ -151,4 +165,3 @@ class _CapScreenState extends State<CapScreen> {
     );
   }
 }
-

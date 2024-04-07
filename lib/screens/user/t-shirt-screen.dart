@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shopping_app/const/app-colors.dart';
 
+import '../../My Cart/my_cart_view.dart';
+import '../../controller/cart-model.dart';
+
 class TshirtScreen extends StatefulWidget {
   const TshirtScreen({super.key});
 
@@ -22,6 +25,8 @@ class _TshirtScreenState extends State<TshirtScreen> {
     "assets/Corporate/tshirt.jpg"
   ];
   List<bool> isCartItemClicked = List.generate(8, (index) => false);
+  List<CartItem> cartItems = [];
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -43,16 +48,19 @@ class _TshirtScreenState extends State<TshirtScreen> {
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.search , color: Colors.white,),
-              onPressed: () {
-              },
+              icon: const Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
+              onPressed: () {},
             ),
           ],
           backgroundColor: AppColor().colorRed,
         ),
         body: Container(child: content()),
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: 0, // Set the initial index of the selected item
+          currentIndex:
+              _selectedIndex, // Set the initial index of the selected item
           selectedItemColor: Colors.red, // Set the color of the selected item
           unselectedItemColor:
               Colors.grey, // Set the color of the unselected items
@@ -80,6 +88,10 @@ class _TshirtScreenState extends State<TshirtScreen> {
           ],
           onTap: (index) {
             // Handle the tap event for each item
+            setState(() {
+              _selectedIndex = index; // Update the selected index
+            });
+            // Perform other actions based on the tapped index
             switch (index) {
               case 0:
                 // Handle the Home item tap
@@ -92,6 +104,13 @@ class _TshirtScreenState extends State<TshirtScreen> {
                 break;
               case 3:
                 // Handle the Cart item tap
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CartScreen(cartItems: cartItems),
+                  ),
+                );
+
                 break;
               case 4:
                 // Handle the Profile item tap
@@ -107,7 +126,7 @@ class _TshirtScreenState extends State<TshirtScreen> {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, mainAxisSpacing: 20, crossAxisSpacing: 20),
-          itemCount: imagesURL.length,
+      itemCount: imagesURL.length,
       itemBuilder: (content, index) {
         return Container(
           decoration: BoxDecoration(
@@ -122,7 +141,7 @@ class _TshirtScreenState extends State<TshirtScreen> {
               Container(
                 color: Colors.black.withOpacity(0.5),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
                       "Premium Cotton \nt-shirt\nPrice : 55 RM",
@@ -133,7 +152,14 @@ class _TshirtScreenState extends State<TshirtScreen> {
                         Fluttertoast.showToast(msg: "Added to cart");
                         setState(() {
                           isCartItemClicked[index] = !isCartItemClicked[index];
+                          cartItems.add(CartItem(
+                            name: "Premium Cotton T-shirt",
+                            price: 55.0,
+                            imageUrl: imagesURL[index],
+                          ));
                         });
+
+                        print(cartItems.length);
                       },
                       icon: Icon(
                         Icons.add_shopping_cart,
