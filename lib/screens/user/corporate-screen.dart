@@ -22,6 +22,8 @@ class _CorporateScreenState extends State<CorporateScreen> {
 
   ];
 
+  List<bool> isCartItemClicked = List.generate(7, (index) => false);
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -31,9 +33,14 @@ class _CorporateScreenState extends State<CorporateScreen> {
             "Corporate Shirt",
             style: TextStyle(color: Colors.white),
           ),
-          leading: const Icon(
-            Icons.menu,
-            color: Colors.white,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
           ),
           actions: [
             IconButton(
@@ -125,10 +132,15 @@ class _CorporateScreenState extends State<CorporateScreen> {
                     IconButton(
                       onPressed: () {
                         Fluttertoast.showToast(msg: "Added to cart");
+                        setState(() {
+                          isCartItemClicked[index] = !isCartItemClicked[index];
+                        });
                       },
-                      icon: const Icon(
+                      icon:  Icon(
                         Icons.add_shopping_cart,
-                        color: Colors.white,
+                        color: isCartItemClicked[index]
+                            ? Colors.green
+                            : Colors.white,
                       ),
                     ),
                   ],

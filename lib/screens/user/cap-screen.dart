@@ -11,12 +11,15 @@ class CapScreen extends StatefulWidget {
 }
 
 class _CapScreenState extends State<CapScreen> {
+
   List<String> imagesURL = [
     "assets/Cap/cap1.jpeg",
     "assets/Cap/cap2.png",
     "assets/Cap/cap4.png",
     "assets/Cap/cap3.jpg",
   ];
+
+  List<bool> isCartItemClicked = List.generate(4, (index) => false);
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +30,14 @@ class _CapScreenState extends State<CapScreen> {
             "Cap",
             style: TextStyle(color: Colors.white),
           ),
-          leading: const Icon(
-            Icons.menu,
-            color: Colors.white,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
           ),
           actions: [
             IconButton(
@@ -95,6 +103,7 @@ class _CapScreenState extends State<CapScreen> {
   }
 
   Widget content() {
+    
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, mainAxisSpacing: 20, crossAxisSpacing: 20),
@@ -122,10 +131,14 @@ class _CapScreenState extends State<CapScreen> {
                     IconButton(
                       onPressed: () {
                         Fluttertoast.showToast(msg: "Added to cart");
+                        setState(() {
+                          isCartItemClicked[index] = !isCartItemClicked[index];
+                        
+                        });
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.add_shopping_cart,
-                        color: Colors.white,
+                        color: isCartItemClicked[index] ? Colors.green : Colors.red,
                       ),
                     ),
                   ],
@@ -138,3 +151,4 @@ class _CapScreenState extends State<CapScreen> {
     );
   }
 }
+

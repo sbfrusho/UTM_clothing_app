@@ -21,6 +21,7 @@ class _TshirtScreenState extends State<TshirtScreen> {
     "assets/Tshirt/utm_tshirt_1.jpg",
     "assets/Corporate/tshirt.jpg"
   ];
+  List<bool> isCartItemClicked = List.generate(8, (index) => false);
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +32,14 @@ class _TshirtScreenState extends State<TshirtScreen> {
             "T-Shirt",
             style: TextStyle(color: Colors.white),
           ),
-          leading: const Icon(
-            Icons.menu,
-            color: Colors.white,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
           ),
           actions: [
             IconButton(
@@ -125,10 +131,15 @@ class _TshirtScreenState extends State<TshirtScreen> {
                     IconButton(
                       onPressed: () {
                         Fluttertoast.showToast(msg: "Added to cart");
+                        setState(() {
+                          isCartItemClicked[index] = !isCartItemClicked[index];
+                        });
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.add_shopping_cart,
-                        color: Colors.white,
+                        color: isCartItemClicked[index]
+                            ? Colors.green[400]
+                            : Colors.white,
                       ),
                     ),
                   ],
