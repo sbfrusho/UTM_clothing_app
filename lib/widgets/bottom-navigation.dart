@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopping_app/controller/cart-model.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});
@@ -14,7 +15,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
     const HomeScreen(),
     const WishlistScreen(),
     const CategoriesScreen(),
-    const CartScreen(),
     const ProfileScreen(),
   ];
 
@@ -105,7 +105,7 @@ class CategoriesScreen extends StatelessWidget {
 }
 
 class CartScreen extends StatelessWidget {
-  const CartScreen({super.key});
+  const CartScreen({super.key, required List<CartItem> cartItems});
 
   @override
   Widget build(BuildContext context) {

@@ -2,7 +2,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shopping_app/My%20Cart/my_cart_view.dart';
 import 'package:shopping_app/const/app-colors.dart';
+import 'package:shopping_app/controller/cart-model.dart';
 import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
 
 import '../../widgets/Categories.dart';
@@ -196,6 +198,12 @@ class _HomeScreenState extends State<HomeScreen> {
             switch (index) {
               case 0:
                 // Handle the Home item tap
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HomeScreen(),
+                  ),
+                );
                 break;
               case 1:
                 // Handle the Wishlist item tap
@@ -205,6 +213,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 break;
               case 3:
                 // Handle the Cart item tap
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CartScreen(cartItems: [],),
+                  ),
+                );
                 break;
               case 4:
                 // Handle the Profile item tap

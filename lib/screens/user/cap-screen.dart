@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shopping_app/const/app-colors.dart';
+import 'package:shopping_app/screens/user/home-screen.dart';
 
+import '../../My Cart/my_cart_view.dart';
 import '../../controller/cart-model.dart';
 
 class CapScreen extends StatefulWidget {
@@ -89,15 +91,18 @@ class _CapScreenState extends State<CapScreen> {
             switch (index) {
               case 0:
                 // Handle the Home item tap
+                Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                 break;
               case 1:
                 // Handle the Wishlist item tap
+                
                 break;
               case 2:
                 // Handle the Categories item tap
                 break;
               case 3:
                 // Handle the Cart item tap
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CartScreen(cartItems: cartItems,)));
                 break;
               case 4:
                 // Handle the Profile item tap

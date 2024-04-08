@@ -1,7 +1,9 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path/path.dart';
 import 'package:shopping_app/const/app-colors.dart';
+import 'package:shopping_app/screens/user/home-screen.dart';
 
 import '../../My Cart/my_cart_view.dart';
 import '../../controller/cart-model.dart';
@@ -95,6 +97,12 @@ class _TshirtScreenState extends State<TshirtScreen> {
             switch (index) {
               case 0:
                 // Handle the Home item tap
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HomeScreen(),
+                  ),
+                );
                 break;
               case 1:
                 // Handle the Wishlist item tap
