@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:shopping_app/const/app-colors.dart';
+import 'package:shopping_app/controller/cart-controller.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 
 import '../../My Cart/my_cart_view.dart';
@@ -14,6 +16,7 @@ class CapScreen extends StatefulWidget {
 }
 
 class _CapScreenState extends State<CapScreen> {
+  final CartController cartController = Get.find<CartController>();
   List<String> imagesURL = [
     "assets/Cap/cap1.jpeg",
     "assets/Cap/cap2.png",
@@ -91,18 +94,24 @@ class _CapScreenState extends State<CapScreen> {
             switch (index) {
               case 0:
                 // Handle the Home item tap
-                Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => HomeScreen()));
                 break;
               case 1:
                 // Handle the Wishlist item tap
-                
+
                 break;
               case 2:
                 // Handle the Categories item tap
                 break;
               case 3:
                 // Handle the Cart item tap
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CartScreen(cartItems: cartItems,)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CartScreen(
+                              cartItems: cartItems,
+                            )));
                 break;
               case 4:
                 // Handle the Profile item tap
@@ -141,17 +150,20 @@ class _CapScreenState extends State<CapScreen> {
                     ),
                     IconButton(
                       onPressed: () {
+                        
                         Fluttertoast.showToast(msg: "Added to cart");
                         setState(() {
                           isCartItemClicked[index] = !isCartItemClicked[index];
-                          cartItems.add(CartItem(
+                          
+                          cartController.addToCart(CartItem(
                             name: "Cap",
-                            price:
-                                10.0, // You can replace this with the actual price
+                            price: 10.0,
                             imageUrl: imagesURL[index],
                           ));
+                          
                         });
-                        print(cartItems.length);
+                        
+                        // print(cartItems.length);
                       },
                       icon: Icon(
                         Icons.add_shopping_cart,

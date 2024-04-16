@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> keepUserLoggedIn(BuildContext context) async {
     if (user != null) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+          context, MaterialPageRoute(builder: (context) =>  HomeScreen()));
     } else {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const WelcomeScreen()));

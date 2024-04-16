@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:shopping_app/const/app-colors.dart';
+import 'package:shopping_app/controller/cart-controller.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 
 import '../../My Cart/my_cart_view.dart';
@@ -14,6 +16,7 @@ class MugScreen extends StatefulWidget {
 }
 
 class _MugScreenState extends State<MugScreen> {
+  final CartController cartController = Get.find<CartController>();
   List<String> imagesURL = [
     "assets/Cup/cup1.jpg",
     "assets/Cup/cup2.jpg",
@@ -161,9 +164,16 @@ class _MugScreenState extends State<MugScreen> {
                             price: 35.0,
                             imageUrl: imagesURL[index],
                           ));
+                          cartController.addToCart(CartItem(
+                            name: "Premium Coffee Mug",
+                            price: 35.0,
+                            imageUrl: imagesURL[index],
+                          ));
+                          
                         });
 
-                        print(cartItems.length);
+                        
+
                       },
                       icon: Icon(
                         Icons.add_shopping_cart,

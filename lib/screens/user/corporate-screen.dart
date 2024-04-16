@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 
 import '../../My Cart/my_cart_view.dart';
+import '../../controller/cart-controller.dart';
 import '../../controller/cart-model.dart';
 
 class CorporateScreen extends StatefulWidget {
@@ -14,6 +16,7 @@ class CorporateScreen extends StatefulWidget {
 }
 
 class _CorporateScreenState extends State<CorporateScreen> {
+  final CartController cartController = Get.find<CartController>();
   List<String> imagesURL = [
     "assets/Corporate/shirt.jpg",
     "assets/Corporate/shirt1.jpg",
@@ -158,14 +161,13 @@ class _CorporateScreenState extends State<CorporateScreen> {
                         Fluttertoast.showToast(msg: "Added to cart");
                         setState(() {
                           isCartItemClicked[index] = !isCartItemClicked[index];
-                          cartItems.add(CartItem(
-                            name: "Premium febric shirt",
-                            price:
-                                20.0, // You can replace this with the actual price
+                        
+                          cartController.addToCart(CartItem(
+                            name: "Shirts",
+                            price: 10.0,
                             imageUrl: imagesURL[index],
                           ));
                         });
-                        print(cartItems.length);
                       },
                       icon: Icon(
                         Icons.add_shopping_cart,

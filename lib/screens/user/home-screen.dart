@@ -2,8 +2,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:shopping_app/My%20Cart/my_cart_view.dart';
 import 'package:shopping_app/const/app-colors.dart';
+import 'package:shopping_app/controller/cart-controller.dart';
 import 'package:shopping_app/controller/cart-model.dart';
 import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
 
@@ -19,6 +21,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final CartController cartController = Get.find();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -127,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                const Categories(),
+                Categories(),
       
                 SizedBox(
                   height: 20.h,

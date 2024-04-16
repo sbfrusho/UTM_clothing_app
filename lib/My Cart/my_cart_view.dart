@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:shopping_app/controller/cart-controller.dart';
 import 'package:shopping_app/controller/cart-model.dart';
 import '../const/app-colors.dart';
 
@@ -12,20 +14,21 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  final CartController cartController = Get.find();
   late List<int> quantities;
   double finalTotal = 0;
 
   @override
   void initState() {
     super.initState();
-    quantities = List.generate(widget.cartItems.length, (index) => 1);
+    quantities = List.generate(cartController.cartItems.length, (index) => 1);
     calculateTotal();
   }
 
   void calculateTotal() {
     finalTotal = 0;
-    for (int i = 0; i < widget.cartItems.length; i++) {
-      finalTotal += widget.cartItems[i].price * quantities[i];
+    for (int i = 0; i < cartController.cartItems.length; i++) {
+      finalTotal += cartController.cartItems[i].price * quantities[i];
     }
   }
 
@@ -58,9 +61,9 @@ class _CartScreenState extends State<CartScreen> {
         backgroundColor: AppColor().colorRed,
       ),
       body: ListView.builder(
-        itemCount: widget.cartItems.length,
+        itemCount: cartController.cartItems.length,
         itemBuilder: (context, index) {
-          final cartItem = widget.cartItems[index];
+          final cartItem = cartController.cartItems[index];
           final quantity = quantities[index];
 
           return ListTile(
@@ -69,7 +72,7 @@ class _CartScreenState extends State<CartScreen> {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('\$${(cartItem.price * quantity).toStringAsFixed(2)}'),
+                Text('${(cartItem.price * quantity).toStringAsFixed(2)} RM'),
                 Row(
                   children: [
                     IconButton(
@@ -81,7 +84,7 @@ class _CartScreenState extends State<CartScreen> {
                             calculateTotal();
                           }
                           else{
-                            widget.cartItems.removeAt(index);
+                            cartController.cartItems.removeAt(index);
                             quantities.removeAt(index);
                             calculateTotal();
                           }
@@ -109,7 +112,7 @@ class _CartScreenState extends State<CartScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Text(
-            'Total: \$${finalTotal.toStringAsFixed(2)}',
+            'Total: ${finalTotal.toStringAsFixed(2)} RM',
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
