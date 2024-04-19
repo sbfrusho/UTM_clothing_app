@@ -158,6 +158,7 @@
 //   }
 // }
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -195,9 +196,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         body: SingleChildScrollView(
           child: Container(
-            color:   const Color.fromARGB(255, 248, 246, 242),
+            color: const Color.fromARGB(255, 248, 246, 242),
             child: Column(
-              
               children: [
                 Image(
                   image: const AssetImage(
@@ -236,6 +236,7 @@ class RegisterForm extends StatelessWidget {
     TextEditingController emailController = TextEditingController();
     TextEditingController phoneController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
+    User? user = FirebaseAuth.instance.currentUser;
 
     return Container(
       margin: const EdgeInsets.all(20),
@@ -321,7 +322,8 @@ class RegisterForm extends StatelessWidget {
                     String password = passwordController.text.trim();
                     String deviceToken = '';
 
-                  
+                    CollectionReference users =
+                        FirebaseFirestore.instance.collection('users');
 
                     // Check if any field is empty
                     if (name.isEmpty ||
@@ -334,6 +336,7 @@ class RegisterForm extends StatelessWidget {
 
                     try {
                       // Call the registration method
+
                       await registerController.signUpMethod(
                         name,
                         email,
@@ -342,12 +345,24 @@ class RegisterForm extends StatelessWidget {
                         deviceToken,
                       );
 
+                      // await registerController.signUpMethod(
+                      //   name,
+                      //   email,
+                      //   phone,
+                      //   password,
+                      //   deviceToken,
+                      // );
+
                       // saveDataToDB() async{
                       //   Conn
                       // }
 
                       showToast(context,
                           "Registration successful. Verify your email to login.");
+
+                      // Save the user data to Firestore if email verification is successful
+
+                      
 
                       // Clear the text fields
                       nameController.clear();

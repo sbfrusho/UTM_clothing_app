@@ -7,7 +7,7 @@ class SignUpController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   CollectionReference colRef = FirebaseFirestore.instance.collection("users");
-
+  User? user = FirebaseAuth.instance.currentUser;
   //for password visibility
   var isPasswordVisible = false.obs;
 
@@ -19,10 +19,7 @@ class SignUpController extends GetxController {
     String userDeviceToken,
   ) async {
     try {
-      
-      
       print("-------->>User Created<<----------");
-
 
       // EasyLoading.show(status: 'loading...');
       UserCredential userCredential =
@@ -42,21 +39,34 @@ class SignUpController extends GetxController {
       //     .collection('users')
       //     .doc(userCredential.user!.uid)
       //     .set(userModel.toMap());
-      colRef.doc(userCredential.user!.uid).set({
-        'uId' : userCredential.user!.uid,
-        'name' : userName,
-        'email' : userEmail,
-        'phone' : userPhone,
-        'isAdmin' : false,
-        'deviceToken': userDeviceToken,
-      }).then((value) => print("User Added"));
-      
+      await colRef
+          .add(
+            {
+              'uId': userCredential.user!.uid,
+              'name': userName,
+              'email': userEmail,
+              'phone': userPhone,
+              'isAdmin': false,
+              'deviceToken': userDeviceToken,
+            },
+          )
+          .then((value) => print("User added"))
+          .catchError((error) => print("Failed to add user: $error"));
+
+      // colRef.doc(userCredential.user!.uid).set({
+      //   'uId': userCredential.user!.uid,
+      //   'name': userName,
+      //   'email': userEmail,
+      //   'phone': userPhone,
+      //   'isAdmin': false,
+      //   'deviceToken': userDeviceToken,
+      // }).then((value) => print("User Added"));
+
       print("Everything is okey-----........");
 
       // EasyLoading.dismiss();
 
       return userCredential;
-      
     } on FirebaseAuthException catch (e) {
       Get.snackbar("Error", "$e",
           snackPosition: SnackPosition.BOTTOM,
@@ -65,6 +75,6 @@ class SignUpController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
-    return null; 
+    return null;
   }
 }
