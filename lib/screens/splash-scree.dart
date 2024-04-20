@@ -1,13 +1,17 @@
-// ignore: file_names
+// ignore: file_names , unused_import
+// ignore_for_file: library_private_types_in_public_api
+
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:shopping_app/const/app-colors.dart';
+import 'package:shopping_app/controller/get-user-data-controller.dart';
+import 'package:shopping_app/screens/admin-panel/admin-screen.dart';
 import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
-
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,11 +32,22 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> keepUserLoggedIn(BuildContext context) async {
     if (user != null) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) =>  HomeScreen()));
+
+      final GetUserDataController getUserDataController =
+          Get.put(GetUserDataController());
+      var userData = await getUserDataController.getUserData(user!.uid);
+
+
+      if (userData[0]['isAdmin'] == true) {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const AdminScreen()));
+      } else {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
+      }
     } else {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const WelcomeScreen()));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const WelcomeScreen()));
     }
   }
 
@@ -66,7 +81,8 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                 ),
                 CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColor().colorRed),
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(AppColor().colorRed),
                 ),
               ],
             ),
