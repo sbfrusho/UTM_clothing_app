@@ -1,168 +1,9 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:shopping_app/const/app-colors.dart';
-// import 'package:shopping_app/screens/auth-ui/login-screen.dart';
-// import 'package:shopping_app/widgets/button.dart';
-
-// class RegisterScreen extends StatefulWidget {
-//   const RegisterScreen({super.key});
-
-//   @override
-//   State<RegisterScreen> createState() => _RegisterScreenState();
-// }
-
-// class _RegisterScreenState extends State<RegisterScreen> {
-
-//   List<String> gender = ['male' , 'female' , 'other']; // Option 2
-//   @override
-//   Widget build(BuildContext context) {
-//     return SafeArea(
-//       child: Scaffold(
-//         appBar: AppBar(
-//           leading: IconButton(
-//             icon: Icon(Icons.arrow_back, color: Colors.white),
-//             onPressed: () => Navigator.of(context).pop(),
-//           ),
-
-//           centerTitle: true,
-//           backgroundColor: AppColor().colorRed,
-//           title: Text(
-//             "Sign Up",
-//             style: TextStyle(color: Colors.white),
-//           ),
-//         ),
-//         body: SingleChildScrollView(
-//           child: Column(
-//             children: [
-//               Padding(
-//                 padding: const EdgeInsets.only(top: 50),
-//                 child: Image(
-//                   image: AssetImage("assets/utm.jpeg"),
-//                   height: 100.h,
-//                   width: 150.h,
-//                 ),
-//               ),
-//               Padding(
-//                 padding: EdgeInsets.all(10),
-//                 child: TextField(
-//                   decoration: InputDecoration(
-//                       border: OutlineInputBorder(),
-//                       labelText: 'Full Name',
-//                       hintText: 'Ex. John Doe'),
-//                 ),
-//               ),
-//               SizedBox(
-//                 height: 20,
-//               ),
-//               Padding(
-//                 padding: EdgeInsets.all(10),
-//                 child: TextField(
-//                   decoration: InputDecoration(
-//                       border: OutlineInputBorder(),
-//                       labelText: 'Email',
-//                       hintText: 'Ex. abc@gmail.com'),
-//                 ),
-//               ),
-//               SizedBox(
-//                 height: 20,
-//               ),
-//               Padding(
-//                 padding: EdgeInsets.all(10),
-//                 child: TextField(
-//                   decoration: InputDecoration(
-//                       border: OutlineInputBorder(),
-//                       labelText: 'Phone Number',
-//                       hintText: 'Ex. 1234567890'),
-//                 ),
-//               ),
-//               SizedBox(
-//                 height: 20,
-//               ),
-//               Padding(
-//                 padding: EdgeInsets.all(10),
-//                 child: TextField(
-//                   decoration: InputDecoration(
-//                       border: OutlineInputBorder(),
-//                       labelText: 'Date of Birth',
-//                       hintText: 'dd/mm/yyyy'),
-//                 ),
-//               ),
-//               SizedBox(
-//                 height: 20,
-//               ),
-//               Padding(
-//                 padding: EdgeInsets.all(10),
-//                 child: TextField(
-//                   decoration: InputDecoration(
-//                       border: OutlineInputBorder(),
-//                       labelText: 'Password',
-//                       hintText: 'hint: 0x12abc..'),
-//                 ),
-//               ),
-//               SizedBox(
-//                 height: 20,
-//               ),
-//               Padding(
-//                 padding: EdgeInsets.all(10),
-//                 child: TextField(
-//                   readOnly: true,
-//                   decoration: InputDecoration(
-//                     hintText: 'Choose your gender',
-//                     border: OutlineInputBorder(),
-//                     prefixIcon: DropdownButton<String>(
-//                       items: gender.map((String value) {
-//                         return DropdownMenuItem<String>(
-//                           value: value,
-//                           child: new Text(value),
-//                           onTap: (){
-//                             setState(() {
-//                               value = value;
-//                             });
-//                           },
-//                         );
-//                       }).toList(), onChanged: (String? value) {  },
-//                     ),
-//                   ),
-//                 ),
-//               ),
-
-//               Container(
-//               width: 100.w,
-//               height: 50.h,
-//               decoration: BoxDecoration(
-//                 color: AppColor().colorRed,
-//                 borderRadius: BorderRadius.circular(50),
-//               ),
-//               child: Row(
-//                 mainAxisAlignment: MainAxisAlignment.center,
-//                 children: [
-//                   GestureDetector(
-//                     onTap: () {
-//                     },
-//                     child: Text(
-//                       "Continue",
-//                       style: TextStyle(
-//                           fontSize: 12.sp,
-//                           color: Colors.white,
-//                           fontWeight: FontWeight.bold),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:shopping_app/const/app-colors.dart';
+import 'package:shopping_app/controller/get-device-token-controller.dart';
 import 'package:shopping_app/controller/sign-up-controller.dart';
 import 'package:shopping_app/screens/auth-ui/login-screen.dart';
 import 'package:flutter/material.dart';
@@ -316,14 +157,15 @@ class RegisterForm extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () async {
+                    final GetDeviceTokenController getDeviceTokenController =
+                        Get.put(GetDeviceTokenController());
                     String name = nameController.text.trim();
                     String email = emailController.text.trim();
                     String phone = phoneController.text.trim();
                     String password = passwordController.text.trim();
-                    String deviceToken = '';
+                    String deviceToken = getDeviceTokenController.deviceToken.toString();
 
-                    CollectionReference users =
-                        FirebaseFirestore.instance.collection('users');
+                    print("this is $deviceToken");
 
                     // Check if any field is empty
                     if (name.isEmpty ||
@@ -345,24 +187,8 @@ class RegisterForm extends StatelessWidget {
                         deviceToken,
                       );
 
-                      // await registerController.signUpMethod(
-                      //   name,
-                      //   email,
-                      //   phone,
-                      //   password,
-                      //   deviceToken,
-                      // );
-
-                      // saveDataToDB() async{
-                      //   Conn
-                      // }
-
                       showToast(context,
                           "Registration successful. Verify your email to login.");
-
-                      // Save the user data to Firestore if email verification is successful
-
-                      
 
                       // Clear the text fields
                       nameController.clear();

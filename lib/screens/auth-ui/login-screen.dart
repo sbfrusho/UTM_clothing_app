@@ -1,8 +1,13 @@
+//ignore_for_file: file_names , prefer_const_constructors_in_immutables, prefer_const_constructors
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:shopping_app/const/app-colors.dart';
+import 'package:shopping_app/controller/get-user-data-controller.dart';
+import 'package:shopping_app/screens/admin-panel/admin-screen.dart';
 
 import '../../controller/sign-in-controller.dart';
 import '../user/home-screen.dart';
@@ -78,6 +83,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
 class LoginForm extends StatelessWidget {
   final SignInController signInController = Get.put(SignInController());
+  final GetUserDataController getUserDataController =
+      Get.put(GetUserDataController());
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -164,19 +171,38 @@ class LoginForm extends StatelessWidget {
                       UserCredential? userCredential =
                           await signInController.signInMethod(email, password);
 
-                      String? whoLoggedIn = "";
+                      var userData = await getUserDataController
+                          .getUserData(userCredential!.user!.uid);
 
-                      // print("Hello Wrold ------ >>>>>>>>");
-                      // print(userData);
-                      // print("End ---------- ......>>>>>>>>>>>>");
-
-                      // ignore: unnecessary_null_comparison
                       if (userCredential != null) {
                         if (userCredential.user!.emailVerified) {
-                          showToast(context, "Login $whoLoggedIn Successful");
+                          if (userData[0]['isAdmin'] == true) {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => AdminScreen()));
 
-                          Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) => HomeScreen()));
+                                print("Moved to admin screen");
+
+                            Fluttertoast.showToast(
+                                msg: "Welcome Admin",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
+                                fontSize: 16.0);
+                          } else {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => HomeScreen()));
+                            
+                            Fluttertoast.showToast(
+                                msg: "Welcome User",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.red,
+                                textColor: Colors.white,
+                                fontSize: 16.0);
+                          }
 
                           return; // Return here to prevent showing unnecessary toasts or snackbar
                         } else {

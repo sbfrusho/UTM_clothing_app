@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 
 class SignUpController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   CollectionReference colRef = FirebaseFirestore.instance.collection("users");
   User? user = FirebaseAuth.instance.currentUser;
   //for password visibility
@@ -18,9 +17,10 @@ class SignUpController extends GetxController {
     String userPassword,
     String userDeviceToken,
   ) async {
+    // userDeviceToken = Get.find<GetDeviceTokenController>().deviceToken!.toString();
+
     try {
       print("-------->>User Created<<----------");
-
       // EasyLoading.show(status: 'loading...');
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
@@ -33,12 +33,6 @@ class SignUpController extends GetxController {
 
       print("------>>Email sent<<------");
 
-      // print(userModel);
-      //save user data to firestore
-      // await _firestore
-      //     .collection('users')
-      //     .doc(userCredential.user!.uid)
-      //     .set(userModel.toMap());
       await colRef
           .add(
             {
@@ -46,21 +40,12 @@ class SignUpController extends GetxController {
               'name': userName,
               'email': userEmail,
               'phone': userPhone,
-              'isAdmin': false,
+              'isAdmin': true,
               'deviceToken': userDeviceToken,
             },
           )
           .then((value) => print("User added"))
           .catchError((error) => print("Failed to add user: $error"));
-
-      // colRef.doc(userCredential.user!.uid).set({
-      //   'uId': userCredential.user!.uid,
-      //   'name': userName,
-      //   'email': userEmail,
-      //   'phone': userPhone,
-      //   'isAdmin': false,
-      //   'deviceToken': userDeviceToken,
-      // }).then((value) => print("User Added"));
 
       print("Everything is okey-----........");
 
