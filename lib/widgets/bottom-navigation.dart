@@ -12,7 +12,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    const HomeScreen(),
     const WishlistScreen(),
     const CategoriesScreen(),
     const ProfileScreen(),
@@ -56,21 +55,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
   }
 }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: const Center(
-        child: Text('Home Screen'),
-      ),
-    );
-  }
-}
 
 class WishlistScreen extends StatelessWidget {
   const WishlistScreen({super.key});

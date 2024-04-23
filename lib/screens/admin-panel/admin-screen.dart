@@ -2,6 +2,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../auth-ui/welcome-screen.dart';
+
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
 
@@ -23,7 +25,7 @@ class _AdminScreenState extends State<AdminScreen> {
               // Add logout functionality here
               await auth.signOut();
 
-              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const WelcomeScreen()));
             },
           ),
         ],

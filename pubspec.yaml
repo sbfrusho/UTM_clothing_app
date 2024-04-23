@@ -54,6 +54,7 @@ dependencies:
   path_provider: ^2.1.2
   badges: ^3.1.2
   firebase_messaging: ^14.8.2
+  cached_network_image: ^3.3.1
 
 dev_dependencies:
   flutter_test:
@@ -113,6 +114,8 @@ flutter:
     - assets/Tshirt/tshirt2.jpeg
     - assets/Tshirt/utm_tshirt_1.jpg
     - assets/Corporate/tshirt.jpg
+
+    - assets/user/user.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

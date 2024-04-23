@@ -1,3 +1,4 @@
+//ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,8 +7,9 @@ import 'package:get/get.dart';
 import 'package:shopping_app/My%20Cart/my_cart_view.dart';
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
-import 'package:shopping_app/controller/cart-model.dart';
 import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
+import 'package:shopping_app/widgets/banner-widget.dart';
+import 'package:shopping_app/widgets/custom-drawer-widget.dart';
 
 import '../../widgets/Categories.dart';
 import '../../widgets/slider-image.dart';
@@ -28,25 +30,34 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.white),
           title: const Text(
             "Home",
             style: TextStyle(color: Colors.white),
           ),
-          leading: const Icon(
-            Icons.menu,
-            color: Colors.white,
-          ),
+          // leading: const Icon(
+          //   Icons.menu,
+          //   color: Colors.white,
+          // ),
           actions: [
             IconButton(
               icon: const Icon(Icons.logout, color: Colors.white),
-              onPressed: () async{
+              onPressed: () async {
                 // Handle logout
                 await _auth.signOut();
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const WelcomeScreen()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const WelcomeScreen()));
               },
-            ),],
+            ),
+          ],
+
           backgroundColor: AppColor().colorRed,
         ),
+        drawer: DrawerWidget(),
+
+
         body: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
@@ -67,76 +78,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                // Padding(
-                //   padding: const EdgeInsets.all(30),
-                //   child: SingleChildScrollView(
-                //     scrollDirection: Axis.horizontal,
-                //     child: Container(
-                //       height: MediaQuery.of(context).size.height * .3, // Adjust height according to your needs
-                //       width: MediaQuery.of(context).size.width,
-                //       child: GridView.builder(
-                //         scrollDirection: Axis.horizontal,
-                //         itemCount:
-                //             10, // Replace itemCount with your actual number of images
-                //         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                //           crossAxisCount:
-                //               1, // Adjust crossAxisCount according to your needs
-                //           mainAxisSpacing: 10, // Adjust spacing as needed
-                //         ),
-                //         itemBuilder: (BuildContext context, int index) {
-                //           // Replace Image.network with your image widget
-                //           return Image(
-                //             image: AssetImage(
-                //                 'assets/utm.jpeg' ,),
-                //                 height: 20.h,
-                //                 width: 20.w, // Replace image path with your actual image path
-                //             fit: BoxFit
-                //                 .cover, // Adjust the fit property according to your needs
-                //           );
-                //         },
-                //       ),
-                //     ),
-                //   ),
-                // ),
                 Padding(
                   padding: const EdgeInsets.all(10),
                   // child: SliderImage(imageUrl: "assets/Tshirt/utm_tshirt_1.jpg",),
                   child: Column(
                     children: [
-                      CarouselSlider(
-                        options: CarouselOptions(
-                          viewportFraction: 1,
-                        ),
-                        items: const [
-                          SliderImage(
-                            imageUrl: "assets/Tshirt/utm_tshirt_1.jpg",
-                          ),
-                          SliderImage(
-                            imageUrl: "assets/Tshirt/image.png",
-                          ),
-                          SliderImage(
-                            imageUrl: "assets/Tshirt/tshirt2.jpeg",
-                          ),
-                          SliderImage(
-                            imageUrl: "assets/Corporate/key.png",
-                          ),
-                          SliderImage(
-                            imageUrl: "assets/Cap/cap1.jpeg",
-                          ),
-                          SliderImage(
-                            imageUrl: "assets/Cap/cap2.png",
-                          ),
-                        ],
-                      ),
+                      BannerWidget(),
                     ],
                   ),
                 ),
+                
                 Categories(),
-      
+
                 SizedBox(
                   height: 20.h,
                 ),
-      
+
                 Padding(
                   padding: const EdgeInsets.all(10),
                   // child: SliderImage(imageUrl: "assets/Tshirt/utm_tshirt_1.jpg",),
@@ -147,22 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: EdgeInsets.only(left: 30, bottom: 20),
                         child: Text("Recommended for you"),
                       ),
-                      CarouselSlider(
-                        options: CarouselOptions(
-                          viewportFraction: 1,
-                        ),
-                        items: const [
-                          SliderImage(
-                            imageUrl: "assets/Tshirt/utm_tshirt_1.jpg",
-                          ),
-                          SliderImage(
-                            imageUrl: "assets/Tshirt/image.png",
-                          ),
-                          SliderImage(
-                            imageUrl: "assets/Tshirt/tshirt2.jpeg",
-                          ),
-                        ],
-                      ),
+                      BannerWidget(),
                     ],
                   ),
                 ),
@@ -220,7 +162,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CartScreen(cartItems: [],),
+                    builder: (context) => CartScreen(
+                      cartItems: [],
+                    ),
                   ),
                 );
                 break;
@@ -229,8 +173,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 break;
             }
           },
+          
         ),
       ),
     );
   }
 }
+
