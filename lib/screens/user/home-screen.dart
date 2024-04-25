@@ -1,4 +1,5 @@
 //ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore: unused_import
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +11,10 @@ import 'package:shopping_app/controller/cart-controller.dart';
 import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
 import 'package:shopping_app/widgets/banner-widget.dart';
 import 'package:shopping_app/widgets/custom-drawer-widget.dart';
+import 'package:shopping_app/widgets/heading-widget.dart';
 
 import '../../widgets/Categories.dart';
+// ignore: unused_import
 import '../../widgets/slider-image.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -78,36 +81,38 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  // child: SliderImage(imageUrl: "assets/Tshirt/utm_tshirt_1.jpg",),
-                  child: Column(
-                    children: [
-                      BannerWidget(),
-                    ],
-                  ),
+                HeadingWidget(headingTitle: "Just for you", subTitle: "Recommended"),
+                BannerWidget(),
+                HeadingWidget(
+                  headingTitle: "Categories",
+                  subTitle: "Explore the categories",
                 ),
-                
                 Categories(),
 
                 SizedBox(
                   height: 20.h,
                 ),
+                HeadingWidget(headingTitle: "Popular Items", subTitle: "Choose what you like"),
+                BannerWidget(),
 
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  // child: SliderImage(imageUrl: "assets/Tshirt/utm_tshirt_1.jpg",),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.only(left: 30, bottom: 20),
-                        child: Text("Recommended for you"),
-                      ),
-                      BannerWidget(),
-                    ],
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.all(10),
+                //   // child: SliderImage(imageUrl: "assets/Tshirt/utm_tshirt_1.jpg",),
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.start,
+                //     children: [
+                //       const Padding(
+                //         padding: EdgeInsets.only(left: 10.0, bottom: 20),
+                //         child: Text("Recommended for you" , style: TextStyle(
+                //           fontSize: 20.0,
+                //           color: Colors.black,
+                //           fontWeight: FontWeight.bold,
+                //         ),),
+                //       ),
+                //       BannerWidget(),
+                //     ],
+                //   ),
+                // ),
               ],
             ),
           ),

@@ -207,8 +207,10 @@ import '../../My Cart/my_cart_view.dart';
 import '../../controller/cart-model.dart';
 import '../../controller/cart-controller.dart';
 
+// ignore: must_be_immutable
 class TshirtScreen extends StatelessWidget {
   final CartController cartController = Get.find();
+  // ignore: prefer_final_fields
   int _selectedIndex = 0;
   List<CartItem> cartItems = [];
 
@@ -222,6 +224,8 @@ class TshirtScreen extends StatelessWidget {
     "assets/Tshirt/utm_tshirt_1.jpg",
     "assets/Corporate/tshirt.jpg"
   ];
+
+  TshirtScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -290,6 +294,7 @@ class TshirtScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
+                    // ignore: prefer_const_constructors
                     builder: (context) => HomeScreen(),
                   ),
                 );
