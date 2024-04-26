@@ -1,5 +1,7 @@
 //ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 // ignore: unused_import
+// ignore_for_file: file_names
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:shopping_app/My%20Cart/my_cart_view.dart';
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
 import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
+import 'package:shopping_app/screens/user/all-category.dart';
 import 'package:shopping_app/widgets/banner-widget.dart';
 import 'package:shopping_app/widgets/custom-drawer-widget.dart';
 import 'package:shopping_app/widgets/heading-widget.dart';
@@ -59,8 +62,6 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: AppColor().colorRed,
         ),
         drawer: DrawerWidget(),
-
-
         body: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
@@ -81,18 +82,41 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                HeadingWidget(headingTitle: "Just for you", subTitle: "Recommended"),
+                HeadingWidget(
+                  headingTitle: "Just for you",
+                  subTitle: "Recommended",
+                  buttonText: "View All",
+                  onTap: () {
+                    // Handle the tap event
+                  },
+                ),
                 BannerWidget(),
                 HeadingWidget(
                   headingTitle: "Categories",
                   subTitle: "Explore the categories",
+                  buttonText: "View All",
+                  onTap: () {
+                    // Handle the tap event
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AllCategoriesScreen(),
+                      ),
+                    );
+                  },
                 ),
                 Categories(),
 
                 SizedBox(
                   height: 20.h,
                 ),
-                HeadingWidget(headingTitle: "Popular Items", subTitle: "Choose what you like"),
+                HeadingWidget(
+                    headingTitle: "Popular Items",
+                    subTitle: "Choose what you like",
+                    buttonText: "View All",
+                    onTap: () {
+                      // Handle the tap event
+                    }),
                 BannerWidget(),
 
                 // Padding(
@@ -178,10 +202,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 break;
             }
           },
-          
         ),
       ),
     );
   }
 }
-
