@@ -1,47 +1,29 @@
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/controller/cart-controller.dart';
-import 'package:shopping_app/controller/cart-model.dart';
+import 'package:shopping_app/controller/cart-controller.dart'; // Adjust import path if necessary
 import '../const/app-colors.dart';
+import '../controller/cart-model.dart';
 
 class CartScreen extends StatefulWidget {
-  final List<CartItem> cartItems;
-
-  const CartScreen({Key? key, required this.cartItems}) : super(key: key);
-
   @override
-  _CartScreenState createState() => _CartScreenState();
+  State<CartScreen> createState() => _CartScreenState();
 }
 
 class _CartScreenState extends State<CartScreen> {
   final CartController cartController = Get.find();
-  late List<int> quantities;
-  double finalTotal = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    quantities = List.generate(cartController.cartItems.length, (index) => 1);
-    calculateTotal();
-  }
-
-  void calculateTotal() {
-    finalTotal = 0;
-    for (int i = 0; i < cartController.cartItems.length; i++) {
-      finalTotal += cartController.cartItems[i].price * quantities[i];
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           "Cart",
           style: TextStyle(color: Colors.white),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back,
             color: Colors.white,
           ),
@@ -51,7 +33,7 @@ class _CartScreenState extends State<CartScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.search,
               color: Colors.white,
             ),
@@ -60,60 +42,58 @@ class _CartScreenState extends State<CartScreen> {
         ],
         backgroundColor: AppColor().colorRed,
       ),
-      body: ListView.builder(
-        itemCount: cartController.cartItems.length,
-        itemBuilder: (context, index) {
-          final cartItem = cartController.cartItems[index];
-          final quantity = quantities[index];
+      body: Obx(
+        () => ListView.builder(
+          itemCount: cartController.cartItems.length,
+          itemBuilder: (context, index) {
+            final CartItem cartItem = cartController.cartItems[index];
+            final int quantity = cartItem.quantity;
 
-          return ListTile(
-            leading: Image(image: AssetImage(cartItem.imageUrl)),
-            title: Text(cartItem.name),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('${(cartItem.price * quantity).toStringAsFixed(2)} RM'),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.remove),
-                      onPressed: () {
-                        setState(() {
+            return ListTile(
+              leading: Image.network(cartItem.productImage), // Adjust as necessary
+              title: Text(cartItem.productName), // Adjust as necessary
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${(cartItem.price * quantity).toStringAsFixed(2)} RM'),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.remove),
+                        onPressed: () {
                           if (quantity > 1) {
-                            quantities[index]--;
-                            calculateTotal();
+                            cartController.decreaseQuantity(index.toString());
+                            cartController.update();
+                          } else {
+                            cartController.removeFromCart(index.toString());
+                            cartController.update();
                           }
-                          else{
-                            cartController.cartItems.removeAt(index);
-                            quantities.removeAt(index);
-                            calculateTotal();
-                          }
-                        });
-                      },
-                    ),
-                    Text(quantity.toString()),
-                    IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: () {
-                        setState(() {
-                          quantities[index]++;
-                          calculateTotal();
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-        },
+                        },
+                      ),
+                      Text(quantity.toString()),
+                      IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: () {
+                          cartController.increaseQuantity(index.toString());
+                          cartController.update();
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(
-            'Total: ${finalTotal.toStringAsFixed(2)} RM',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      bottomNavigationBar: Obx(
+        () => BottomAppBar(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'Total: ${cartController.totalPrice.toStringAsFixed(2)} RM',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       ),

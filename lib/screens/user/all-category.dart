@@ -1,132 +1,167 @@
-// ignore_for_file: file_names, prefer_const_constructors, sized_box_for_whitespace, avoid_unnecessary_containers
-
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:image_card/image_card.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:shopping_app/const/app-colors.dart';
-
+import 'package:shopping_app/screens/user/single-category-product-screen.dart';
 import '../../models/Category-model.dart';
+import '../../My Cart/my_cart_view.dart';
+import 'home-screen.dart';
 
-class AllCategoriesScreen extends StatefulWidget {
-  const AllCategoriesScreen({super.key});
+class AllCategoriesScreen extends StatelessWidget {
+  const AllCategoriesScreen({Key? key}) : super(key: key);
 
-  @override
-  State<AllCategoriesScreen> createState() => _AllCategoriesScreenState();
-}
-
-class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor().backgroundColor,
-      appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: AppColor().backgroundColor,
+        appBar: AppBar(
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
+          backgroundColor: AppColor().colorRed,
+          title: Text(
+            "All Categories",
+            style: TextStyle(color: Colors.white),
+          ),
         ),
-        backgroundColor: AppColor().colorRed,
-        title: Text(
-          "All Categories",
-          style: TextStyle(color: Colors.black),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: FutureBuilder(
-          future: FirebaseFirestore.instance.collection("categories").get(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.hasError) {
-              return Center(
-                child: Text("Error: ${snapshot.error}"),
-              );
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasData) {
-              return GridView.builder(
-                  itemCount: snapshot.data!.docs.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: FutureBuilder(
+            future: FirebaseFirestore.instance.collection("categories").get(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text("Error: ${snapshot.error}"),
+                );
+              } else if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasData) {
+                return Expanded(
+                  child: GridView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       mainAxisSpacing: 3,
                       crossAxisSpacing: 3,
-                      childAspectRatio: 1.19),
-                  itemBuilder: (context, index) {
-                    CategoriesModel categoriesModel = CategoriesModel(
+                      childAspectRatio: 1.19,
+                    ),
+                    itemBuilder: (context, index) {
+                      CategoriesModel categoriesModel = CategoriesModel(
                         categoryId: snapshot.data!.docs[index]['categoryId'],
                         categoryImg: snapshot.data!.docs[index]['categoryImg'],
                         categoryName: snapshot.data!.docs[index]['categoryName'],
                         createdAt: snapshot.data!.docs[index]['createdAt'],
-                        updatedAt: snapshot.data!.docs[index]['updatedAt']);
-        
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: FillImageCard(
-                            width: MediaQuery.of(context).size.width * .4,
-                            height: MediaQuery.of(context).size.height,
-                            heightImage: MediaQuery.of(context).size.height * .10,
-                            imageProvider: CachedNetworkImageProvider(
-                              categoriesModel.categoryImg,
+                        updatedAt: snapshot.data!.docs[index]['updatedAt'],
+                      );
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SingleProductView(
+                                categoryId: categoriesModel.categoryId,
+                              ),
                             ),
-                            title: Center(
-                              child: Text(categoriesModel.categoryName),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20.0),
+                              color: Colors.white,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CachedNetworkImage(
+                                  imageUrl: categoriesModel.categoryImg,
+                                  placeholder: (context, url) => CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) => Icon(Icons.error),
+                                  width: MediaQuery.of(context).size.width * 0.4,
+                                  height: MediaQuery.of(context).size.height * 0.3,
+                                  fit: BoxFit.cover,
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  categoriesModel.categoryName,
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                      ],
-                    );
-                  });
-              // return Container(
-              //   child: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: [
-              //       const Padding(
-              //         padding: EdgeInsets.only(bottom: 20),
-              //       ),
-              //       SizedBox(
-              //         height: MediaQuery.of(context).size.height * .2,
-              //         width: MediaQuery.of(context).size.width * .8,
-              //         child: SingleChildScrollView(
-              //           scrollDirection: Axis.horizontal,
-              //           child: Row(
-              //             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              //             children: snapshot.data!.docs.map((DocumentSnapshot document) {
-              //               return Padding(
-              //                 padding: const EdgeInsets.all(10),
-              //                 child: GestureDetector(
-              //                   onTap: () {
-              //                     // Navigator.push(
-              //                     //     context,
-              //                     //     MaterialPageRoute(
-              //                     //         builder: (context) => CorporateScreen()));
-              //                   },
-              //                   child: Column(
-              //                     children: [
-              //                       Image(
-              //                         image: CachedNetworkImageProvider(document['categoryImg']),
-              //                         height: 100.h,
-              //                       ),
-              //                       Text(document['categoryName']),
-              //                     ],
-              //                   ),
-              //                 ),
-              //               );
-              //             }).toList(),
-              //           ),
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // );
-            } else if (snapshot.data!.docs.isEmpty) {
-              return Center(
-                child: Text("No data found"),
-              );
+                      );
+                    },
+                  ),
+                );
+              } else if (snapshot.data!.docs.isEmpty) {
+                return Center(
+                  child: Text("No data found"),
+                );
+              }
+              return Container();
+            },
+          ),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: 0,
+          selectedItemColor: Colors.red,
+          unselectedItemColor: Colors.grey,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: 'Wishlist',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.category),
+              label: 'Categories',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart),
+              label: 'Cart',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ],
+          onTap: (index) {
+            switch (index) {
+              case 0:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HomeScreen(),
+                  ),
+                );
+                break;
+              case 1:
+                // Handle the Wishlist item tap
+                break;
+              case 2:
+                // Handle the Categories item tap
+                break;
+              case 3:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CartScreen(
+                      // cartItems: [],
+                    ),
+                  ),
+                );
+                break;
+              case 4:
+                // Handle the Profile item tap
+                break;
             }
-            return Container();
           },
         ),
       ),

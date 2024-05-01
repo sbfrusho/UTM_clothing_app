@@ -5,7 +5,7 @@ class ProductModel {
   final String categoryId;
   final String productName;
   final String categoryName;
-  final String salePrice;
+  final double salePrice;
   final String fullPrice;
   final List productImages;
   final String deliveryTime;

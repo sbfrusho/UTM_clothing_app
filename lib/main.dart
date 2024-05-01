@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:shopping_app/screens/user/all-category.dart';
-import 'package:shopping_app/screens/user/cap-screen.dart';
 import 'package:shopping_app/widgets/bottom-navigation.dart';
 
 import 'controller/cart-controller.dart';
@@ -25,7 +24,8 @@ void main() async{
   )
   );
 
-  Get.put(CartController());
+  BindingsBuilder(() { 
+    Get.put(CartController());});
   
   runApp(const MyApp());
 }
@@ -46,7 +46,8 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: SplashScreen(),
+        home: AllCategoriesScreen(),
+        
       ),
     );
   }

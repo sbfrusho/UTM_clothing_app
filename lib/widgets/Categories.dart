@@ -7,11 +7,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
 import 'package:shopping_app/models/Category-model.dart';
-import 'package:shopping_app/screens/user/corporate-screen.dart';
+import 'package:shopping_app/screens/user/single-category-product-screen.dart';
 
-import '../screens/user/cap-screen.dart';
-import '../screens/user/mug-screen.dart';
-import '../screens/user/t-shirt-screen.dart';
 
 class Categories extends StatelessWidget {
   // const Categories({
@@ -49,10 +46,10 @@ class Categories extends StatelessWidget {
                           padding: const EdgeInsets.all(10),
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => CorporateScreen()));
+                              // Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) => SingleProductView(categoryId:,)));
                             },
                             child: Column(
                               children: [
