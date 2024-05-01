@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/screens/user/single-category-product-screen.dart';
@@ -38,64 +39,65 @@ class AllCategoriesScreen extends StatelessWidget {
               } else if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
               } else if (snapshot.hasData) {
-                return Expanded(
-                  child: GridView.builder(
-                    itemCount: snapshot.data!.docs.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 3,
-                      crossAxisSpacing: 3,
-                      childAspectRatio: 1.19,
-                    ),
-                    itemBuilder: (context, index) {
-                      CategoriesModel categoriesModel = CategoriesModel(
-                        categoryId: snapshot.data!.docs[index]['categoryId'],
-                        categoryImg: snapshot.data!.docs[index]['categoryImg'],
-                        categoryName: snapshot.data!.docs[index]['categoryName'],
-                        createdAt: snapshot.data!.docs[index]['createdAt'],
-                        updatedAt: snapshot.data!.docs[index]['updatedAt'],
-                      );
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => SingleProductView(
-                                categoryId: categoriesModel.categoryId,
-                              ),
+                return GridView.builder(
+                  itemCount: snapshot.data!.docs.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 3,
+                    crossAxisSpacing: 3,
+                    childAspectRatio: 1,
+                  ),
+                  itemBuilder: (context, index) {
+                    CategoriesModel categoriesModel = CategoriesModel(
+                      categoryId: snapshot.data!.docs[index]['categoryId'],
+                      categoryImg: snapshot.data!.docs[index]['categoryImg'],
+                      categoryName: snapshot.data!.docs[index]['categoryName'],
+                      createdAt: snapshot.data!.docs[index]['createdAt'],
+                      updatedAt: snapshot.data!.docs[index]['updatedAt'],
+                    );
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SingleProductView(
+                              categoryId: categoriesModel.categoryId,
+                              categoryName: categoriesModel.categoryName,
                             ),
-                          );
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20.0),
-                              color: Colors.white,
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CachedNetworkImage(
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20.0),
+                            color: Colors.white,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: CachedNetworkImage(
                                   imageUrl: categoriesModel.categoryImg,
                                   placeholder: (context, url) => CircularProgressIndicator(),
                                   errorWidget: (context, url, error) => Icon(Icons.error),
                                   width: MediaQuery.of(context).size.width * 0.4,
-                                  height: MediaQuery.of(context).size.height * 0.3,
+                                  height: MediaQuery.of(context).size.height * 0.12,
                                   fit: BoxFit.cover,
                                 ),
-                                SizedBox(height: 8),
-                                Text(
-                                  categoriesModel.categoryName,
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ],
-                            ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                categoriesModel.categoryName,
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ],
                           ),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 );
               } else if (snapshot.data!.docs.isEmpty) {
                 return Center(

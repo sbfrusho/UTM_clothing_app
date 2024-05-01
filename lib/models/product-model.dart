@@ -6,7 +6,7 @@ class ProductModel {
   final String productName;
   final String categoryName;
   final double salePrice;
-  final String fullPrice;
+  final double fullPrice;
   final List productImages;
   final String deliveryTime;
   final bool isSale;
@@ -15,7 +15,7 @@ class ProductModel {
   final dynamic updatedAt;
 
   ProductModel({
-    required this.productId,
+    required this.productId,  
     required this.categoryId,
     required this.productName,
     required this.categoryName,

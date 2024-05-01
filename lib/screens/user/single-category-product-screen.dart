@@ -3,7 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 import '../../My Cart/my_cart_view.dart';
@@ -12,9 +14,11 @@ import '../../models/product-model.dart';
 
 class SingleProductView extends StatelessWidget {
   final String categoryId;
+  final String categoryName;
   final CartController cartController = Get.put(CartController());
 
-  SingleProductView({Key? key, required this.categoryId})
+  SingleProductView(
+      {Key? key, required this.categoryId, required this.categoryName})
       : super(key: key);
 
   @override
@@ -23,8 +27,14 @@ class SingleProductView extends StatelessWidget {
       Get.put(CartController());
     });
     return Scaffold(
+      backgroundColor: AppColor().backgroundColor,
       appBar: AppBar(
-        title: Text('Product Details'),
+        backgroundColor: AppColor().colorRed,
+        title: Text(categoryName, style: TextStyle(color: Colors.white)),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -44,18 +54,19 @@ class SingleProductView extends StatelessWidget {
             return Center(child: Text("Products not found for this category!"));
           }
 
-          return GridView.builder(
+          return // Your code with adjustments
+              GridView.builder(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 3,
               mainAxisSpacing: 3,
-              childAspectRatio: 1.3,
+              childAspectRatio: .6, // Adjusted value
             ),
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
               ProductModel product = ProductModel.fromMap(
-                  snapshot.data!.docs[index].data()
-                  as Map<String, dynamic>);
+                snapshot.data!.docs[index].data() as Map<String, dynamic>,
+              );
               return GestureDetector(
                 onTap: () {
                   // Navigate to product details screen
@@ -67,13 +78,15 @@ class SingleProductView extends StatelessWidget {
                     children: [
                       Expanded(
                         child: CachedNetworkImage(
+                          height: MediaQuery.of(context).size.height * 0.2,
+                          width: MediaQuery.of(context).size.width * 0.5,
                           imageUrl: product.productImages[0],
                           placeholder: (context, url) =>
                               CircularProgressIndicator(),
                           errorWidget: (context, url, error) =>
                               Icon(Icons.error),
-                          fit: BoxFit.fill,
-                        ),
+                          fit: BoxFit.fitWidth,
+                        ), // Placeholder or empty container if URL is null
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -83,31 +96,48 @@ class SingleProductView extends StatelessWidget {
                             Text(
                               product.productName,
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             SizedBox(height: 4),
                             Text(
                               'Sale Price: ${product.salePrice}',
                               style: TextStyle(fontSize: 14),
                             ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Full Price: ${product.fullPrice}',
+                              style: TextStyle(fontSize: 14),
+                            ),
                             SizedBox(height: 8),
                             ElevatedButton(
                               onPressed: () {
-                                // Check if the item is already in the cart
-                                bool isInCart = cartController.cartItems.any((item) => item.productId == product.productId); // Replace with actual check
-                                if (isInCart) {
-                                  cartController.removeFromCart(product.productId);
+                                if (cartController.cartItems.any((element) =>
+                                    element.productId == product.productId)) {
+                                      cartController.removeFromCart(product.productId);
+                                  Get.snackbar('Product already in cart',
+                                      'Please go to cart to update quantity');
+                                  return;
                                 } else {
-                                  // Add item to cart
-                                  CartItem cartItem = CartItem(
-                                    productId: product.productId,
-                                    productName: product.productName,
-                                    productImage: product.productImages[0],
-                                    price: product.salePrice,
-                                    quantity: 1,
+                                  cartController.addToCart(
+                                    CartItem(
+                                      productId: product.productId,
+                                      productName: product.productName,
+                                      productImage: product.productImages[0],
+                                      price: product.salePrice,
+                                    ),
                                   );
-                                  // AddProductToCart(cartItem);
-                                  cartController.addToCart(cartItem);
+                                  // Get.snackbar('Product added to cart', 'You can update quantity in cart');
+                                  Fluttertoast.showToast(
+                                    msg: "Product added to cart",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    timeInSecForIosWeb: 1,
+                                    backgroundColor: Colors.red,
+                                    textColor: Colors.white,
+                                    fontSize: 16.0,
+                                  );
                                 }
                               },
                               child: Text('Add to Cart'),
@@ -121,66 +151,67 @@ class SingleProductView extends StatelessWidget {
               );
             },
           );
+          ;
         },
       ),
       bottomNavigationBar: BottomNavigationBar(
-          currentIndex: 0,
-          selectedItemColor: Colors.red,
-          unselectedItemColor: Colors.grey,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              label: 'Wishlist',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.category),
-              label: 'Categories',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart),
-              label: 'Cart',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
-          onTap: (index) {
-            switch (index) {
-              case 0:
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HomeScreen(),
-                  ),
-                );
-                break;
-              case 1:
-                // Handle the Wishlist item tap
-                break;
-              case 2:
-                // Handle the Categories item tap
-                break;
-              case 3:
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CartScreen(
+        currentIndex: 0,
+        selectedItemColor: Colors.red,
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Wishlist',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.category),
+            label: 'Categories',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Cart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(),
+                ),
+              );
+              break;
+            case 1:
+              // Handle the Wishlist item tap
+              break;
+            case 2:
+              // Handle the Categories item tap
+              break;
+            case 3:
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CartScreen(
                       // cartItems: [],
-                    ),
-                  ),
-                );
-                break;
-              case 4:
-                // Handle the Profile item tap
-                break;
-            }
-          },
-        ),
+                      ),
+                ),
+              );
+              break;
+            case 4:
+              // Handle the Profile item tap
+              break;
+          }
+        },
+      ),
     );
   }
 }
