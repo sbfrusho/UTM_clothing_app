@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
 
 class CartScreen extends StatefulWidget {
@@ -16,7 +17,8 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Cart'),
+        backgroundColor: AppColor().colorRed,
+        title: Text('Your Cart' , style: TextStyle(color: Colors.white),),
       ),
       body: Column(
         children: [
@@ -25,39 +27,57 @@ class _CartScreenState extends State<CartScreen> {
               itemCount: cartController.cartItems.length,
               itemBuilder: (context, index) {
                 final item = cartController.cartItems[index];
-                return ListTile(
-                  leading: Image.network(item.productImage),
-                  title: Text(item.productName),
-                  subtitle: Text('Price: ${item.price.toStringAsFixed(2)} RM'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.remove),
-                        onPressed: () {
-                          if (item.quantity > 1) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: ListTile(
+                    tileColor: Colors.grey[200],
+                    leading: Image.network(item.productImage),
+                    title: Text(item.productName),
+                    subtitle: Text(
+                      'price : \$${(item.price * item.quantity).toStringAsFixed(2)}',
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.remove),
+                          onPressed: () {
+                            if (item.quantity > 1) {
+                              cartController.updateQuantity(
+                                  item.productId, item.quantity - 1);
+                              setState(() {
+                                // Update the UI
+                                cartController.update();
+                              });
+                            } else if (item.quantity < 1) {
+                              cartController.removeFromCart(item.productId);
+                              setState(() {
+                                // Update the UI
+                                cartController.update();
+                              });
+                            } else {
+                              cartController.removeFromCart(item.productId);
+                              setState(() {
+                                // Update the UI
+                                cartController.update();
+                              });
+                            }
+                          },
+                        ),
+                        Text(item.quantity.toString()),
+                        IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: () {
                             cartController.updateQuantity(
-                                item.productId, item.quantity - 1);
+                                item.productId, item.quantity + 1);
                             setState(() {
                               // Update the UI
                               cartController.update();
                             });
-                          }
-                        },
-                      ),
-                      Text(item.quantity.toString()),
-                      IconButton(
-                        icon: Icon(Icons.add),
-                        onPressed: () {
-                          cartController.updateQuantity(
-                              item.productId, item.quantity + 1);
-                          setState(() {
-                            // Update the UI
-                            cartController.update();
-                          });
-                        },
-                      ),
-                    ],
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
