@@ -20,18 +20,16 @@ class SignUpController extends GetxController {
     // userDeviceToken = Get.find<GetDeviceTokenController>().deviceToken!.toString();
 
     try {
-      print("-------->>User Created<<----------");
-      // EasyLoading.show(status: 'loading...');
+      // print("-------->>User Created<<----------");
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
         email: userEmail,
         password: userPassword,
       );
 
-      //send email verification
       await userCredential.user!.sendEmailVerification();
 
-      print("------>>Email sent<<------");
+      // print("------>>Email sent<<------");
 
       await colRef
           .add(
@@ -47,7 +45,7 @@ class SignUpController extends GetxController {
           .then((value) => print("User added"))
           .catchError((error) => print("Failed to add user: $error"));
 
-      print("Everything is okey-----........");
+      // print("Everything is okey-----........");
 
       // EasyLoading.dismiss();
 

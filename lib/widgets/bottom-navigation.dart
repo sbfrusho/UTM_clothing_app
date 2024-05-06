@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_app/controller/cart-model.dart';
+import 'package:shopping_app/controller/cart-model-controller.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});

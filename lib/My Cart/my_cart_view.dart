@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
 
+import '../screens/user/checkout-screen.dart';
+
 class CartScreen extends StatefulWidget {
   @override
   _CartScreenState createState() => _CartScreenState();
@@ -95,6 +97,7 @@ class _CartScreenState extends State<CartScreen> {
                 ElevatedButton(
                   onPressed: () {
                     // Place order logic
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => CheckoutScreen()));
                   },
                   child: const Text('Place Order'),
                 ),

@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:shopping_app/const/app-colors.dart';
+import 'package:shopping_app/models/product-model.dart';
 import 'package:shopping_app/screens/user/single-category-product-screen.dart';
 import '../../models/Category-model.dart';
 import '../../My Cart/my_cart_view.dart';
@@ -63,6 +64,7 @@ class AllCategoriesScreen extends StatelessWidget {
                             builder: (context) => SingleProductView(
                               categoryId: categoriesModel.categoryId,
                               categoryName: categoriesModel.categoryName,
+                              
                             ),
                           ),
                         );
@@ -80,10 +82,14 @@ class AllCategoriesScreen extends StatelessWidget {
                               Expanded(
                                 child: CachedNetworkImage(
                                   imageUrl: categoriesModel.categoryImg,
-                                  placeholder: (context, url) => CircularProgressIndicator(),
-                                  errorWidget: (context, url, error) => Icon(Icons.error),
-                                  width: MediaQuery.of(context).size.width * 0.4,
-                                  height: MediaQuery.of(context).size.height * 0.12,
+                                  placeholder: (context, url) =>
+                                      CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      Icon(Icons.error),
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.4,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.12,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -155,8 +161,8 @@ class AllCategoriesScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => CartScreen(
-                      // cartItems: [],
-                    ),
+                        // cartItems: [],
+                        ),
                   ),
                 );
                 break;

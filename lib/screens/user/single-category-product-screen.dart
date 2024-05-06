@@ -1,5 +1,6 @@
-// ignore_for_file: prefer_const_constructors, use_super_parameters
+// ignore_for_file: prefer_const_constructors, use_super_parameters, unused_local_variable
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,19 +8,24 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
+import 'package:shopping_app/controller/cart-model-controller.dart';
+import 'package:shopping_app/screens/user/checkout-screen.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
+import 'package:shopping_app/screens/user/product-detailscreen.dart';
 import '../../My Cart/my_cart_view.dart';
-import '../../controller/cart-model.dart';
 import '../../models/product-model.dart';
 
 class SingleProductView extends StatelessWidget {
   final String categoryId;
   final String categoryName;
   final CartController cartController = Get.put(CartController());
-
+  final CheckoutScreen checkoutScreen = CheckoutScreen();
+  User? user = FirebaseAuth.instance.currentUser;
   SingleProductView(
       {Key? key, required this.categoryId, required this.categoryName})
       : super(key: key);
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -77,15 +83,26 @@ class SingleProductView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: CachedNetworkImage(
-                          height: MediaQuery.of(context).size.height * 0.2,
-                          width: MediaQuery.of(context).size.width * 0.5,
-                          imageUrl: product.productImages[0],
-                          placeholder: (context, url) =>
-                              CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
-                          fit: BoxFit.fitWidth,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ProductDetailScreen(productModel: product),
+                              ),
+                            );
+                          },
+                          child: CachedNetworkImage(
+                            height: MediaQuery.of(context).size.height * 0.2,
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            imageUrl: product.productImages[0],
+                            placeholder: (context, url) =>
+                                CircularProgressIndicator(),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                            fit: BoxFit.fitWidth,
+                          ),
                         ), // Placeholder or empty container if URL is null
                       ),
                       Padding(
@@ -115,11 +132,13 @@ class SingleProductView extends StatelessWidget {
                               onPressed: () {
                                 if (cartController.cartItems.any((element) =>
                                     element.productId == product.productId)) {
-                                      cartController.removeFromCart(product.productId);
+                                  cartController
+                                      .removeFromCart(product.productId);
                                   Get.snackbar('Product already in cart',
                                       'Please go to cart to update quantity');
                                   return;
                                 } else {
+                                  
                                   cartController.addToCart(
                                     CartItem(
                                       productId: product.productId,
@@ -151,7 +170,6 @@ class SingleProductView extends StatelessWidget {
               );
             },
           );
-          ;
         },
       ),
       bottomNavigationBar: BottomNavigationBar(

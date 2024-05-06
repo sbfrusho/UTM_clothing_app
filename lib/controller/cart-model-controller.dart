@@ -52,9 +52,18 @@ class CartItem {
     required this.price,
     this.quantity = 1,
   });
+  Map<String, dynamic> toMap() {
+    return {
+      'productId': productId,
+      'productName': productName,
+      'productImage': productImage,
+      'price': price,
+      'quantity': quantity,
+    };
+  }
 }
 
-class CartModel extends ChangeNotifier {
+class CartModelController extends ChangeNotifier {
   List<CartItem> _cartItems = [];
 
   List<CartItem> get cartItems => _cartItems;
@@ -78,7 +87,8 @@ class CartModel extends ChangeNotifier {
   }
 
   void updateQuantity(String productId, int newQuantity) {
-    _cartItems.firstWhere((item) => item.productId == productId).quantity = newQuantity;
+    _cartItems.firstWhere((item) => item.productId == productId).quantity =
+        newQuantity;
     notifyListeners();
   }
 
@@ -87,4 +97,3 @@ class CartModel extends ChangeNotifier {
     notifyListeners();
   }
 }
-
