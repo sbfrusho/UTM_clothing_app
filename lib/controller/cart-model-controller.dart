@@ -42,7 +42,7 @@ class CartItem {
   final String productId;
   final String productName;
   final String productImage;
-  final double price;
+  final String price;
   int quantity;
 
   CartItem({
@@ -71,7 +71,7 @@ class CartModelController extends ChangeNotifier {
   double get totalPrice {
     double total = 0;
     _cartItems.forEach((item) {
-      total += item.price * item.quantity;
+      total += double.parse(item.price) * item.quantity;
     });
     return total;
   }

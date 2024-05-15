@@ -5,8 +5,8 @@ class OrderModel {
   final String categoryId;
   final String productName;
   final String categoryName;
-  final double salePrice;
-  final double fullPrice;
+  final String salePrice;
+  final String fullPrice;
   final List productImages;
   final String deliveryTime;
   final bool isSale;
@@ -14,7 +14,7 @@ class OrderModel {
   final dynamic createdAt;
   final dynamic updatedAt;
   final int productQuantity;
-  final double productTotalPrice;
+  final String productTotalPrice;
   final String customerId;
   final bool status;
   final String customerName;
