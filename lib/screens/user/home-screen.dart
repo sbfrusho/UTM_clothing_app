@@ -1,8 +1,6 @@
 //ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 // ignore: unused_import
 // ignore_for_file: file_names
-
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,8 +15,6 @@ import 'package:shopping_app/widgets/custom-drawer-widget.dart';
 import 'package:shopping_app/widgets/heading-widget.dart';
 
 import '../../widgets/Categories.dart';
-// ignore: unused_import
-import '../../widgets/slider-image.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,7 +25,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final CartController cartController = Get.find();
+  final CartController cartController = Get.put(CartController());
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const WelcomeScreen()));
+                        builder: (context) =>  WelcomeScreen()));
               },
             ),
           ],

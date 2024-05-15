@@ -3,7 +3,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
+import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
 import 'package:shopping_app/screens/user/all-category.dart';
 import 'package:shopping_app/widgets/bottom-navigation.dart';
 
@@ -14,6 +16,7 @@ import 'screens/user/home-screen.dart';
 
 
 void main() async{
+  Stripe.publishableKey = "pk_test_51J0ZQvK5Q6ZQ6ZQvK5Q6ZQ6ZQvK5Q6ZQ6ZQ6ZQvK5Q6ZQ6ZQvK5Q6ZQ6ZQ6ZQvK5Q6ZQ6ZQ6ZQ6ZQ6ZQvK5";
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: const FirebaseOptions(
@@ -46,7 +49,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: AllCategoriesScreen(),
+        home: WelcomeScreen(),
         
       ),
     );

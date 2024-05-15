@@ -37,14 +37,13 @@ class CartController extends GetxController {
       String paymentMethod,
       String deliveryTime) async {
     try {
-
       print("cartItems: $cartItems");
       print("totalPrice: $totalPrice");
       print("customerId: $customerId");
       print("customerName: $customerName");
       // Add order details to Firestore
       DocumentReference orderRef =
-          await FirebaseFirestore.instance.collection('orders').add({
+          await FirebaseFirestore.instance.collection('orders').add({ 
         'customerId': customerId,
         'customerName': customerName,
         'customerPhone': customerPhone,

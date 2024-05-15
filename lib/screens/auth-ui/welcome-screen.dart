@@ -1,16 +1,42 @@
+// ignore_for_file: prefer_final_fields, unused_field
+
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:shopping_app/const/app-colors.dart';
+import 'package:shopping_app/controller/sign-in-controller.dart';
 import 'package:shopping_app/screens/auth-ui/login-screen.dart';
 import 'package:shopping_app/screens/auth-ui/register-screen.dart';
+import 'package:shopping_app/screens/user/home-screen.dart';
 
-class WelcomeScreen extends StatelessWidget {
-  const WelcomeScreen({super.key});
+class WelcomeScreen extends StatefulWidget {
+  WelcomeScreen({super.key});
+
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  final SignInController signInController = SignInController();
+  late final LocalAuthentication localAuth;
+  bool _supportState = false;
+
+  @override
+  void initState() {
+    super.initState();
+    localAuth = LocalAuthentication();
+    localAuth.isDeviceSupported().then((bool isSupported) => setState(() {
+          _supportState = isSupported;
+        }));
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      
       child: Scaffold(
         body: Container(
           color: const Color.fromARGB(255, 248, 246, 242),
@@ -48,10 +74,11 @@ class WelcomeScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                                MaterialPageRoute(
+                                    builder: (context) => const LoginScreen()),
                               );
                             },
                             child: Text(
@@ -77,12 +104,13 @@ class WelcomeScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           GestureDetector(
-                            onTap: (){
+                            onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const RegisterScreen()),
                               );
-                            
                             },
                             child: Text(
                               "Register",
@@ -94,7 +122,24 @@ class WelcomeScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      
+                    ),
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColor().colorRed,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                            ),
+                            onPressed: authenticate,
+                            child: const Text("Use Biometric Authentication")),
+                      ),
                     )
                   ],
                 ),
@@ -104,5 +149,35 @@ class WelcomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> authenticate() async{
+    try{
+      bool isAuthenticated = await localAuth.authenticate(
+        localizedReason: "Authenticate to login",
+        options: const AuthenticationOptions(
+          stickyAuth: true,
+          biometricOnly: true,
+        ),
+      );
+      if(isAuthenticated){
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+        );
+      }
+    }on PlatformException catch(e){
+
+    }
+  }
+
+  Future<void> getBiometricTypes() async {
+    List<BiometricType> availableBiometrics =
+        await localAuth.getAvailableBiometrics();
+
+      print("available : $availableBiometrics");
+      if(!mounted) return;
   }
 }

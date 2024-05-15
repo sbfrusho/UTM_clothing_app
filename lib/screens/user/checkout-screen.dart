@@ -2,13 +2,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
 import 'package:shopping_app/controller/get-customer-device-token-controller.dart';
-
 
 class CheckoutScreen extends StatefulWidget {
   @override
@@ -220,7 +217,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         );
                       } else {}
                     },
-                    child: Text('Confirm Order'),
+                    child: Text('COnfirm Order'),
                   ),
                 ),
               ],

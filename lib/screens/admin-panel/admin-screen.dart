@@ -25,7 +25,7 @@ class _AdminScreenState extends State<AdminScreen> {
               // Add logout functionality here
               await auth.signOut();
 
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const WelcomeScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) =>  WelcomeScreen()));
             },
           ),
         ],
