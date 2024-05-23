@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+import 'package:shopping_app/models/product-model.dart';
 
 class WishListModel {
   final String productId;
@@ -15,7 +15,7 @@ class WishListModel {
   final dynamic updatedAt;
 
   WishListModel({
-    required this.productId,  
+    required this.productId,
     required this.categoryId,
     required this.productName,
     required this.categoryName,
@@ -60,6 +60,23 @@ class WishListModel {
       productDescription: json['productDescription'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
+    );
+  }
+
+  ProductModel toProductModel() {
+    return ProductModel(
+      productId: productId,
+      categoryId: categoryId,
+      productName: productName,
+      categoryName: categoryName,
+      salePrice: salePrice,
+      fullPrice: fullPrice,
+      productImages: productImages,
+      deliveryTime: deliveryTime,
+      isSale: isSale,
+      productDescription: productDescription,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
     );
   }
 }

@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/models/product-model.dart';
 import 'package:shopping_app/screens/user/single-category-product-screen.dart';
+import 'package:shopping_app/screens/user/wish-list.dart';
+import '../../controller/wishlist-controller.dart';
 import '../../models/Category-model.dart';
 import '../../My Cart/my_cart_view.dart';
 import 'home-screen.dart';
 
 class AllCategoriesScreen extends StatelessWidget {
-  const AllCategoriesScreen({Key? key}) : super(key: key);
+  AllCategoriesScreen({Key? key}) : super(key: key);
+
+  WishlistController wishlistController = Get.put(WishlistController());
 
   @override
   Widget build(BuildContext context) {
@@ -152,6 +157,8 @@ class AllCategoriesScreen extends StatelessWidget {
                 break;
               case 1:
                 // Handle the Wishlist item tap
+                Navigator.push(context, MaterialPageRoute(builder: (context) => WishlistScreen(wishlistItems: [],)));
+                
                 break;
               case 2:
                 // Handle the Categories item tap

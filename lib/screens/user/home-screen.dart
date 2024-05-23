@@ -6,8 +6,10 @@ import 'package:get/get.dart';
 import 'package:shopping_app/My%20Cart/my_cart_view.dart';
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
+import 'package:shopping_app/controller/wishlist-controller.dart';
 import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
 import 'package:shopping_app/screens/user/all-category.dart';
+import 'package:shopping_app/screens/user/wish-list.dart';
 import 'package:shopping_app/widgets/banner-widget.dart';
 import 'package:shopping_app/widgets/custom-drawer-widget.dart';
 import 'package:shopping_app/widgets/heading-widget.dart'; 
@@ -25,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CartController cartController = Get.put(CartController());
   TextEditingController searchController = TextEditingController();
-
+  WishlistController wishlistController = Get.put(WishlistController());
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -159,6 +161,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 break;
               case 1:
                 // Handle the Wishlist item tap
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => WishlistScreen(wishlistItems: [],)));
                 break;
               case 2:
                 // Handle the Categories item tap

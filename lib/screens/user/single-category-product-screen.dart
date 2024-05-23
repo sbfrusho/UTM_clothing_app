@@ -13,6 +13,7 @@ import 'package:shopping_app/screens/user/checkout-screen.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 import 'package:shopping_app/screens/user/product-detailscreen.dart';
 import '../../My Cart/my_cart_view.dart';
+import '../../controller/wishlist-controller.dart';
 import '../../models/product-model.dart';
 
 class SingleProductView extends StatelessWidget {
@@ -25,7 +26,7 @@ class SingleProductView extends StatelessWidget {
       {Key? key, required this.categoryId, required this.categoryName})
       : super(key: key);
 
-  
+  WishlistController wishlistController = Get.put(WishlistController());
 
   @override
   Widget build(BuildContext context) {
@@ -210,6 +211,7 @@ class SingleProductView extends StatelessWidget {
               break;
             case 1:
               // Handle the Wishlist item tap
+              
               break;
             case 2:
               // Handle the Categories item tap

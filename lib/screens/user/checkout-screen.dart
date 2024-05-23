@@ -241,6 +241,7 @@ import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
 import 'package:shopping_app/controller/get-customer-device-token-controller.dart';
 import 'package:shopping_app/controller/payment-controller.dart';
+import 'package:shopping_app/controller/wishlist-controller.dart';
 
 class CheckoutScreen extends StatefulWidget {
   @override
@@ -250,6 +251,7 @@ class CheckoutScreen extends StatefulWidget {
 class _CheckoutScreenState extends State<CheckoutScreen> {
   late TextEditingController timeController;
   var paymentController = Get.put(PaymentController());
+  WishlistController wishlistController = Get.put(WishlistController());
 
   @override
   void initState() {

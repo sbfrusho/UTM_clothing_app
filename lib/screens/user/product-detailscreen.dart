@@ -9,9 +9,9 @@ import 'package:shopping_app/models/wishlist-model.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 import 'package:shopping_app/screens/user/wish-list.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../../My Cart/my_cart_view.dart';
 import '../../controller/cart-model-controller.dart';
+import '../../controller/wishlist-controller.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final ProductModel productModel;
@@ -24,10 +24,17 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   CartController cartController = Get.put(CartController());
-  bool isInWishlist = false; // Track whether the product is in the wishlist
+  WishlistController wishlistController = Get.put(WishlistController());
+  bool isInWishlist = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isInWishlist = wishlistController.wishlistItems
+        .any((item) => item.productId == widget.productModel.productId);
+  }
 
   Future<void> _launchWhatsApp() async {
-    // Replace "01781314166" with the actual phone number of the user you want to chat with
     const String userPhoneNumber = "01781314166";
     final String whatsappUrl = "https://wa.me/$userPhoneNumber";
 
@@ -50,9 +57,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     launchUrl(Uri.parse(url));
   }
 
-  // Toggle the product's presence in the wishlist
   void addToWishlist() {
-    
     WishListModel wishlistItem = WishListModel(
       productId: widget.productModel.productId,
       categoryId: widget.productModel.categoryId,
@@ -68,16 +73,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       updatedAt: widget.productModel.updatedAt,
     );
 
-    // Add the wishlist item to the wishlist model
-    // Here you can add your logic to store the wishlist item in a database or any other storage mechanism
-    // For now, let's assume you have a list of wishlist items in your state
-    // and we'll just add the item to that list
-    // wishlistItems.add(wishlistItem);
+    if (isInWishlist) {
+      wishlistController.removeFromWishlistById(widget.productModel.productId);
+    } else {
+      wishlistController.addToWishlist(wishlistItem);
+    }
 
-    // Update the UI to reflect that the product is in the wishlist
     setState(() {
       isInWishlist = !isInWishlist;
     });
+
+    // Upload the wishlist to Firebase for the specific user
+    wishlistController.uploadWishlist("user123"); // Replace with actual user ID
   }
 
   @override
@@ -178,9 +185,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   IconButton(
                     onPressed: addToWishlist,
                     icon: Icon(
-                      isInWishlist
-                          ? Icons.favorite
-                          : Icons.favorite_border,
+                      isInWishlist ? Icons.favorite : Icons.favorite_border,
                       color: isInWishlist ? Colors.red : null,
                     ),
                   ),
@@ -227,12 +232,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               );
               break;
             case 1:
-              // Navigate to the wishlist screen and pass the product model
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => WishlistScreen(
-                    productModel: widget.productModel,
+                    // productModel: widget.productModel,
+                    // wishListModel: WishListModel(
+                    //   productId: widget.productModel.productId,
+                    //   categoryId: widget.productModel.categoryId,
+                    //   productName: widget.productModel.productName,
+                    //   categoryName: widget.productModel.categoryName,
+                    //   salePrice: widget.productModel.salePrice,
+                    //   fullPrice: widget.productModel.fullPrice,
+                    //   productImages: widget.productModel.productImages,
+                    //   deliveryTime: widget.productModel.deliveryTime,
+                    //   isSale: widget.productModel.isSale,
+                    //   productDescription: widget.productModel.productDescription,
+                    //   createdAt: widget.productModel.createdAt,
+                    //   updatedAt: widget.productModel.updatedAt,
+                    // ),
                     wishlistItems: [
                       WishListModel(
                         productId: widget.productModel.productId,
@@ -248,9 +266,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         createdAt: widget.productModel.createdAt,
                         updatedAt: widget.productModel.updatedAt,
                       ),
-                    ],  
+                    ],
+                  ),
                 ),
-              ));
+              );
               break;
             case 2:
               // Handle the Categories item tap
