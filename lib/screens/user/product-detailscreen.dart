@@ -35,7 +35,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Future<void> _launchWhatsApp() async {
-    const String userPhoneNumber = "01781314166";
+    const String userPhoneNumber = "";
     final String whatsappUrl = "https://wa.me/$userPhoneNumber";
 
     try {
@@ -52,7 +52,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void sendWhatsAp() {
-    String phoneNumber = "+880 1677-652072";
+    String phoneNumber = "";
     String url = "whatsapp://send?phone= $phoneNumber";
     launchUrl(Uri.parse(url));
   }
