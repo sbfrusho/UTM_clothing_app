@@ -1,6 +1,4 @@
-//ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-// ignore: unused_import
-// ignore_for_file: file_names
+// home_screen.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,9 +10,9 @@ import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
 import 'package:shopping_app/screens/user/all-category.dart';
 import 'package:shopping_app/widgets/banner-widget.dart';
 import 'package:shopping_app/widgets/custom-drawer-widget.dart';
-import 'package:shopping_app/widgets/heading-widget.dart';
-
+import 'package:shopping_app/widgets/heading-widget.dart'; 
 import '../../widgets/Categories.dart';
+import 'search-result-screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,6 +24,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final CartController cartController = Get.put(CartController());
+  TextEditingController searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -37,24 +36,18 @@ class _HomeScreenState extends State<HomeScreen> {
             "Home",
             style: TextStyle(color: Colors.white),
           ),
-          // leading: const Icon(
-          //   Icons.menu,
-          //   color: Colors.white,
-          // ),
           actions: [
             IconButton(
               icon: const Icon(Icons.logout, color: Colors.white),
               onPressed: () async {
-                // Handle logout
                 await _auth.signOut();
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>  WelcomeScreen()));
+                  context,
+                  MaterialPageRoute(builder: (context) => WelcomeScreen()),
+                );
               },
             ),
           ],
-
           backgroundColor: AppColor().colorRed,
         ),
         drawer: DrawerWidget(),
@@ -67,13 +60,26 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(30),
-                  child: TextField(
+                  child: TextFormField(
+                    controller: searchController,
+                    keyboardType: TextInputType.emailAddress,
+                    onFieldSubmitted: (value) {
+                      if (value.isNotEmpty) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SearchResultsScreen(query: value),
+                          ),
+                        );
+                      }
+                    },
                     decoration: InputDecoration(
-                      hintText: 'Search',
+                      hintText: "Search for products",
+                      labelText: "Search",
                       prefixIcon: const Icon(Icons.search),
-                      suffixIcon: const Icon(Icons.mic),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
@@ -92,7 +98,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   subTitle: "Explore the categories",
                   buttonText: "View All",
                   onTap: () {
-                    // Handle the tap event
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -102,46 +107,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
                 Categories(),
-
                 SizedBox(
                   height: 20.h,
                 ),
                 HeadingWidget(
-                    headingTitle: "Popular Items",
-                    subTitle: "Choose what you like",
-                    buttonText: "View All",
-                    onTap: () {
-                      // Handle the tap event
-                    }),
+                  headingTitle: "Popular Items",
+                  subTitle: "Choose what you like",
+                  buttonText: "View All",
+                  onTap: () {
+                    // Handle the tap event
+                  },
+                ),
                 BannerWidget(),
-
-                // Padding(
-                //   padding: const EdgeInsets.all(10),
-                //   // child: SliderImage(imageUrl: "assets/Tshirt/utm_tshirt_1.jpg",),
-                //   child: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     children: [
-                //       const Padding(
-                //         padding: EdgeInsets.only(left: 10.0, bottom: 20),
-                //         child: Text("Recommended for you" , style: TextStyle(
-                //           fontSize: 20.0,
-                //           color: Colors.black,
-                //           fontWeight: FontWeight.bold,
-                //         ),),
-                //       ),
-                //       BannerWidget(),
-                //     ],
-                //   ),
-                // ),
               ],
             ),
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: 0, // Set the initial index of the selected item
-          selectedItemColor: Colors.red, // Set the color of the selected item
-          unselectedItemColor:
-              Colors.grey, // Set the color of the unselected items
+          currentIndex: 0,
+          selectedItemColor: Colors.red,
+          unselectedItemColor: Colors.grey,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
@@ -165,15 +150,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
           onTap: (index) {
-            // Handle the tap event for each item
             switch (index) {
               case 0:
-                // Handle the Home item tap
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => HomeScreen(),
-                  ),
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
                 );
                 break;
               case 1:
@@ -183,14 +164,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Handle the Categories item tap
                 break;
               case 3:
-                // Handle the Cart item tap
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => CartScreen(
-                      // cartItems: [],
-                    ),
-                  ),
+                  MaterialPageRoute(builder: (context) => CartScreen()),
                 );
                 break;
               case 4:

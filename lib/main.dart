@@ -10,6 +10,7 @@ import 'package:shopping_app/screens/user/all-category.dart';
 import 'package:shopping_app/widgets/bottom-navigation.dart';
 
 import 'controller/cart-controller.dart';
+import 'firebase_options.dart';
 import 'screens/splash-scree.dart';
 import 'screens/user/home-screen.dart';
 
@@ -18,14 +19,7 @@ import 'screens/user/home-screen.dart';
 void main() async{
   Stripe.publishableKey = "pk_test_51J0ZQvK5Q6ZQ6ZQvK5Q6ZQ6ZQvK5Q6ZQ6ZQ6ZQvK5Q6ZQ6ZQvK5Q6ZQ6ZQ6ZQvK5Q6ZQ6ZQ6ZQ6ZQ6ZQvK5";
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-    apiKey: "AIzaSyA7AjYocASnUxdv4nVcJ3LAWjVva4hjtGY",
-    appId: "1:1049642488385:android:eab6445f1f78f7827b6cc0",
-    messagingSenderId: "1049642488385",
-    projectId: "utm-shopping-app-5b973",
-  )
-  );
+   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   BindingsBuilder(() { 
     Get.put(CartController());});

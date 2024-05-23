@@ -429,7 +429,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   child: ElevatedButton(
                     onPressed: () async {
 
-                      await paymentController.makePayment();
+                      // await paymentController.makePayment();
 
                       if (nameController.text != '' &&
                           phoneController.text != '' &&
