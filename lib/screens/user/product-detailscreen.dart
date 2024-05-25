@@ -119,7 +119,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Sale Price: \$${widget.productModel.salePrice}',
+                    'Sale Price: ${widget.productModel.salePrice} RM',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.green,
@@ -127,7 +127,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'Full Price: \$${widget.productModel.fullPrice}',
+                    'Full Price: \$${widget.productModel.fullPrice} RM',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.grey[600],

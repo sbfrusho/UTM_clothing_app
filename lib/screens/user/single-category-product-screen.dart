@@ -120,12 +120,12 @@ class SingleProductView extends StatelessWidget {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'Sale Price: ${product.salePrice}',
+                              'Sale Price: ${product.salePrice} RM',
                               style: TextStyle(fontSize: 14),
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'Full Price: ${product.fullPrice}',
+                              'Full Price: ${product.fullPrice} RM',
                               style: TextStyle(fontSize: 14),
                             ),
                             SizedBox(height: 8),
