@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
               case 1:
                 // Handle the Wishlist item tap
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => WishlistScreen(wishlistItems: [],)));
+                    MaterialPageRoute(builder: (context) => WishlistScreen()));
                 break;
               case 2:
                 // Handle the Categories item tap

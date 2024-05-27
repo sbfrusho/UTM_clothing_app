@@ -26,6 +26,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   CartController cartController = Get.put(CartController());
   WishlistController wishlistController = Get.put(WishlistController());
   bool isInWishlist = false;
+  bool _isButtonPressed = false;
 
   @override
   void initState() {
@@ -71,6 +72,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       productDescription: widget.productModel.productDescription,
       createdAt: widget.productModel.createdAt,
       updatedAt: widget.productModel.updatedAt,
+      timeSlot: "",
     );
 
     if (isInWishlist) {
@@ -83,8 +85,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       isInWishlist = !isInWishlist;
     });
 
-    // Upload the wishlist to Firebase for the specific user
-    wishlistController.uploadWishlist("user123"); // Replace with actual user ID
+    // Upload the wishlist to Firebase for the current user
+    wishlistController.addToWishlist(wishlistItem);
   }
 
   @override
@@ -174,7 +176,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           quantity: 1,
                         ),
                       );
-                      Fluttertoast.showToast(msg: "added to cart");
+                      Fluttertoast.showToast(msg: "Added to cart");
                     },
                     icon: Icon(Icons.add_shopping_cart),
                     label: Text("Add to Cart"),
@@ -183,12 +185,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
                   IconButton(
-                    onPressed: addToWishlist,
+                    onPressed: _isButtonPressed
+                        ? null
+                        : () {
+                            setState(() {
+                              _isButtonPressed = true;
+                            });
+                            addToWishlist();
+                          },
                     icon: Icon(
                       isInWishlist ? Icons.favorite : Icons.favorite_border,
                       color: isInWishlist ? Colors.red : null,
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
@@ -224,7 +233,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         onTap: (index) {
           switch (index) {
             case 0:
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => HomeScreen(),
@@ -235,39 +244,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => WishlistScreen(
-                    // productModel: widget.productModel,
-                    // wishListModel: WishListModel(
-                    //   productId: widget.productModel.productId,
-                    //   categoryId: widget.productModel.categoryId,
-                    //   productName: widget.productModel.productName,
-                    //   categoryName: widget.productModel.categoryName,
-                    //   salePrice: widget.productModel.salePrice,
-                    //   fullPrice: widget.productModel.fullPrice,
-                    //   productImages: widget.productModel.productImages,
-                    //   deliveryTime: widget.productModel.deliveryTime,
-                    //   isSale: widget.productModel.isSale,
-                    //   productDescription: widget.productModel.productDescription,
-                    //   createdAt: widget.productModel.createdAt,
-                    //   updatedAt: widget.productModel.updatedAt,
-                    // ),
-                    wishlistItems: [
-                      WishListModel(
-                        productId: widget.productModel.productId,
-                        categoryId: widget.productModel.categoryId,
-                        productName: widget.productModel.productName,
-                        categoryName: widget.productModel.categoryName,
-                        salePrice: widget.productModel.salePrice,
-                        fullPrice: widget.productModel.fullPrice,
-                        productImages: widget.productModel.productImages,
-                        deliveryTime: widget.productModel.deliveryTime,
-                        isSale: widget.productModel.isSale,
-                        productDescription: widget.productModel.productDescription,
-                        createdAt: widget.productModel.createdAt,
-                        updatedAt: widget.productModel.updatedAt,
-                      ),
-                    ],
-                  ),
+                  builder: (context) => WishlistScreen(),
                 ),
               );
               break;

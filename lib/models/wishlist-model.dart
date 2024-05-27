@@ -1,5 +1,3 @@
-import 'package:shopping_app/models/product-model.dart';
-
 class WishListModel {
   final String productId;
   final String categoryId;
@@ -9,6 +7,7 @@ class WishListModel {
   final String fullPrice;
   final List productImages;
   final String deliveryTime;
+  String timeSlot; // New field for time slot
   final bool isSale;
   final String productDescription;
   final dynamic createdAt;
@@ -23,6 +22,7 @@ class WishListModel {
     required this.fullPrice,
     required this.productImages,
     required this.deliveryTime,
+    required this.timeSlot, // Add time slot field
     required this.isSale,
     required this.productDescription,
     required this.createdAt,
@@ -39,6 +39,7 @@ class WishListModel {
       'fullPrice': fullPrice,
       'productImages': productImages,
       'deliveryTime': deliveryTime,
+      'timeSlot': timeSlot, // Add time slot field
       'isSale': isSale,
       'productDescription': productDescription,
       'createdAt': createdAt,
@@ -46,37 +47,21 @@ class WishListModel {
     };
   }
 
-  factory WishListModel.fromMap(Map<String, dynamic> json) {
+  factory WishListModel.fromMap(Map<String, dynamic> map) {
     return WishListModel(
-      productId: json['productId'],
-      categoryId: json['categoryId'],
-      productName: json['productName'],
-      categoryName: json['categoryName'],
-      salePrice: json['salePrice'],
-      fullPrice: json['fullPrice'],
-      productImages: json['productImages'],
-      deliveryTime: json['deliveryTime'],
-      isSale: json['isSale'],
-      productDescription: json['productDescription'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-    );
-  }
-
-  ProductModel toProductModel() {
-    return ProductModel(
-      productId: productId,
-      categoryId: categoryId,
-      productName: productName,
-      categoryName: categoryName,
-      salePrice: salePrice,
-      fullPrice: fullPrice,
-      productImages: productImages,
-      deliveryTime: deliveryTime,
-      isSale: isSale,
-      productDescription: productDescription,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
+      productId: map['productId'],
+      categoryId: map['categoryId'],
+      productName: map['productName'],
+      categoryName: map['categoryName'],
+      salePrice: map['salePrice'],
+      fullPrice: map['fullPrice'],
+      productImages: map['productImages'],
+      deliveryTime: map['deliveryTime'],
+      timeSlot: map['timeSlot'], // Add time slot field
+      isSale: map['isSale'],
+      productDescription: map['productDescription'],
+      createdAt: map['createdAt'],
+      updatedAt: map['updatedAt'],
     );
   }
 }

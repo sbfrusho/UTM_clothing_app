@@ -157,7 +157,7 @@ class AllCategoriesScreen extends StatelessWidget {
                 break;
               case 1:
                 // Handle the Wishlist item tap
-                Navigator.push(context, MaterialPageRoute(builder: (context) => WishlistScreen(wishlistItems: [],)));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => WishlistScreen()));
                 
                 break;
               case 2:

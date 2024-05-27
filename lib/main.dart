@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
+import 'package:path/path.dart';
+import 'package:provider/provider.dart';
+import 'package:shopping_app/controller/wishlist-controller.dart';
 import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
 import 'package:shopping_app/screens/user/all-category.dart';
 import 'package:shopping_app/widgets/bottom-navigation.dart';
-
 import 'controller/cart-controller.dart';
 import 'firebase_options.dart';
 import 'screens/splash-scree.dart';
@@ -24,7 +26,12 @@ void main() async {
     Get.put(CartController());
   });
 
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => WishlistController(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -41,7 +48,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: WelcomeScreen(),
+        home: SplashScreen(),
       ),
     );
   }

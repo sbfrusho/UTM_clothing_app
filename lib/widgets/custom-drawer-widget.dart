@@ -102,7 +102,7 @@ class DrawerWidget extends StatelessWidget {
             title: Text('Wishlist'),
             onTap: () {
               // Add your navigation logic here
-              // Navigator.push(context, MaterialPageRoute(builder: (context)=>WishlistScreen()));; // Close the drawer
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>WishlistScreen()));; // Close the drawer
             },
           ),
           ListTile(
