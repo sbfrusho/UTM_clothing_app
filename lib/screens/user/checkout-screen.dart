@@ -266,7 +266,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           await sendEmail(
                             user!.email!,
                             'Order Confirmation',
-                            'Your order has been placed successfully. Total amount: $total RM',
+                            'Your order has been placed successfully. Order will be delivered within 3 days by $time.\n  Total amount: $total RM',
                           );
 
                           setState(() {

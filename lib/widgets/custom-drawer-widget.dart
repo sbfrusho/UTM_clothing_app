@@ -6,9 +6,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart';
+import 'package:shopping_app/My%20Cart/my_cart_view.dart';
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/get-user-data-controller.dart';
+import 'package:shopping_app/screens/auth-ui/forgot-password-screen.dart';
 import 'package:shopping_app/screens/auth-ui/login-screen.dart';
+import 'package:shopping_app/screens/user/user-details-screen.dart';
+import 'package:shopping_app/screens/user/wish-list.dart';
 
 class DrawerWidget extends StatelessWidget {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -66,7 +70,7 @@ class DrawerWidget extends StatelessWidget {
             title: Text('Account Information'),
             onTap: () {
               // Add your navigation logic here
-              Navigator.pop(context); // Close the drawer
+              // Navigator.push(context, MaterialPageRoute(builder: (context)=>UserScreen()));// Close the drawer
             },
           ),
           ListTile(
@@ -74,7 +78,7 @@ class DrawerWidget extends StatelessWidget {
             title: Text('Password '),
             onTap: () {
               // Add your navigation logic here
-              Navigator.pop(context); // Close the drawer
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>ForgotPasswordScreen()));
             },
           ),
           ListTile(
@@ -82,7 +86,7 @@ class DrawerWidget extends StatelessWidget {
             title: Text('My Cart'),
             onTap: () {
               // Add your navigation logic here
-              Navigator.pop(context); // Close the drawer
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>CartScreen())); // Close the drawer
             },
           ),
           ListTile(
@@ -90,7 +94,7 @@ class DrawerWidget extends StatelessWidget {
             title: Text('Order'),
             onTap: () {
               // Add your navigation logic here
-              Navigator.pop(context); // Close the drawer
+              // Navigator.pop(context); // Close the drawer
             },
           ),
           ListTile(
@@ -98,7 +102,7 @@ class DrawerWidget extends StatelessWidget {
             title: Text('Wishlist'),
             onTap: () {
               // Add your navigation logic here
-              Navigator.pop(context); // Close the drawer
+              // Navigator.push(context, MaterialPageRoute(builder: (context)=>WishlistScreen()));; // Close the drawer
             },
           ),
           ListTile(
@@ -106,7 +110,7 @@ class DrawerWidget extends StatelessWidget {
             title: Text('Notifications'),
             onTap: () {
               // Add your navigation logic here
-              Navigator.pop(context); // Close the drawer
+              // Navigator.pop(context); // Close the drawer
             },
           ),
           ListTile(
@@ -114,7 +118,7 @@ class DrawerWidget extends StatelessWidget {
             title: Text('Settings'),
             onTap: () {
               // Add your navigation logic here
-              Navigator.pop(context); // Close the drawer
+              // Navigator.pop(context); // Close the drawer
             },
           ),
 
