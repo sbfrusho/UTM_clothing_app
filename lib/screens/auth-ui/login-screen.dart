@@ -174,45 +174,41 @@ class LoginForm extends StatelessWidget {
                       var userData = await getUserDataController
                           .getUserData(userCredential!.user!.uid);
 
-                      if (userCredential != null) {
-                        if (userCredential.user!.emailVerified) {
-                          if (userData[0]['isAdmin'] == true) {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => AdminScreen()));
+                      if (userCredential.user!.emailVerified) {
+                        if (userData[0]['isAdmin'] == true) {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => AdminScreen()));
 
-                            print("Moved to admin screen");
+                          print("Moved to admin screen");
 
-                            Fluttertoast.showToast(
-                                msg: "Welcome Admin",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.red,
-                                textColor: Colors.white,
-                                fontSize: 16.0);
-                          } else {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => HomeScreen()));
-
-                            Fluttertoast.showToast(
-                                msg: "Welcome User",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.red,
-                                textColor: Colors.white,
-                                fontSize: 16.0);
-                          }
-
-                          return; // Return here to prevent showing unnecessary toasts or snackbar
+                          Fluttertoast.showToast(
+                              msg: "Welcome Admin",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
                         } else {
-                          showToast(
-                              context, "Please verify your email before login");
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => HomeScreen()));
+
+                          Fluttertoast.showToast(
+                              msg: "Welcome User",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
                         }
+
+                        return; // Return here to prevent showing unnecessary toasts or snackbar
                       } else {
-                        showToast(context, "Login failed. Please try again.");
+                        showToast(
+                            context, "Please verify your email before login");
                       }
-                    }
+                                        }
                   },
                   child: Text(
                     "Login",

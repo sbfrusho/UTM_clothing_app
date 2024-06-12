@@ -12,12 +12,51 @@ class AddAddressScreen extends StatefulWidget {
 class _AddAddressScreenState extends State<AddAddressScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _addressController = TextEditingController(); // New address field controller
-  final _streetController = TextEditingController();
-  final _cityController = TextEditingController();
-  final _stateController = TextEditingController();
-  final _postalCodeController = TextEditingController();
-  final _countryController = TextEditingController();
+  late TextEditingController _addressController;
+  late TextEditingController _streetController;
+  late TextEditingController _cityController;
+  late TextEditingController _stateController;
+  late TextEditingController _postalCodeController;
+  late TextEditingController _countryController;
+
+  late bool _isExistingAddress = false;
+  late String _documentId;
+
+  @override
+  void initState() {
+    super.initState();
+    _addressController = TextEditingController();
+    _streetController = TextEditingController();
+    _cityController = TextEditingController();
+    _stateController = TextEditingController();
+    _postalCodeController = TextEditingController();
+    _countryController = TextEditingController();
+    fetchExistingAddress();
+  }
+
+  Future<void> fetchExistingAddress() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      QuerySnapshot querySnapshot = await firestore
+          .collection('addresses')
+          .where('email', isEqualTo: user.email)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        final addressData = querySnapshot.docs.first.data() as Map<String, dynamic>;
+        setState(() {
+          _isExistingAddress = true;
+          _documentId = querySnapshot.docs.first.id;
+          _addressController.text = addressData['address'] ?? '';
+          _streetController.text = addressData['street'] ?? '';
+          _cityController.text = addressData['city'] ?? '';
+          _stateController.text = addressData['state'] ?? '';
+          _postalCodeController.text = addressData['postalCode'] ?? '';
+          _countryController.text = addressData['country'] ?? '';
+        });
+      }
+    }
+  }
 
   Future<void> _saveAddress() async {
     if (_formKey.currentState!.validate()) {
@@ -31,17 +70,19 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
           postalCode: _postalCodeController.text,
           country: _countryController.text,
           address: _addressController.text,
-          email: user.email! // Add the address field to the model
+          email: user.email!,
         );
 
         FirebaseFirestore firestore = FirebaseFirestore.instance;
         try {
-          await firestore
-              .collection('addresses') // Plural form for consistency
-              .add(address.toMap());
+          if (_isExistingAddress) {
+            await firestore.collection('addresses').doc(_documentId).update(address.toMap());
+          } else {
+            await firestore.collection('addresses').add(address.toMap());
+          }
 
           // Show a success message and navigate back
-          Get.snackbar('Success', 'Address added successfully!',
+          Get.snackbar('Success', _isExistingAddress ? 'Address updated successfully!' : 'Address added successfully!',
               snackPosition: SnackPosition.BOTTOM);
           Navigator.pop(context);
         } catch (e) {
@@ -78,7 +119,6 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              
               SizedBox(height: 16),
               TextFormField(
                 controller: _streetController,
@@ -137,7 +177,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
               SizedBox(height: 32),
               TextFormField(
                 controller: _addressController,
-                decoration: InputDecoration(labelText: 'Address'), // New address field
+                decoration: InputDecoration(labelText: 'Address'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the address';

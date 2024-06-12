@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/wishlist-controller.dart';
 import 'package:shopping_app/models/wishlist-model.dart';
 
@@ -56,8 +57,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Wishlist'),
-        backgroundColor: Colors.red,
+        title: Text('My Wishlist' , style: TextStyle(color: Colors.white),),
+        backgroundColor: AppColor().colorRed,
       ),
       body: FutureBuilder<void>(
         future: _wishlistFuture,

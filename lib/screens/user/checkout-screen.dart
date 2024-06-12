@@ -1,13 +1,19 @@
+// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, use_build_context_synchronously, avoid_print, sized_box_for_whitespace, prefer_interpolation_to_compose_strings
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
+import 'package:shopping_app/My%20Cart/my_cart_view.dart';
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
-import 'package:shopping_app/controller/get-customer-device-token-controller.dart';
 import 'package:shopping_app/controller/payment-controller.dart';
-import 'package:mailer/mailer.dart';
-import 'package:mailer/smtp_server.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shopping_app/screens/user/order-screen.dart';
+
+import '../../controller/get-customer-device-token-controller.dart';
 
 class CheckoutScreen extends StatefulWidget {
   @override
@@ -22,6 +28,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void initState() {
     super.initState();
     timeController = TextEditingController();
+    fetchUserData(); // Fetch user data
+    fetchAddressData(); // Fetch address data
   }
 
   final CartController cartController = Get.find<CartController>();
@@ -31,7 +39,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   TextEditingController phoneController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  String selectedPaymentMethod = 'Card';  // Default payment method
+  String selectedPaymentMethod = 'Card';
 
   bool isPaymentCompleted = false;
 
@@ -46,216 +54,96 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: cartController.cartItems.length,
-              itemBuilder: (context, index) {
-                final item = cartController.cartItems[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: ListTile(
-                    tileColor: Colors.grey[200],
-                    leading: Image.network(item.productImage),
-                    title: Text(item.productName),
-                    subtitle: Text(
-                      'price : ${(double.parse(item.price) * item.quantity).toStringAsFixed(2)} RM',
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.1,
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColor().colorRed.withOpacity(0.5),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(15),
-                  topRight: Radius.circular(15),
-                  bottomLeft: Radius.circular(15),
-                  bottomRight: Radius.circular(15),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Total: ${cartController.totalPrice.toStringAsFixed(2)} RM',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Show bottom sheet
-                      showCustomBottomSheet(context);
-                    },
-                    child: const Text('Checkout'),
-                  ),
-                ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            // Display user information
+            ListTile(
+              title: Text('Name'),
+              subtitle: TextField(
+                controller: nameController,
+                readOnly: true,
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void showCustomBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          height: 600.h,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
+            ListTile(
+              title: Text('Email'),
+              subtitle: TextField(
+                controller: emailController,
+              ),
             ),
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Container(
-                    height: 55.0.h,
-                    child: TextFormField(
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.text,
-                      controller: nameController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your name',
-                        labelText: 'Name',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
+            // Display address details
+            ListTile(
+              title: Text('Address'),
+              subtitle: TextField(
+                controller: addressController,
+              ),
+            ),
+            SizedBox(height: 20),
+            // Other checkout fields
+                        Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Container(
+                height: 55.0.h,
+                child: TextFormField(
+                  controller: timeController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    hintText: 'Select delivery date',
+                    labelText: 'Delivery Date',
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.calendar_today),
+                      onPressed: () async {
+                        final date = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2101),
+                        );
+                        if (date != null) {
+                          timeController.text = "${date.toLocal()}".split(' ')[0];
+                        }
+                      },
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.next,
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Container(
-                    height: 55.0.h,
-                    child: TextFormField(
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.phone,
-                      controller: phoneController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your phone',
-                        labelText: 'Phone',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: DropdownButtonFormField<String>(
+                value: selectedPaymentMethod,
+                items: ['Card', 'Cash on Delivery'].map((String method) {
+                  return DropdownMenuItem<String>(
+                    value: method,
+                    child: Text(method),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedPaymentMethod = newValue!;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'Payment Method',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Container(
-                    height: 55.0.h,
-                    child: TextFormField(
-                      keyboardType: TextInputType.streetAddress,
-                      textInputAction: TextInputAction.next,
-                      controller: addressController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your Address',
-                        labelText: 'Address',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Container(
-                    height: 55.0.h,
-                    child: TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      textInputAction: TextInputAction.next,
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your Email',
-                        labelText: 'Email',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Container(
-                    height: 55.0.h,
-                    child: TextFormField(
-                      controller: timeController,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        hintText: 'Enter delivery time',
-                        labelText: 'Delivery Time',
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.calendar_today),
-                          onPressed: () async {
-                            final time = await showTimePicker(
-                              context: context,
-                              initialTime: TimeOfDay.now(),
-                            );
-                            if (time != null) {
-                              timeController.text = time.format(context);
-                            }
-                          },
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      keyboardType: TextInputType.text,
-                      textInputAction: TextInputAction.next,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: DropdownButtonFormField<String>(
-                    value: selectedPaymentMethod,
-                    items: ['Card', 'Cash on Delivery'].map((String method) {
-                      return DropdownMenuItem<String>(
-                        value: method,
-                        child: Text(method),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedPaymentMethod = newValue!;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Payment Method',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
+              ),
+            ),
+            Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: ElevatedButton(
                     onPressed: () async {
-                      if (nameController.text.isNotEmpty &&
-                          phoneController.text.isNotEmpty &&
-                          addressController.text.isNotEmpty &&
-                          timeController.text.isNotEmpty && 
-                          emailController.text.isNotEmpty) {
                         String name = nameController.text.trim();
-                        String phone = phoneController.text.trim();
                         String address = addressController.text.trim();
+                        String phone = phoneController.text.trim();
                         String time = timeController.text.trim();
                         String total = cartController.totalPrice.toString();
                         String paymentMethod = selectedPaymentMethod;
@@ -264,10 +152,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                         print('Customer Token: $customerToken');
                         print('Name: $name');
-                        print('Phone: $phone');
+                        print('phome : $phone');
                         print('Address: $address');
                         print('Time: $time');
                         print('Payment Method: $paymentMethod');
+                        print("Total price: $total");
 
                         if (selectedPaymentMethod=='Cash on Delivery') {
                           await cartController.placeOrder(
@@ -290,6 +179,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           setState(() {
                             isPaymentCompleted = true;
                           });
+                          
+                          Get.offAll(OrderScreen());
                         }
                         
 
@@ -314,37 +205,74 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           setState(() {
                             isPaymentCompleted = true;
                           });
+                          Get.offAll(OrderScreen());
                         }
 
-                        nameController.clear();
-                        phoneController.clear();
-                        addressController.clear();
-                        timeController.clear();
-                        emailController.clear();
                         
-                      } else {
-                        // Handle the case where some fields are empty
-                      }
                     },
                     child: Text('Confirm Order'),
                   ),
                 ),
-                if (isPaymentCompleted)
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text(
-                      'Order placed successfully!',
-                      style: TextStyle(color: Colors.green),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        );
-      },
+            if (isPaymentCompleted)
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  'Order placed successfully!',
+                  style: TextStyle(color: Colors.green),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 
+  // Fetch user data
+  void fetchUserData() {
+    FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: user!.email)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        final userData =
+            querySnapshot.docs.first.data() as Map<String, dynamic>;
+        print('User data: $userData');
+        setState(() {
+          nameController.text = userData['name'] ?? '';
+          phoneController.text = userData['phone'] ?? '';
+          emailController.text = user!.email ?? '';
+          // You can add more fields if available in the address collection
+        });
+      } else {
+        print('No data found for this user');
+      }
+    }).catchError((error) {
+      print('Error fetching address data: $error');
+    });
+  }
+
+  void fetchAddressData() {
+    FirebaseFirestore.instance
+        .collection('addresses')
+        .where('email', isEqualTo: user!.email)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        final userData =
+            querySnapshot.docs.first.data() as Map<String, dynamic>;
+        print('User data: $userData');
+        setState(() {
+          addressController.text = userData['address'] ?? '';
+          // You can add more fields if available in the address collection
+        });
+      } else {
+        print('No data found for this user');
+      }
+    }).catchError((error) {
+      print('Error fetching address data: $error');
+    });
+  }
   Future<void> sendEmail(String recipient, String subject, String body) async {
     String username = "ealumnimobileapp@gmail.com";
     String password = "NABIL112233";
