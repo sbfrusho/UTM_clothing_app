@@ -11,6 +11,7 @@ import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/get-user-data-controller.dart';
 import 'package:shopping_app/screens/auth-ui/forgot-password-screen.dart';
 import 'package:shopping_app/screens/auth-ui/login-screen.dart';
+import 'package:shopping_app/screens/user/order-screen.dart';
 import 'package:shopping_app/screens/user/user-details-screen.dart';
 import 'package:shopping_app/screens/user/wish-list.dart';
 
@@ -19,12 +20,15 @@ class DrawerWidget extends StatelessWidget {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   GetUserDataController getUserDataController =
       Get.put(GetUserDataController());
+
+  User? user = FirebaseAuth.instance.currentUser;
+
   var userData;
 
   Future<void> getUserData() async {
-    User? user = auth.currentUser;
     userData = await getUserDataController.getUserData(user!.uid);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +40,11 @@ class DrawerWidget extends StatelessWidget {
             tileColor: AppColor().colorRed,
             iconColor: Colors.white,
             leading: Icon(Icons.arrow_back),
-            onTap: (){
+            onTap: () {
               Navigator.pop(context);
             },
           ),
           DrawerHeader(
-            
             decoration: BoxDecoration(
               color: AppColor().colorRed,
             ),
@@ -69,16 +72,24 @@ class DrawerWidget extends StatelessWidget {
             leading: Icon(Icons.account_circle),
             title: Text('Account Information'),
             onTap: () {
-              // Add your navigation logic here
-              // Navigator.push(context, MaterialPageRoute(builder: (context)=>UserScreen()));// Close the drawer
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UserDetailsScreen(), // Pass the user's email
+                ),
+              ); // Close the drawer
             },
           ),
+
           ListTile(
             leading: Icon(Icons.lock),
             title: Text('Password '),
             onTap: () {
               // Add your navigation logic here
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>ForgotPasswordScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ForgotPasswordScreen()));
             },
           ),
           ListTile(
@@ -86,7 +97,10 @@ class DrawerWidget extends StatelessWidget {
             title: Text('My Cart'),
             onTap: () {
               // Add your navigation logic here
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>CartScreen())); // Close the drawer
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => CartScreen())); // Close the drawer
             },
           ),
           ListTile(
@@ -94,7 +108,10 @@ class DrawerWidget extends StatelessWidget {
             title: Text('Order'),
             onTap: () {
               // Add your navigation logic here
-              // Navigator.pop(context); // Close the drawer
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => OrderScreen())); // Close the drawer
             },
           ),
           ListTile(
@@ -102,15 +119,9 @@ class DrawerWidget extends StatelessWidget {
             title: Text('Wishlist'),
             onTap: () {
               // Add your navigation logic here
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>WishlistScreen()));; // Close the drawer
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.notifications),
-            title: Text('Notifications'),
-            onTap: () {
-              // Add your navigation logic here
-              // Navigator.pop(context); // Close the drawer
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => WishlistScreen()));
+              ; // Close the drawer
             },
           ),
           ListTile(
@@ -121,16 +132,16 @@ class DrawerWidget extends StatelessWidget {
               // Navigator.pop(context); // Close the drawer
             },
           ),
-
           ListTile(
             leading: Icon(Icons.logout),
             title: Text('Log out'),
             onTap: () {
               auth.signOut();
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> LoginScreen()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()));
             },
           ),
-          
+
           // Add more ListTiles for additional items
         ],
       ),

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -9,7 +11,8 @@ class PaymentController extends GetxController {
   Future<bool> makePayment(String amount) async {
     try {
       // Create payment intent data
-      paymentIntent = await createPaymentIntent(double.parse(amount), 'MYR'); // Changed to MYR
+      paymentIntent = await createPaymentIntent(
+          double.parse(amount), 'MYR'); // Changed to MYR
       // Initialise the payment sheet setup
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
@@ -52,35 +55,36 @@ class PaymentController extends GetxController {
     }
   }
 
-  Future<Map<String, dynamic>> createPaymentIntent(double amount, String currency) async {
-  try {
-    // Convert the amount to the smallest currency unit (e.g., cents for USD)
+  Future<Map<String, dynamic>> createPaymentIntent(
+      double amount, String currency) async {
+    try {
+      // Convert the amount to the smallest currency unit (e.g., cents for USD)
 
-    print("This is a double value :$amount");
-    int amountInCents = (amount * 100).toInt();
+      print("This is a double value :$amount");
+      int amountInCents = (amount * 100).toInt();
 
-    Map<String, dynamic> body = {
-      'amount': amountInCents.toString(),
-      'currency': currency,
-      'payment_method_types[]': 'card',
-    };
-    
-    var secretKey = "sk_test_51PGXvy06xtEbkBYxTTHTZWSoJDHDj9d8EH6ru6dqmVBpLCrNUohWeMsPZw31SPN3EbdL1rBRH4JGbGhGKZfZbmeL00HI8Zv3T2";
-    var response = await http.post(
-      Uri.parse('https://api.stripe.com/v1/payment_intents'),
-      headers: {
-        'Authorization': 'Bearer $secretKey',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: body,
-    );
-    
-    print('Payment Intent Body: ${response.body.toString()}');
-    return jsonDecode(response.body.toString());
-  } catch (err) {
-    print('Error charging user: ${err.toString()}');
-    rethrow;
+      Map<String, dynamic> body = {
+        'amount': amountInCents.toString(),
+        'currency': currency,
+        'payment_method_types[]': 'card',
+      };
+
+      var secretKey =
+          "sk_test_51PGXvy06xtEbkBYxTTHTZWSoJDHDj9d8EH6ru6dqmVBpLCrNUohWeMsPZw31SPN3EbdL1rBRH4JGbGhGKZfZbmeL00HI8Zv3T2";
+      var response = await http.post(
+        Uri.parse('https://api.stripe.com/v1/payment_intents'),
+        headers: {
+          'Authorization': 'Bearer $secretKey',
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: body,
+      );
+
+      print('Payment Intent Body: ${response.body.toString()}');
+      return jsonDecode(response.body.toString());
+    } catch (err) {
+      print('Error charging user: ${err.toString()}');
+      rethrow;
+    }
   }
-}
-
 }

@@ -101,7 +101,7 @@ class LoginForm extends StatelessWidget {
             child: TextFormField(
               controller: emailController,
               decoration: InputDecoration(
-                labelText: 'Email',
+                labelText: 'Enter your email',
                 filled: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(50),
@@ -117,7 +117,7 @@ class LoginForm extends StatelessWidget {
                 controller: passwordController,
                 obscureText: signInController.isPasswordVisible.value,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: 'Enter your password',
                   filled: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(50),
@@ -180,7 +180,7 @@ class LoginForm extends StatelessWidget {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => AdminScreen()));
 
-                                print("Moved to admin screen");
+                            print("Moved to admin screen");
 
                             Fluttertoast.showToast(
                                 msg: "Welcome Admin",
@@ -193,7 +193,7 @@ class LoginForm extends StatelessWidget {
                           } else {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => HomeScreen()));
-                            
+
                             Fluttertoast.showToast(
                                 msg: "Welcome User",
                                 toastLength: Toast.LENGTH_SHORT,

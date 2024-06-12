@@ -5,6 +5,12 @@ class User {
   String name;
   String phone;
   String uId;
+  String city;
+  String state;
+  String country;
+  String road;
+  String postalCode;
+  String adress;
 
   User({
     required this.deviceToken,
@@ -13,6 +19,13 @@ class User {
     required this.name,
     required this.phone,
     required this.uId,
+    required this.city,
+    required this.state,
+    required this.country,
+    required this.road,
+    required this.postalCode,
+    required this.adress,
+
   });
 
   // Factory constructor for creating a new User instance from a map
@@ -24,6 +37,12 @@ class User {
       name: map['name'] ?? '',
       phone: map['phone'] ?? '',
       uId: map['uId'] ?? '',
+      city: map['city'] ?? '',
+      state: map['state'] ?? '',
+      country: map['country'] ?? '',
+      road: map['road'] ?? '',
+      postalCode: map['postalCode'] ?? '',
+      adress: map['adress'] ?? '',
     );
   }
 
@@ -36,6 +55,12 @@ class User {
       'name': name,
       'phone': phone,
       'uId': uId,
+      'city': city,
+      'state': state,
+      'country': country,
+      'road': road,
+      'postalCode': postalCode,
+      'adress': adress,
     };
   }
 }

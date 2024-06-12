@@ -40,6 +40,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
           BottomNavigationBarItem(
             icon: Icon(Icons.category),
             label: 'Categories',
+          ),BottomNavigationBarItem(
+            icon: Icon(Icons.category),
+            label: 'Orders',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart),

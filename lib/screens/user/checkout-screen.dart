@@ -31,6 +31,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   TextEditingController phoneController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  String selectedPaymentMethod = 'Card';  // Default payment method
 
   bool isPaymentCompleted = false;
 
@@ -106,21 +107,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-          height: 500.h,
+          height: 600.h,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
             ),
-            // gradient: LinearGradient(
-            //   begin: Alignment.topCenter,
-            //   end: Alignment.bottomCenter,
-            //   colors: [
-            //     Colors.blue,
-            //     Colors.yellow,
-            //   ],
-            // ),
           ),
           child: SingleChildScrollView(
             child: Column(
@@ -184,7 +177,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   child: Container(
                     height: 55.0.h,
                     child: TextFormField(
-                      keyboardType: TextInputType.streetAddress,
+                      keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       controller: emailController,
                       decoration: InputDecoration(
@@ -230,28 +223,53 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(20.0),
+                  child: DropdownButtonFormField<String>(
+                    value: selectedPaymentMethod,
+                    items: ['Card', 'Cash on Delivery'].map((String method) {
+                      return DropdownMenuItem<String>(
+                        value: method,
+                        child: Text(method),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedPaymentMethod = newValue!;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Payment Method',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
                   child: ElevatedButton(
                     onPressed: () async {
-                      if (nameController.text != '' &&
-                          phoneController.text != '' &&
-                          addressController.text != '' &&
-                          timeController.text != '' && emailController.text != '') {
+                      if (nameController.text.isNotEmpty &&
+                          phoneController.text.isNotEmpty &&
+                          addressController.text.isNotEmpty &&
+                          timeController.text.isNotEmpty && 
+                          emailController.text.isNotEmpty) {
                         String name = nameController.text.trim();
                         String phone = phoneController.text.trim();
                         String address = addressController.text.trim();
                         String time = timeController.text.trim();
                         String total = cartController.totalPrice.toString();
+                        String paymentMethod = selectedPaymentMethod;
 
                         String? customerToken = await getCustomerDeviceToken();
 
-                        print('Hello world');
                         print('Customer Token: $customerToken');
                         print('Name: $name');
                         print('Phone: $phone');
                         print('Address: $address');
                         print('Time: $time');
+                        print('Payment Method: $paymentMethod');
 
-                        if (await payment.makePayment(total)) {
+                        if (selectedPaymentMethod=='Cash on Delivery') {
                           await cartController.placeOrder(
                             cartController.cartItems,
                             cartController.totalPrice,
@@ -259,7 +277,31 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             name,
                             phone,
                             address,
-                            'Card',
+                            paymentMethod,
+                            time,
+                          );
+
+                          await sendEmail(
+                            user!.email!,
+                            'Order Confirmation',
+                            'Your order has been placed successfully. Order will be delivered within 3 days by $time.\n  Total amount: $total RM',
+                          );
+
+                          setState(() {
+                            isPaymentCompleted = true;
+                          });
+                        }
+                        
+
+                        if (await payment.makePayment(total) && selectedPaymentMethod=='Card') {
+                          await cartController.placeOrder(
+                            cartController.cartItems,
+                            cartController.totalPrice,
+                            user!.uid,
+                            name,
+                            phone,
+                            address,
+                            paymentMethod,
                             time,
                           );
 
@@ -280,7 +322,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         timeController.clear();
                         emailController.clear();
                         
-                      } else {}
+                      } else {
+                        // Handle the case where some fields are empty
+                      }
                     },
                     child: Text('Confirm Order'),
                   ),
@@ -302,8 +346,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Future<void> sendEmail(String recipient, String subject, String body) async {
-    String username = "s2010776109@ru.ac.bd";//s2010776109@ru.ac.bd
-    String password = "b00cf74ff7";//your original password
+    String username = "ealumnimobileapp@gmail.com";
+    String password = "NABIL112233";
 
     final smtpServer = gmail(username, password);
 
