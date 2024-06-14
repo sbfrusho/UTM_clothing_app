@@ -17,8 +17,8 @@ import 'screens/splash-scree.dart';
 import 'screens/user/home-screen.dart';
 
 void main() async {
-  Stripe.publishableKey =
-      "pk_test_51PGXvy06xtEbkBYxUkFo4Sdng5zZTx4tcKZynJcUyAreSpphCrtXk8wOC54TXKTYMT4R6oVVcYpf0EZUEw1wTXZq00122GrocM";
+  Stripe.publishableKey ="pk_test_51PRaUxIaAXWjCICDSEzX1p1o2DphoK3QbgebrxG0lYC5w3R4v6oT0SAmFU5lxhir4u0HtnrCw7KgJ12S2VqrrGru00HEcFdz9h";
+      // "pk_test_51PGXvy06xtEbkBYxUkFo4Sdng5zZTx4tcKZynJcUyAreSpphCrtXk8wOC54TXKTYMT4R6oVVcYpf0EZUEw1wTXZq00122GrocM";
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 

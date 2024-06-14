@@ -91,7 +91,7 @@ class _CartScreenState extends State<CartScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Total: \$${cartController.totalPrice.toStringAsFixed(2)}',
+                  'Total: ${cartController.totalPrice.toStringAsFixed(2)} RM',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 ElevatedButton(

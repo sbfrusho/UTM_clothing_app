@@ -53,7 +53,7 @@ class OrderDetailPage extends StatelessWidget {
                           Text('Customer Address: ${orderData['customerAddress']}'),
                           Text('Payment Method: ${orderData['paymentMethod']}'),
                           Text('Delivery Time: ${orderData['deliveryTime']}'),
-                          Text('Total Price: \$${orderData['totalPrice']}'),
+                          Text('Total Price: ${orderData['totalPrice']} RM'),
                           Text('Order Status: ${orderData['status']}'),
                           Text('Placed on: ${orderData['createdAt'].toDate()}'),
                         ],

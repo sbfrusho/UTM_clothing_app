@@ -139,15 +139,22 @@ class SingleProductView extends StatelessWidget {
                                       'Please go to cart to update quantity');
                                   return;
                                 } else {
-                                  
-                                  cartController.addToCart(
-                                    CartItem(
-                                      productId: product.productId,
-                                      productName: product.productName,
-                                      productImage: product.productImages[0],
-                                      price: product.salePrice,
-                                    ),
-                                  );
+                                  if (product.quantity == "0") {
+                                    Fluttertoast.showToast(
+                                        msg: "Product is unavailable");
+                                  } else {
+                                    cartController.addToCart(
+                                      CartItem(
+                                        productId: product.productId,
+                                        productName: product.productName,
+                                        productImage: product.productImages[0],
+                                        price: product.salePrice,
+                                        quantity: 1,
+                                      ),
+                                    );
+                                    Fluttertoast.showToast(
+                                        msg: "Added to cart");
+                                  }
                                   // Get.snackbar('Product added to cart', 'You can update quantity in cart');
                                   Fluttertoast.showToast(
                                     msg: "Product added to cart",
@@ -211,7 +218,7 @@ class SingleProductView extends StatelessWidget {
               break;
             case 1:
               // Handle the Wishlist item tap
-              
+
               break;
             case 2:
               // Handle the Categories item tap

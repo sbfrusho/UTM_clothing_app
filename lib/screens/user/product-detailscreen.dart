@@ -8,6 +8,7 @@ import 'package:shopping_app/models/product-model.dart';
 import 'package:shopping_app/models/wishlist-model.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 import 'package:shopping_app/screens/user/wish-list.dart';
+import 'package:shopping_app/widgets/check-quantity.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../My Cart/my_cart_view.dart';
 import '../../controller/cart-model-controller.dart';
@@ -27,6 +28,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   WishlistController wishlistController = Get.put(WishlistController());
   bool isInWishlist = false;
   bool _isButtonPressed = false;
+  QuantityChecker quantityChecker = QuantityChecker();
 
   @override
   void initState() {
@@ -176,16 +178,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                   ElevatedButton.icon(
                     onPressed: () {
-                      cartController.addToCart(
-                        CartItem(
-                          productId: widget.productModel.productId,
-                          productName: widget.productModel.productName,
-                          productImage: widget.productModel.productImages[0],
-                          price: widget.productModel.salePrice,
-                          quantity: 1,
-                        ),
-                      );
-                      Fluttertoast.showToast(msg: "Added to cart");
+                      if (widget.productModel.quantity == "0") {
+                        Fluttertoast.showToast(msg: "Product is unavailable");
+                      } else {
+                        cartController.addToCart(
+                          CartItem(
+                            productId: widget.productModel.productId,
+                            productName: widget.productModel.productName,
+                            productImage: widget.productModel.productImages[0],
+                            price: widget.productModel.salePrice,
+                            quantity: 1,
+                          ),
+                        );
+                        Fluttertoast.showToast(msg: "Added to cart");
+                      }
                     },
                     icon: Icon(Icons.add_shopping_cart),
                     label: Text("Add to Cart"),

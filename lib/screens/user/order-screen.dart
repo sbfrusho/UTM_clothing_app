@@ -196,7 +196,7 @@ class OrderScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 8),
-                        Text('Total Price: \$${orderData['totalPrice']}'),
+                        Text('Total Price: ${orderData['totalPrice']} RM'),
                         Text('Order Status: ${orderData['status']}'),
                         Text('Placed on: ${orderData['createdAt'].toDate()}'),
                       ],

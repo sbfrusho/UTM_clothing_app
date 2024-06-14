@@ -69,8 +69,8 @@ class PaymentController extends GetxController {
         'payment_method_types[]': 'card',
       };
 
-      var secretKey =
-          "sk_test_51PGXvy06xtEbkBYxTTHTZWSoJDHDj9d8EH6ru6dqmVBpLCrNUohWeMsPZw31SPN3EbdL1rBRH4JGbGhGKZfZbmeL00HI8Zv3T2";
+      var secretKey ="sk_test_51PRaUxIaAXWjCICDPDZn5yl9lBFJqP0tmvRBpEW9IGvymvcrDvUFAGWTqTOqRJOpk5j6wRZhyu62BhwN1R67RpLx00RkVntVWa";
+          // "sk_test_51PGXvy06xtEbkBYxTTHTZWSoJDHDj9d8EH6ru6dqmVBpLCrNUohWeMsPZw31SPN3EbdL1rBRH4JGbGhGKZfZbmeL00HI8Zv3T2";
       var response = await http.post(
         Uri.parse('https://api.stripe.com/v1/payment_intents'),
         headers: {
