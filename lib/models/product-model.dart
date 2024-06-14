@@ -1,5 +1,3 @@
-// ignore_for_file: file_names
-
 class ProductModel {
   final String productId;
   final String categoryId;
@@ -16,7 +14,7 @@ class ProductModel {
   final String quantity;
 
   ProductModel({
-    required this.productId,  
+    required this.productId,
     required this.categoryId,
     required this.productName,
     required this.categoryName,
@@ -51,19 +49,19 @@ class ProductModel {
 
   factory ProductModel.fromMap(Map<String, dynamic> json) {
     return ProductModel(
-      productId: json['productId'],
-      categoryId: json['categoryId'],
-      productName: json['productName'],
-      categoryName: json['categoryName'],
-      salePrice: json['salePrice'],
-      fullPrice: json['fullPrice'],
-      productImages: json['productImages'],
-      deliveryTime: json['deliveryTime'],
-      isSale: json['isSale'],
-      productDescription: json['productDescription'],
+      productId: json['productId'] ?? '',
+      categoryId: json['categoryId'] ?? '',
+      productName: json['productName'] ?? '',
+      categoryName: json['categoryName'] ?? '',
+      salePrice: json['salePrice'] ?? '',
+      fullPrice: json['fullPrice'] ?? '',
+      productImages: json['productImages'] ?? [],
+      deliveryTime: json['deliveryTime'] ?? '',
+      isSale: json['isSale'] ?? false,
+      productDescription: json['productDescription'] ?? '',
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
-      quantity: json['quantity'],
+      quantity: json['quantity'] ?? '',
     );
   }
 }

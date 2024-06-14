@@ -55,7 +55,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void sendWhatsAp() {
-    String phoneNumber = "";
+    String phoneNumber = "+88001781314166";
     String url = "whatsapp://send?phone= $phoneNumber";
     launchUrl(Uri.parse(url));
   }

@@ -1,4 +1,3 @@
-// home_screen.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final CartController cartController = Get.put(CartController());
   TextEditingController searchController = TextEditingController();
   WishlistController wishlistController = Get.put(WishlistController());
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -125,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        bottomNavigationBar: BottomNavigationBar(
+bottomNavigationBar: BottomNavigationBar(
           currentIndex: 0,
           selectedItemColor: Colors.red,
           unselectedItemColor: Colors.grey,
@@ -179,7 +179,6 @@ class _HomeScreenState extends State<HomeScreen> {
             }
           },
         ),
-      ),
-    );
+    ));
   }
 }
