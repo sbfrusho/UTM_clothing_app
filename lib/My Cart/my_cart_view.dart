@@ -36,7 +36,7 @@ class _CartScreenState extends State<CartScreen> {
                     leading: Image.network(item.productImage),
                     title: Text(item.productName),
                     subtitle: Text(
-                      'price : \$${(double.parse(item.price)  * item.quantity).toStringAsFixed(2)}',
+                      'price : ${(double.parse(item.price)  * item.quantity).toStringAsFixed(2)} RM',
                     ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,

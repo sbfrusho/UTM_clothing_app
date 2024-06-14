@@ -30,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppColor().colorRed,
-          //Add a back button to left of the app bar
+          // Add a back button to the left of the app bar
           leading: IconButton(
             icon: const Icon(
               Icons.arrow_back,
@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Don\'t have an account?'),
+                      const Text("Don't have an account?"),
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).push(MaterialPageRoute(
@@ -81,14 +81,33 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-class LoginForm extends StatelessWidget {
+class LoginForm extends StatefulWidget {
+  LoginForm({super.key});
+
+  @override
+  _LoginFormState createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
   final SignInController signInController = Get.put(SignInController());
   final GetUserDataController getUserDataController =
       Get.put(GetUserDataController());
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  late TextEditingController emailController;
+  late TextEditingController passwordController;
 
-  LoginForm({super.key});
+  @override
+  void initState() {
+    super.initState();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -208,7 +227,7 @@ class LoginForm extends StatelessWidget {
                         showToast(
                             context, "Please verify your email before login");
                       }
-                                        }
+                    }
                   },
                   child: Text(
                     "Login",
@@ -227,7 +246,7 @@ class LoginForm extends StatelessWidget {
   }
 }
 
-//create a toast message for the login
+// Create a toast message for the login
 void showToast(BuildContext context, String message) {
   final scaffold = ScaffoldMessenger.of(context);
   scaffold.showSnackBar(

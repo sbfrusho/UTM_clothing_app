@@ -129,11 +129,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'Full Price: \$${widget.productModel.fullPrice} RM',
+                    'Full Price: ${widget.productModel.fullPrice} RM',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.grey[600],
                       decoration: TextDecoration.lineThrough,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Available: ${widget.productModel.quantity} units',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[600],
+                      // decoration: TextDecoration.lineThrough,
                     ),
                   ),
                   SizedBox(height: 16),

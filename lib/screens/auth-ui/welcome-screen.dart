@@ -151,8 +151,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
-  Future<void> authenticate() async{
-    try{
+  Future<void> authenticate() async {
+    try {
       bool isAuthenticated = await localAuth.authenticate(
         localizedReason: "Authenticate to login",
         options: const AuthenticationOptions(
@@ -160,7 +160,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           biometricOnly: true,
         ),
       );
-      if(isAuthenticated){
+      if (isAuthenticated) {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -168,16 +168,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
         );
       }
-    }on PlatformException catch(e){
-
-    }
+    } on PlatformException catch (e) {}
   }
 
   Future<void> getBiometricTypes() async {
     List<BiometricType> availableBiometrics =
         await localAuth.getAvailableBiometrics();
 
-      print("available : $availableBiometrics");
-      if(!mounted) return;
+    print("available : $availableBiometrics");
+    if (!mounted) return;
   }
 }
