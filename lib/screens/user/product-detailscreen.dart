@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,6 +9,7 @@ import 'package:shopping_app/controller/cart-controller.dart';
 import 'package:shopping_app/models/product-model.dart';
 import 'package:shopping_app/models/wishlist-model.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
+import 'package:shopping_app/screens/user/settings.dart';
 import 'package:shopping_app/screens/user/wish-list.dart';
 import 'package:shopping_app/widgets/check-quantity.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -29,6 +32,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool isInWishlist = false;
   bool _isButtonPressed = false;
   QuantityChecker quantityChecker = QuantityChecker();
+  User? user = FirebaseAuth.instance.currentUser;
 
   @override
   void initState() {
@@ -55,7 +59,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void sendWhatsAp() {
-    String phoneNumber = "+88001781314166";
+    String phoneNumber = "+8801768360928";
     String url = "whatsapp://send?phone= $phoneNumber";
     launchUrl(Uri.parse(url));
   }
@@ -265,6 +269,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               break;
             case 2:
               // Handle the Categories item tap
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString(),)));
               break;
             case 3:
               Navigator.push(

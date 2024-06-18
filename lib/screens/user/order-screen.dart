@@ -153,6 +153,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 import 'package:shopping_app/screens/user/order-detail-screen.dart';
+import 'package:shopping_app/screens/user/settings.dart';
 import 'package:shopping_app/screens/user/wish-list.dart';
 
 import '../../My Cart/my_cart_view.dart';
@@ -162,6 +163,7 @@ class OrderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    User? user  = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Orders',style: TextStyle(color: Colors.white),),
@@ -267,6 +269,7 @@ class OrderScreen extends StatelessWidget {
                 break;
               case 4:
                 // Handle the Profile item tap
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString(),)));
                 break;
             }
           },

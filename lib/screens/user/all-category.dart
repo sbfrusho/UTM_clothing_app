@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,6 +7,7 @@ import 'package:get/get.dart';
 
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/models/product-model.dart';
+import 'package:shopping_app/screens/user/settings.dart';
 import 'package:shopping_app/screens/user/single-category-product-screen.dart';
 import 'package:shopping_app/screens/user/wish-list.dart';
 import '../../controller/wishlist-controller.dart';
@@ -17,6 +19,7 @@ class AllCategoriesScreen extends StatelessWidget {
   AllCategoriesScreen({Key? key}) : super(key: key);
 
   WishlistController wishlistController = Get.put(WishlistController());
+  User? user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -175,6 +178,7 @@ class AllCategoriesScreen extends StatelessWidget {
                 break;
               case 4:
                 // Handle the Profile item tap
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString(),)));
                 break;
             }
           },

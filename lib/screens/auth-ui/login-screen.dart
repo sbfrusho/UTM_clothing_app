@@ -30,16 +30,6 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppColor().colorRed,
-          // Add a back button to the left of the app bar
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
         ),
         body: SingleChildScrollView(
           child: Container(

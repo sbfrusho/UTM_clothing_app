@@ -1,25 +1,22 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, use_build_context_synchronously, avoid_print, sized_box_for_whitespace, prefer_interpolation_to_compose_strings
+// ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:mailer/mailer.dart';
-import 'package:mailer/smtp_server/gmail.dart';
-import 'package:shopping_app/My%20Cart/my_cart_view.dart';
-import 'package:shopping_app/const/app-colors.dart';
+import 'package:mailer/smtp_server.dart';
 import 'package:shopping_app/controller/address-controller.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
 import 'package:shopping_app/controller/payment-controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shopping_app/screens/user/all-category.dart';
-import 'package:shopping_app/screens/user/delivery-adress.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 import 'package:shopping_app/screens/user/order-confirmation-screen.dart';
-import 'package:shopping_app/screens/user/order-screen.dart';
+import 'package:shopping_app/screens/user/settings.dart';
 import 'package:shopping_app/screens/user/shipping-address.dart';
 import 'package:shopping_app/screens/user/wish-list.dart';
-
+import '../../My Cart/my_cart_view.dart';
+import '../../const/app-colors.dart';
 import '../../controller/get-customer-device-token-controller.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -32,20 +29,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final payment = PaymentController();
   AddressController ads = Get.put(AddressController());
 
-
   @override
-void initState() {
-  super.initState();
-  timeController = TextEditingController();
-  fetchUserData(); // Fetch user data
-  fetchAddressData(); // Fetch address data
-
-  // Add a listener to addressController
-  addressController.addListener(() {
-    setState(() {});
-  });
-}
-
+  void initState() {
+    super.initState();
+    timeController = TextEditingController();
+    fetchUserData(); // Fetch user data
+    fetchAddressData(); // Fetch address data
+  }
 
   final CartController cartController = Get.find<CartController>();
   User? user = FirebaseAuth.instance.currentUser;
@@ -82,9 +72,8 @@ void initState() {
           children: [
             SizedBox(height: 20),
             GestureDetector(
-              onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context)=>AddAddressScreen())),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddAddressScreen())),
               child: Card(
-                
                 margin: EdgeInsets.all(20.0),
                 child: Padding(
                   padding: EdgeInsets.all(15.0),
@@ -121,7 +110,7 @@ void initState() {
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Container(
-                height: 55.0.h,
+                height: 55.0,
                 child: TextFormField(
                   controller: timeController,
                   readOnly: true,
@@ -138,8 +127,7 @@ void initState() {
                           lastDate: DateTime(2101),
                         );
                         if (date != null) {
-                          timeController.text =
-                              "${date.toLocal()}".split(' ')[0];
+                          timeController.text = "${date.toLocal()}".split(' ')[0];
                         }
                       },
                     ),
@@ -206,13 +194,13 @@ void initState() {
 
                   print('Customer Token: $customerToken');
                   print('Name: $name');
-                  print('phome : $phone');
+                  print('Phone: $phone');
                   print('Address: $address');
                   print('Time: $time');
                   print('Payment Method: $paymentMethod');
                   print("Total price: $total");
 
-                  if (selectedPaymentMethod == 'Cash on Delivery') {
+                  if (paymentMethod == 'Cash on Delivery') {
                     await cartController.placeOrder(
                       cartController.cartItems,
                       cartController.totalPrice,
@@ -224,45 +212,43 @@ void initState() {
                       time,
                     );
 
-                    // Get.offAll(OrderConfirmationScreen());
-
                     await sendEmail(
                       user!.email!,
                       'Order Confirmation',
-                      'Your order has been placed successfully. Order will be delivered within 3 days by $time.\n  Total amount: $total RM',
+                      'Your order has been placed successfully. Order will be delivered within 3 days by $time.\nTotal amount: $total RM',
                     );
 
                     setState(() {
                       isPaymentCompleted = true;
                     });
+
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => OrderConfirmationScreen()));
+                  } else if (paymentMethod == 'Card') {
+                    if (await payment.makePayment(total)) {
+                      await cartController.placeOrder(
+                        cartController.cartItems,
+                        cartController.totalPrice,
+                        user!.uid,
+                        name,
+                        phone,
+                        address,
+                        paymentMethod,
+                        time,
+                      );
+
+                      await sendEmail(
+                        user!.email!,
+                        'Order Confirmation',
+                        'Your order has been placed successfully. Order will be delivered by $time.\nTotal amount: $total RM',
+                      );
+
+                      setState(() {
+                        isPaymentCompleted = true;
+                      });
+
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => OrderConfirmationScreen()));
+                    }
                   }
-
-                  if (await payment.makePayment(total) &&
-                      selectedPaymentMethod == 'Card') {
-                    await cartController.placeOrder(
-                      cartController.cartItems,
-                      cartController.totalPrice,
-                      user!.uid,
-                      name,
-                      phone,
-                      address,
-                      paymentMethod,
-                      time,
-                    );
-
-                    // Get.offAll(OrderConfirmationScreen());
-
-                    await sendEmail(
-                      user!.email!,
-                      'Order Confirmation',
-                      'Your order has been placed successfully. Order will be delivered by $time.\n  Total amount: $total RM',
-                    );
-
-                    setState(() {
-                      isPaymentCompleted = true;
-                    });
-                  }
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => OrderConfirmationScreen()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor().colorRed,
@@ -322,12 +308,9 @@ void initState() {
               );
               break;
             case 1:
-              // Handle the Wishlist item tap
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => WishlistScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => WishlistScreen()));
               break;
             case 2:
-              // Handle the Categories item tap
               Get.offAll(AllCategoriesScreen());
               break;
             case 3:
@@ -338,6 +321,7 @@ void initState() {
               break;
             case 4:
               // Handle the Profile item tap
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString(),)));
               break;
           }
         },
@@ -347,51 +331,46 @@ void initState() {
 
   // Fetch user data
   void fetchUserData() {
-  FirebaseFirestore.instance
-      .collection('users')
-      .where('email', isEqualTo: user!.email)
-      .get()
-      .then((QuerySnapshot querySnapshot) {
-    if (querySnapshot.docs.isNotEmpty) {
-      final userData =
-          querySnapshot.docs.first.data() as Map<String, dynamic>;
-      print('User data: $userData');
-      setState(() {
-        nameController.text = userData['name'] ?? '';
-        phoneController.text = userData['phone'] ?? '';
-        emailController.text = user!.email ?? '';
-        // You can add more fields if available in the address collection
-      });
-    } else {
-      print('No data found for this user');
-    }
-  }).catchError((error) {
-    print('Error fetching address data: $error');
-  });
-}
+    FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: user!.email)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        final userData = querySnapshot.docs.first.data() as Map<String, dynamic>;
+        print('User data: $userData');
+        setState(() {
+          nameController.text = userData['name'] ?? '';
+          phoneController.text = userData['phone'] ?? '';
+          emailController.text = user!.email ?? '';
+        });
+      } else {
+        print('No data found for this user');
+      }
+    }).catchError((error) {
+      print('Error fetching address data: $error');
+    });
+  }
 
-void fetchAddressData() {
-  FirebaseFirestore.instance
-      .collection('addresses')
-      .where('email', isEqualTo: user!.email)
-      .get()
-      .then((QuerySnapshot querySnapshot) {
-    if (querySnapshot.docs.isNotEmpty) {
-      final addressData =
-          querySnapshot.docs.first.data() as Map<String, dynamic>;
-      print('Address data: $addressData');
-      setState(() {
-        addressController.text = addressData['address'] ?? '';
-        // You can add more fields if available in the address collection
-      });
-    } else {
-      print('No data found for this address');
-    }
-  }).catchError((error) {
-    print('Error fetching address data: $error');
-  });
-}
-
+  void fetchAddressData() {
+    FirebaseFirestore.instance
+        .collection('addresses')
+        .where('email', isEqualTo: user!.email)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        final addressData = querySnapshot.docs.first.data() as Map<String, dynamic>;
+        print('Address data: $addressData');
+        setState(() {
+          addressController.text = addressData['address'] ?? '';
+        });
+      } else {
+        print('No data found for this address');
+      }
+    }).catchError((error) {
+      print('Error fetching address data: $error');
+    });
+  }
 
   Future<void> sendEmail(String recipient, String subject, String body) async {
     String username = "ealumnimobileapp@gmail.com";

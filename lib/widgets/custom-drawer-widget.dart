@@ -11,7 +11,9 @@ import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/get-user-data-controller.dart';
 import 'package:shopping_app/screens/auth-ui/forgot-password-screen.dart';
 import 'package:shopping_app/screens/auth-ui/login-screen.dart';
+import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
 import 'package:shopping_app/screens/user/order-screen.dart';
+import 'package:shopping_app/screens/user/settings.dart';
 import 'package:shopping_app/screens/user/user-details-screen.dart';
 import 'package:shopping_app/screens/user/wish-list.dart';
 
@@ -129,7 +131,7 @@ class DrawerWidget extends StatelessWidget {
             title: Text('Settings'),
             onTap: () {
               // Add your navigation logic here
-              // Navigator.pop(context); // Close the drawer
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString())));
             },
           ),
           ListTile(
@@ -138,7 +140,7 @@ class DrawerWidget extends StatelessWidget {
             onTap: () {
               auth.signOut();
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()));
+                  MaterialPageRoute(builder: (context) => WelcomeScreen()));
             },
           ),
 

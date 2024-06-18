@@ -1,5 +1,6 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors_in_immutables, prefer_const_constructors
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shopping_app/My%20Cart/my_cart_view.dart';
@@ -7,6 +8,7 @@ import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/screens/user/all-category.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 import 'package:shopping_app/screens/user/order-screen.dart';
+import 'package:shopping_app/screens/user/settings.dart';
 import 'package:shopping_app/screens/user/shipping-address.dart';
 import 'package:shopping_app/screens/user/wish-list.dart';
 
@@ -17,6 +19,7 @@ class UserDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    User? user = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColor().colorRed,
@@ -48,7 +51,7 @@ class UserDetailsScreen extends StatelessWidget {
                   title: Text('Settings', style: TextStyle(color: AppColor().colorRed)),
                   trailing: Icon(Icons.arrow_forward_ios, color: AppColor().colorRed),
                   onTap: () {
-                    // Get.to(SettingsScreen());
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString(),)));
                   },
                 ),
               ],
