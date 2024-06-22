@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors, prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -45,8 +43,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   TextEditingController addressController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   String selectedPaymentMethod = 'Card';
+  String selectOrderType = 'Normal Delivery';
 
   bool isPaymentCompleted = false;
+  bool isSubmittingOrder = false; // New state variable
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +102,56 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         subtitle: Text(addressController.text),
                       ),
                     ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: DropdownButtonFormField<String>(
+                value: selectOrderType,
+                items: [
+                  DropdownMenuItem<String>(
+                    value: 'Normal Delivery',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delivery_dining),
+                        SizedBox(width: 10),
+                        Text('Normal Delivery'),
+                      ],
+                    ),
+                  ),
+                  DropdownMenuItem<String>(
+                    value: 'Pick up',
+                    child: Row(
+                      children: [
+                        Icon(Icons.location_on),
+                        SizedBox(width: 10),
+                        Text('Pick up'),
+                      ],
+                    ),
+                  ),
+                  
+                  DropdownMenuItem<String>(
+                    value: 'Preferred time',
+                    child: Row(
+                      children: [
+                        Icon(Icons.timelapse),
+                        SizedBox(width: 10),
+                        Text('Prffered time'),
+                      ],
+                    ),
+                  ),
+                ],
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectOrderType = newValue!;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'Order Type',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),
@@ -183,6 +233,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               padding: const EdgeInsets.all(20.0),
               child: ElevatedButton(
                 onPressed: () async {
+                  if (cartController.totalPrice == 0) {
+                    Get.snackbar("Error", "Your cart is empty!");
+                    return;
+                  }
+
+                  setState(() {
+                    isSubmittingOrder = true; // Show circular indicator
+                  });
+
                   String name = nameController.text.trim();
                   String address = addressController.text.trim();
                   String phone = phoneController.text.trim();
@@ -220,6 +279,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                     setState(() {
                       isPaymentCompleted = true;
+                      isSubmittingOrder = false; // Hide circular indicator
                     });
 
                     Navigator.push(context, MaterialPageRoute(builder: (context) => OrderConfirmationScreen()));
@@ -244,6 +304,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                       setState(() {
                         isPaymentCompleted = true;
+                        isSubmittingOrder = false; // Hide circular indicator
                       });
 
                       Navigator.push(context, MaterialPageRoute(builder: (context) => OrderConfirmationScreen()));
@@ -260,14 +321,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                 ),
-                child: Text(
-                  'Confirm Order',
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                child: isSubmittingOrder // Show circular indicator or button text
+                    ? CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      )
+                    : Text(
+                        'Confirm Order',
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
             ),
           ],
@@ -321,7 +386,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               break;
             case 4:
               // Handle the Profile item tap
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString(),)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen(email: user!.email.toString(),)));
               break;
           }
         },

@@ -65,19 +65,9 @@ class _SplashScreenState extends State<SplashScreen> {
                 // Add your logo in the image folder and provide the path here
                 Container(
                   child: Image(
-                    image: const AssetImage("assets/logo1.png"),
-                    height: 200.h,
-                    width: 200.w,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                // Add your app name here
-                Text(
-                  'UTM E-COMMERCE APP\nEnhance Your Shopping Experience',
-                  style: TextStyle(
-                    color: AppColor().colorRed,
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
+                    image: const AssetImage("assets/For Design Picture/fp.png"),
+                    height: 600.h,
+                    width: 600.w,
                   ),
                 ),
                 CircularProgressIndicator(
