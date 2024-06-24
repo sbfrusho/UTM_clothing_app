@@ -6,6 +6,8 @@ import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/models/address-model.dart';
 import 'package:shopping_app/screens/user/all-category.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
+import 'package:shopping_app/screens/user/settings.dart';
+import 'package:shopping_app/screens/user/user-details-screen.dart';
 import 'package:shopping_app/screens/user/wish-list.dart';
 
 import '../../My Cart/my_cart_view.dart'; // Import the Address model
@@ -17,6 +19,8 @@ class AddAddressScreen extends StatefulWidget {
 
 class _AddAddressScreenState extends State<AddAddressScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  User? user = FirebaseAuth.instance.currentUser;
 
   late TextEditingController _addressController;
   late TextEditingController _streetController;
@@ -245,7 +249,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   break;
                 case 2:
                   // Handle the Categories item tap
-                  Get.offAll(AllCategoriesScreen());
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AllCategoriesScreen()));
                   break;
                 case 3:
                   Navigator.push(
@@ -255,6 +259,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   break;
                 case 4:
                   // Handle the Profile item tap
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString(),)));
                   break;
               }
             },

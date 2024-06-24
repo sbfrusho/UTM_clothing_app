@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:shopping_app/const/app-colors.dart';
+import 'package:shopping_app/screens/user/all-category.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 import 'package:shopping_app/screens/user/settings.dart';
 import 'package:shopping_app/screens/user/wish-list.dart';
@@ -113,6 +115,7 @@ class OrderDetailPage extends StatelessWidget {
                 break;
               case 2:
                 // Handle the Categories item tap
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>AllCategoriesScreen()));
                 break;
               case 3:
                 Navigator.push(
@@ -160,7 +163,7 @@ class OrderDetailPage extends StatelessWidget {
               child: ListTile(
                 contentPadding: const EdgeInsets.all(16),
                 title: Text(itemData['product_name']),
-                subtitle: Text('Quantity: ${itemData['quantity']} - Price: \$${itemData['price']}'),
+                subtitle: Text('Quantity: ${itemData['quantity']} - Price: ${itemData['price']} RM'),
               ),
             );
           },

@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class CartController extends GetxController {
   final CartModelController _cartModel = CartModelController();
+  late String sellerEmail = "";
 
   List<CartItem> get cartItems => _cartModel.cartItems;
 
@@ -25,6 +26,10 @@ class CartController extends GetxController {
 
   void clearCart() {
     _cartModel.clearCart();
+  }
+
+  void email(String s){
+    sellerEmail = s;
   }
 
   Future<bool> updateProductQuantity(String productId, int orderedQuantity) async {
@@ -82,6 +87,7 @@ class CartController extends GetxController {
       print("customerId: $customerId");
       print("customerName: $customerName");
       print("userEmail: $userEmail");
+      print("Seller ID : $sellerEmail");
 
       // Check product availability and update quantities
       for (var item in cartItems) {
@@ -111,7 +117,8 @@ class CartController extends GetxController {
         'totalPrice': totalPrice,
         'status': 'Pending', // You can set initial status as 'Pending'
         'createdAt': Timestamp.now(),
-        'uniqueId': userEmail, // Add the uniqueId
+        'uniqueId': userEmail,
+        'sellerId': sellerEmail,
       });
       print("Order placed successfully");
 

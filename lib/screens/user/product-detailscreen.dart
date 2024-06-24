@@ -8,8 +8,10 @@ import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
 import 'package:shopping_app/models/product-model.dart';
 import 'package:shopping_app/models/wishlist-model.dart';
+import 'package:shopping_app/screens/user/all-category.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 import 'package:shopping_app/screens/user/settings.dart';
+import 'package:shopping_app/screens/user/user-details-screen.dart';
 import 'package:shopping_app/screens/user/wish-list.dart';
 import 'package:shopping_app/widgets/check-quantity.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -174,8 +176,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 children: [
                   ElevatedButton.icon(
                     onPressed: sendWhatsAp,
-                    icon: Icon(FontAwesomeIcons.whatsapp),
-                    label: Text("Contact Us"),
+                    icon: Icon(FontAwesomeIcons.whatsapp , color: Colors.white,),
+                    label: Text("Contact Us", style: TextStyle(color: Colors.white),),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                     ),
@@ -185,6 +187,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       if (widget.productModel.quantity == "0") {
                         Fluttertoast.showToast(msg: "Product is unavailable");
                       } else {
+                        cartController.email(widget.productModel.sellerEmail);
                         cartController.addToCart(
                           CartItem(
                             productId: widget.productModel.productId,
@@ -197,8 +200,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         Fluttertoast.showToast(msg: "Added to cart");
                       }
                     },
-                    icon: Icon(Icons.add_shopping_cart),
-                    label: Text("Add to Cart"),
+                    icon: Icon(Icons.add_shopping_cart , color: Colors.white,),
+                    label: Text("Add to Cart",style: TextStyle(color: Colors.white),),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColor().colorRed,
                     ),
@@ -269,7 +272,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               break;
             case 2:
               // Handle the Categories item tap
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString(),)));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>AllCategoriesScreen()));
               break;
             case 3:
               Navigator.push(
@@ -281,6 +284,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               break;
             case 4:
               // Handle the Profile item tap
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString(),)));
               break;
           }
         },

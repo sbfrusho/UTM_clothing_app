@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +9,7 @@ import 'package:shopping_app/controller/wishlist-controller.dart';
 import 'package:shopping_app/models/wishlist-model.dart';
 import 'package:shopping_app/screens/user/all-category.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
+import 'package:shopping_app/screens/user/settings.dart';
 
 class WishlistScreen extends StatefulWidget {
   @override
@@ -15,7 +18,7 @@ class WishlistScreen extends StatefulWidget {
 
 class _WishlistScreenState extends State<WishlistScreen> {
   late Future<void> _wishlistFuture;
-
+  User? user = FirebaseAuth.instance.currentUser;
   @override
   void initState() {
     super.initState();
@@ -157,7 +160,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 break;
               case 2:
                 // Handle the Categories item tap
-                Get.offAll(AllCategoriesScreen());
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>AllCategoriesScreen()));
                 break;
               case 3:
                 Navigator.push(
@@ -167,6 +170,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 break;
               case 4:
                 // Handle the Profile item tap
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString(),)));
                 break;
             }
           },

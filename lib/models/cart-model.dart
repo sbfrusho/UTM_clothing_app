@@ -15,6 +15,7 @@ class CartModel {
   final dynamic updatedAt;
   final int productQuantity;
   final double productTotalPrice;
+  final String sellerId;
 
   CartModel({
     required this.productId,
@@ -31,6 +32,7 @@ class CartModel {
     required this.updatedAt,
     required this.productQuantity,
     required this.productTotalPrice,
+    required this.sellerId,
   });
 
   Map<String, dynamic> toMap() {
@@ -49,6 +51,7 @@ class CartModel {
       'updatedAt': updatedAt,
       'productQuantity': productQuantity,
       'productTotalPrice': productTotalPrice,
+      'sellerId': sellerId,
     };
   }
 
@@ -68,6 +71,7 @@ class CartModel {
       updatedAt: json['updatedAt'],
       productQuantity: json['productQuantity'],
       productTotalPrice: json['productTotalPrice'],
+      sellerId: json['sellerId'],
     );
   }
 }

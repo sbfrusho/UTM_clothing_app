@@ -169,6 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
               break;
             case 2:
               // Handle the Categories item tap
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>AllCategoriesScreen()));
               break;
             case 3:
               Navigator.push(

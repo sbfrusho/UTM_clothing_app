@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,6 +20,7 @@ import '../../const/app-colors.dart';
 import '../../controller/get-customer-device-token-controller.dart';
 
 class CheckoutScreen extends StatefulWidget {
+
   @override
   _CheckoutScreenState createState() => _CheckoutScreenState();
 }
@@ -268,7 +271,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       phone,
                       address,
                       paymentMethod,
-                      time,
+                      time
                     );
 
                     await sendEmail(
@@ -376,7 +379,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               Navigator.push(context, MaterialPageRoute(builder: (context) => WishlistScreen()));
               break;
             case 2:
-              Get.offAll(AllCategoriesScreen());
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>AllCategoriesScreen()));
               break;
             case 3:
               Navigator.push(

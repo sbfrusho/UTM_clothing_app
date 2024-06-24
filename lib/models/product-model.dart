@@ -12,6 +12,7 @@ class ProductModel {
   final dynamic createdAt;
   final dynamic updatedAt;
   final String quantity;
+  final String sellerEmail;
 
   ProductModel({
     required this.productId,
@@ -27,6 +28,7 @@ class ProductModel {
     required this.createdAt,
     required this.updatedAt,
     required this.quantity,
+    required this.sellerEmail,
   });
 
   Map<String, dynamic> toMap() {
@@ -44,6 +46,7 @@ class ProductModel {
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'quantity': quantity,
+      'email':sellerEmail,
     };
   }
 
@@ -62,6 +65,7 @@ class ProductModel {
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
       quantity: json['quantity'] ?? '',
+      sellerEmail: json['email']??'',
     );
   }
 }

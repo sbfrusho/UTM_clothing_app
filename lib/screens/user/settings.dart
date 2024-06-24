@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
@@ -6,6 +7,7 @@ import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/models/user-model.dart';
 import 'package:shopping_app/screens/user/all-category.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
+import 'package:shopping_app/screens/user/user-details-screen.dart';
 import 'package:shopping_app/screens/user/wish-list.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -140,85 +142,95 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      _buildUserInfoRow('Username', nameController, Icons.person),
+                      _buildUserInfoRow(
+                          'Username', nameController, Icons.person),
                       _buildDivider(),
-                      _buildUserInfoRow('Email', emailController, Icons.email, isEditable: false),
+                      _buildUserInfoRow('Email', emailController, Icons.email,
+                          isEditable: false),
                       _buildDivider(),
                       _buildUserInfoRow('Phone', phoneController, Icons.phone),
                       _buildDivider(),
-                      _buildUserInfoRow('City', cityController, Icons.location_city),
+                      _buildUserInfoRow(
+                          'City', cityController, Icons.location_city),
                       _buildDivider(),
                       _buildUserInfoRow('State', stateController, Icons.map),
                       _buildDivider(),
-                      _buildUserInfoRow('Country', countryController, Icons.flag),
+                      _buildUserInfoRow(
+                          'Country', countryController, Icons.flag),
                       _buildDivider(),
                       _buildUserInfoRow('Road', roadController, Icons.add_road),
                       _buildDivider(),
-                      _buildUserInfoRow('Postal Code', postalCodeController, Icons.markunread_mailbox),
+                      _buildUserInfoRow('Postal Code', postalCodeController,
+                          Icons.markunread_mailbox),
                       _buildDivider(),
-                      _buildUserInfoRow('Address', addressController, Icons.home),
+                      _buildUserInfoRow(
+                          'Address', addressController, Icons.home),
                     ],
                   ),
                 ),
               ),
             ),
       bottomNavigationBar: BottomNavigationBar(
-      currentIndex: 0,
-      selectedItemColor: Colors.red,
-      unselectedItemColor: Colors.grey,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.favorite),
-          label: 'Wishlist',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.category),
-          label: 'Categories',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_cart),
-          label: 'Cart',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
-        ),
-      ],
-      onTap: (index) {
-        switch (index) {
-          case 0:
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
-            );
-            break;
-          case 1:
-            // Handle the Wishlist item tap
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => WishlistScreen()));
-            break;
-          case 2:
-            // Handle the Categories item tap
-            break;
-          case 3:
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CartScreen()),
-            );
-            break;
-          case 4:
-            break;
-        }
-      },
-            ),
-      );
+        currentIndex: 0,
+        selectedItemColor: Colors.red,
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Wishlist',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.category),
+            label: 'Categories',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Cart',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+              );
+              break;
+            case 1:
+              // Handle the Wishlist item tap
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => WishlistScreen()));
+              break;
+            case 2:
+              // Handle the Categories item tap
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>AllCategoriesScreen()));
+              break;
+            case 3:
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CartScreen()),
+              );
+              break;
+            case 4:
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: FirebaseAuth.instance.currentUser!.email.toString(),)));
+              break;
+          }
+        },
+      ),
+    );
   }
 
-  Widget _buildUserInfoRow(String title, TextEditingController controller, IconData icon, {bool isEditable = true}) {
+  Widget _buildUserInfoRow(
+      String title, TextEditingController controller, IconData icon,
+      {bool isEditable = true}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -165,13 +165,13 @@ class AllCategoriesScreen extends StatelessWidget {
                 break;
               case 2:
                 // Handle the Categories item tap
+                Get.offAll(AllCategoriesScreen());
                 break;
               case 3:
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => CartScreen(
-                        // cartItems: [],
                         ),
                   ),
                 );

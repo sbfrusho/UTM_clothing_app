@@ -110,6 +110,7 @@ class UserDetailsScreen extends StatelessWidget {
                 break;
               case 4:
                 // Handle the Profile item tap
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString(),)));
                 break;
             }
           },

@@ -1,9 +1,13 @@
 // ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, use_key_in_widget_constructors
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
+import 'package:shopping_app/models/product-model.dart';
+import 'package:shopping_app/screens/user/all-category.dart';
+import 'package:shopping_app/screens/user/settings.dart';
 
 import '../screens/user/checkout-screen.dart';
 import '../screens/user/home-screen.dart';
@@ -16,6 +20,7 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   final CartController cartController = Get.find<CartController>();
+  User? user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +35,8 @@ class _CartScreenState extends State<CartScreen> {
             child: ListView.builder(
               itemCount: cartController.cartItems.length,
               itemBuilder: (context, index) {
-                final item = cartController.cartItems[index];
+                final item = cartController.cartItems[index]; 
+                
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: ListTile(
@@ -149,6 +155,7 @@ class _CartScreenState extends State<CartScreen> {
                 break;
               case 2:
                 // Handle the Categories item tap
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>AllCategoriesScreen()));
                 break;
               case 3:
                 Navigator.push(
@@ -158,6 +165,7 @@ class _CartScreenState extends State<CartScreen> {
                 break;
               case 4:
                 // Handle the Profile item tap
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString(),)));
                 break;
             }
           },

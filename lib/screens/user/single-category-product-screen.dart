@@ -9,9 +9,12 @@ import 'package:get/get.dart';
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/cart-controller.dart';
 import 'package:shopping_app/controller/cart-model-controller.dart';
+import 'package:shopping_app/screens/user/all-category.dart';
 import 'package:shopping_app/screens/user/checkout-screen.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 import 'package:shopping_app/screens/user/product-detailscreen.dart';
+import 'package:shopping_app/screens/user/settings.dart';
+import 'package:shopping_app/screens/user/wish-list.dart';
 import '../../My Cart/my_cart_view.dart';
 import '../../controller/wishlist-controller.dart';
 import '../../models/product-model.dart';
@@ -143,6 +146,7 @@ class SingleProductView extends StatelessWidget {
                                     Fluttertoast.showToast(
                                         msg: "Product is unavailable");
                                   } else {
+                                    cartController.email(product.sellerEmail);
                                     cartController.addToCart(
                                       CartItem(
                                         productId: product.productId,
@@ -150,6 +154,7 @@ class SingleProductView extends StatelessWidget {
                                         productImage: product.productImages[0],
                                         price: product.salePrice,
                                         quantity: 1,
+
                                       ),
                                     );
                                     Fluttertoast.showToast(
@@ -218,10 +223,12 @@ class SingleProductView extends StatelessWidget {
               break;
             case 1:
               // Handle the Wishlist item tap
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>WishlistScreen()));
 
               break;
             case 2:
               // Handle the Categories item tap
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>AllCategoriesScreen()));
               break;
             case 3:
               Navigator.push(
@@ -235,6 +242,7 @@ class SingleProductView extends StatelessWidget {
               break;
             case 4:
               // Handle the Profile item tap
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString(),)));
               break;
           }
         },
