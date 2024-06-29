@@ -27,9 +27,17 @@ class DrawerWidget extends StatelessWidget {
 
   var userData;
 
-  Future<void> getUserData() async {
-    userData = await getUserDataController.getUserData(user!.uid);
+  Future<String> fetchPasswordFromFirestore(String uid) async {
+  try {
+    // Fetch password from Firestore
+    DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    return snapshot['password']; // Assuming 'password' is a field in your 'users' collection
+  } catch (e) {
+    print('Error fetching password: $e');
+    return ''; // Handle error as per your app's requirements
   }
+}
+
 
 
   @override
@@ -135,14 +143,23 @@ class DrawerWidget extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.logout),
-            title: Text('Log out'),
-            onTap: () {
-              auth.signOut();
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => WelcomeScreen()));
-            },
-          ),
+  leading: Icon(Icons.logout),
+  title: Text('Log out'),
+  onTap: () async {
+    // Fetch the password from Firestore or any secure storage
+    String password = await fetchPasswordFromFirestore(user!.uid);
+
+    // Navigate to WelcomeScreen with user and password
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => WelcomeScreen(user: user, password: password)),
+    );
+
+    // Sign out of Firebase
+    auth.signOut();
+  },
+),
+
 
           // Add more ListTiles for additional items
         ],

@@ -13,6 +13,7 @@ class ProductModel {
   final dynamic updatedAt;
   final String quantity;
   final String sellerEmail;
+  final List<String> productSizes; // New field for product sizes
 
   ProductModel({
     required this.productId,
@@ -29,6 +30,7 @@ class ProductModel {
     required this.updatedAt,
     required this.quantity,
     required this.sellerEmail,
+    required this.productSizes, // New field for product sizes
   });
 
   Map<String, dynamic> toMap() {
@@ -46,7 +48,8 @@ class ProductModel {
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'quantity': quantity,
-      'email':sellerEmail,
+      'sellerEmail': sellerEmail,
+      'productSizes': productSizes, // New field for product sizes
     };
   }
 
@@ -65,7 +68,8 @@ class ProductModel {
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
       quantity: json['quantity'] ?? '',
-      sellerEmail: json['email']??'',
+      sellerEmail: json['sellerEmail'] ?? '',
+      productSizes: List<String>.from(json['productSizes'] ?? []), // New field for product sizes
     );
   }
 }

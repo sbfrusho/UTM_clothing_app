@@ -7,7 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/get-user-data-controller.dart';
-import 'package:shopping_app/screens/admin-panel/admin-screen.dart';
+import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
 
 import '../../controller/sign-in-controller.dart';
 import '../user/home-screen.dart';
@@ -185,8 +185,8 @@ class _LoginFormState extends State<LoginForm> {
 
                       if (userCredential.user!.emailVerified) {
                         if (userData[0]['isAdmin'] == true) {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => AdminScreen()));
+                          // Navigator.of(context).push(MaterialPageRoute(
+                          //     builder: (context) => AdminScreen()));
 
                           print("Moved to admin screen");
 

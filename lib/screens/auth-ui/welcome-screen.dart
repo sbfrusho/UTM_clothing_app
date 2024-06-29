@@ -1,10 +1,6 @@
-// ignore_for_file: prefer_final_fields, unused_field
-
-import 'dart:math';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shopping_app/const/app-colors.dart';
@@ -14,7 +10,11 @@ import 'package:shopping_app/screens/auth-ui/register-screen.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  WelcomeScreen({super.key});
+  final User? user;
+  final String password;
+
+  WelcomeScreen({Key? key, required this.user, required this.password})
+      : super(key: key);
 
   @override
   State<WelcomeScreen> createState() => _WelcomeScreenState();
@@ -78,15 +78,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const LoginScreen()),
+                                  builder: (context) => const LoginScreen(),
+                                ),
                               );
                             },
                             child: Text(
                               "Login",
                               style: TextStyle(
-                                  fontSize: 12.sp,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                                fontSize: 12.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],
@@ -108,16 +110,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        const RegisterScreen()),
+                                  builder: (context) =>
+                                      const RegisterScreen(),
+                                ),
                               );
                             },
                             child: Text(
                               "Register",
                               style: TextStyle(
-                                  fontSize: 12.sp,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                                fontSize: 12.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],
@@ -131,14 +135,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColor().colorRed,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50),
-                              ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColor().colorRed,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(50),
                             ),
-                            onPressed: authenticate,
-                            child: const Text("Use Biometric Authentication")),
+                          ),
+                          onPressed: () {
+                            authenticate(widget.user);
+                          },
+                          child: const Text("Use Biometric Authentication" , style: TextStyle(color: Colors.white)),
+                        ),
                       ),
                     )
                   ],
@@ -151,7 +158,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
-  Future<void> authenticate() async {
+  Future<void> authenticate(User? user) async {
     try {
       bool isAuthenticated = await localAuth.authenticate(
         localizedReason: "Authenticate to login",
@@ -161,21 +168,48 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         ),
       );
       if (isAuthenticated) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const HomeScreen(),
-          ),
-        );
+        if (user != null) {
+          // Call signInWithBiometrics with user and password
+          signInWithBiometrics(user, widget.password);
+        } else {
+          showToast(context, "No user found. Please log in manually first.");
+        }
       }
-    } on PlatformException catch (e) {}
+    } on PlatformException catch (e) {
+      showToast(context, "Authentication failed: ${e.message}");
+    }
   }
 
-  Future<void> getBiometricTypes() async {
-    List<BiometricType> availableBiometrics =
-        await localAuth.getAvailableBiometrics();
+  Future<void> signInWithBiometrics(User user, String password) async {
+    try {
+      // You can implement your biometric authentication logic here
+      // For simplicity, assuming biometric authentication is successful
+      // and then signing in with Firebase using the provided user
+      print("user email : ${user.email.toString()} , password : $password" );
+      await signInController.signInMethod(user.email.toString(), password);
 
-    print("available : $availableBiometrics");
-    if (!mounted) return;
+      // Navigate to home screen upon successful sign-in
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+      );
+    } catch (e) {
+      showToast(context, "Failed to sign in: ${e.toString()}");
+    }
+  }
+
+  void showToast(BuildContext context, String message) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: Text(message),
+        action: SnackBarAction(
+          label: 'OK',
+          onPressed: scaffold.hideCurrentSnackBar,
+        ),
+      ),
+    );
   }
 }

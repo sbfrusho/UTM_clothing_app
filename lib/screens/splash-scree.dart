@@ -9,7 +9,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:shopping_app/const/app-colors.dart';
 import 'package:shopping_app/controller/get-user-data-controller.dart';
-import 'package:shopping_app/screens/admin-panel/admin-screen.dart';
 import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 
@@ -39,15 +38,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
 
       if (userData[0]['isAdmin'] == true) {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const AdminScreen()));
+        // Navigator.push(context,
+        //     MaterialPageRoute(builder: (context) => const AdminScreen()));
       } else {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const HomeScreen()));
       }
     } else {
       Navigator.push(context,
-          MaterialPageRoute(builder: (context) =>  WelcomeScreen()));
+          MaterialPageRoute(builder: (context) =>  WelcomeScreen(user: null, password: "",)));
     }
   }
 
