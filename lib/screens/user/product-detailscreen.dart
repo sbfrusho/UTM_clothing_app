@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,7 +10,6 @@ import 'package:shopping_app/models/wishlist-model.dart';
 import 'package:shopping_app/screens/user/all-category.dart';
 import 'package:shopping_app/screens/user/home-screen.dart';
 import 'package:shopping_app/screens/user/settings.dart';
-import 'package:shopping_app/screens/user/user-details-screen.dart';
 import 'package:shopping_app/screens/user/wish-list.dart';
 import 'package:shopping_app/widgets/check-quantity.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -99,6 +97,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void showSizeSelectionDialog() {
+    if (widget.productModel.categoryName == 'Cap' || widget.productModel.categoryName == 'Cup') {
+      addToCartWithSize(''); // Add to cart without size selection
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -152,6 +155,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       Navigator.of(context).pop(); // Close the dialog
                     } else {
                       // Show a message or handle empty selection
+                      Fluttertoast.showToast(msg: "Please select a size");
                     }
                   },
                   child: Text('Confirm'),
@@ -176,7 +180,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           productName: widget.productModel.productName,
           productImage: widget.productModel.productImages[0],
           price: widget.productModel.salePrice,
-          quantity: 1, // Assign selected size to cart item
+          quantity: 1, 
         ),
       );
       Fluttertoast.showToast(msg: "Added to cart");
@@ -185,191 +189,193 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColor().colorRed,
-        title: Text(widget.productModel.productName),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AspectRatio(
-              aspectRatio: 1.5,
-              child: Image.network(
-                widget.productModel.productImages[0],
-                fit: BoxFit.contain,
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColor().colorRed,
+          title: Text(widget.productModel.productName),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AspectRatio(
+                aspectRatio: 1.5,
+                child: Image.network(
+                  widget.productModel.productImages[0],
+                  fit: BoxFit.contain,
+                ),
               ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.productModel.productName,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Sale Price: ${widget.productModel.salePrice} RM',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.green,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Full Price: ${widget.productModel.fullPrice} RM',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey[600],
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Available: ${widget.productModel.quantity} units',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey[600],
+                        // decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'Description:',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      widget.productModel.productDescription,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: sendWhatsAp,
+                      icon: Icon(FontAwesomeIcons.whatsapp, color: Colors.white),
+                      label: Text(
+                        "Contact Us",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        if (widget.productModel.quantity == "0") {
+                          Fluttertoast.showToast(msg: "Product is unavailable");
+                        } else {
+                          showSizeSelectionDialog(); // Show the size selection dialog
+                        }
+                      },
+                      icon: Icon(Icons.add_shopping_cart, color: Colors.white),
+                      label: Text(
+                        "Add to Cart",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColor().colorRed,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: _isButtonPressed
+                          ? null
+                          : () {
+                              setState(() {
+                                _isButtonPressed = true;
+                              });
+                              addToWishlist();
+                            },
+                      icon: Icon(
+                        isInWishlist ? Icons.favorite : Icons.favorite_border,
+                        color: isInWishlist ? Colors.red : null,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: 0,
+          selectedItemColor: Colors.red,
+          unselectedItemColor: Colors.grey,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.productModel.productName,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Sale Price: ${widget.productModel.salePrice} RM',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.green,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Full Price: ${widget.productModel.fullPrice} RM',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[600],
-                      decoration: TextDecoration.lineThrough,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Available: ${widget.productModel.quantity} units',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[600],
-                      // decoration: TextDecoration.lineThrough,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Description:',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    widget.productModel.productDescription,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite),
+              label: 'Wishlist',
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: sendWhatsAp,
-                    icon: Icon(FontAwesomeIcons.whatsapp, color: Colors.white),
-                    label: Text(
-                      "Contact Us",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      if (widget.productModel.quantity == "0") {
-                        Fluttertoast.showToast(msg: "Product is unavailable");
-                      } else {
-                        showSizeSelectionDialog(); // Show the size selection dialog
-                      }
-                    },
-                    icon: Icon(Icons.add_shopping_cart, color: Colors.white),
-                    label: Text(
-                      "Add to Cart",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor().colorRed,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: _isButtonPressed
-                        ? null
-                        : () {
-                            setState(() {
-                              _isButtonPressed = true;
-                            });
-                            addToWishlist();
-                          },
-                    icon: Icon(
-                      isInWishlist ? Icons.favorite : Icons.favorite_border,
-                      color: isInWishlist ? Colors.red : null,
-                    ),
-                  )
-                ],
-              ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.category),
+              label: 'Categories',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart),
+              label: 'Cart',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
             ),
           ],
+          onTap: (index) {
+            switch (index) {
+              case 0:
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HomeScreen(),
+                  ),
+                );
+                break;
+              case 1:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WishlistScreen(),
+                  ),
+                );
+                break;
+              case 2:
+                // Handle the Categories item tap
+                Navigator.push(context, MaterialPageRoute(builder: (context) => AllCategoriesScreen()));
+                break;
+              case 3:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CartScreen(),
+                  ),
+                );
+                break;
+              case 4:
+                // Handle the Profile item tap
+                Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen(email: user!.email.toString(),)));
+                break;
+            }
+          },
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        selectedItemColor: Colors.red,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Wishlist',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.category),
-            label: 'Categories',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Cart',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HomeScreen(),
-                ),
-              );
-              break;
-            case 1:
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => WishlistScreen(),
-                ),
-              );
-              break;
-            case 2:
-              // Handle the Categories item tap
-              Navigator.push(context, MaterialPageRoute(builder: (context) => AllCategoriesScreen()));
-              break;
-            case 3:
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CartScreen(),
-                ),
-              );
-              break;
-            case 4:
-              // Handle the Profile item tap
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen(email: user!.email.toString(),)));
-              break;
-          }
-        },
       ),
     );
   }
