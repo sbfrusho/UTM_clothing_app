@@ -174,6 +174,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       Fluttertoast.showToast(msg: "Product is unavailable");
     } else {
       cartController.email(widget.productModel.sellerEmail);
+      print("Seller Email : ${widget.productModel.sellerEmail}");
       cartController.addToCart(
         CartItem(
           productId: widget.productModel.productId,
@@ -238,6 +239,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     SizedBox(height: 4),
                     Text(
                       'Available: ${widget.productModel.quantity} units',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey[600],
+                        // decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                    Text(
+                      'Available: ${widget.productModel.sellerEmail} ',
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.grey[600],

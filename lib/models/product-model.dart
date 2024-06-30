@@ -48,7 +48,7 @@ class ProductModel {
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'quantity': quantity,
-      'sellerEmail': sellerEmail,
+      'email': sellerEmail,
       'productSizes': productSizes, // New field for product sizes
     };
   }
@@ -68,7 +68,7 @@ class ProductModel {
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
       quantity: json['quantity'] ?? '',
-      sellerEmail: json['sellerEmail'] ?? '',
+      sellerEmail: json['email'] ?? '',
       productSizes: List<String>.from(json['productSizes'] ?? []), // New field for product sizes
     );
   }
