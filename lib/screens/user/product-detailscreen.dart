@@ -271,7 +271,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(20.0),
-                child: Row(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     ElevatedButton.icon(
@@ -286,36 +286,45 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ),
                     ElevatedButton.icon(
-                      onPressed: () {
-                        if (widget.productModel.quantity == "0") {
-                          Fluttertoast.showToast(msg: "Product is unavailable");
-                        } else {
-                          showSizeSelectionDialog(); // Show the size selection dialog
-                        }
-                      },
-                      icon: Icon(Icons.add_shopping_cart, color: Colors.white),
-                      label: Text(
-                        "Add to Cart",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColor().colorRed,
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: _isButtonPressed
-                          ? null
-                          : () {
-                              setState(() {
-                                _isButtonPressed = true;
-                              });
-                              addToWishlist();
-                            },
-                      icon: Icon(
-                        isInWishlist ? Icons.favorite : Icons.favorite_border,
-                        color: isInWishlist ? Colors.red : null,
-                      ),
-                    )
+  onPressed: () {
+    if (widget.productModel.quantity == "0") {
+      Fluttertoast.showToast(msg: "Product is unavailable");
+    } else {
+      showSizeSelectionDialog(); // Show the size selection dialog
+    }
+  },
+  icon: Icon(Icons.add_shopping_cart, color: Colors.white),
+  label: Text(
+    "Add to Cart",
+    style: TextStyle(color: Colors.white),
+  ),
+  style: ElevatedButton.styleFrom(
+    backgroundColor: AppColor().colorRed,
+  ),
+),
+SizedBox(height: 10), // Add some spacing between the buttons
+ElevatedButton.icon(
+  onPressed: _isButtonPressed
+      ? null
+      : () {
+          setState(() {
+            _isButtonPressed = true;
+          });
+          addToWishlist();
+        },
+  icon: Icon(
+    isInWishlist ? Icons.favorite : Icons.favorite_border,
+    color: Colors.white,
+  ),
+  label: Text(
+    isInWishlist ? "Added to Wishlist" : "Add to Wishlist",
+    style: TextStyle(color: Colors.white),
+  ),
+  style: ElevatedButton.styleFrom(
+    backgroundColor: isInWishlist ? Colors.red : Colors.grey,
+  ),
+)
+
                   ],
                 ),
               ),
