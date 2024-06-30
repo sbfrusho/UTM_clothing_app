@@ -101,7 +101,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       addToCartWithSize(''); // Add to cart without size selection
       return;
     }
-
+    
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -246,7 +246,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ),
                     Text(
-                      'Available: ${widget.productModel.sellerEmail} ',
+                      'Seller: ${widget.productModel.sellerEmail.split('@').first} ',
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.grey[600],
