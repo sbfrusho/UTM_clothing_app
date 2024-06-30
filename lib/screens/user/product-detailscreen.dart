@@ -35,6 +35,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool _isButtonPressed = false;
   QuantityChecker quantityChecker = QuantityChecker();
   User? user = FirebaseAuth.instance.currentUser;
+  String selectedSize = '';
 
   @override
   void initState() {
@@ -95,6 +96,91 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     // Upload the wishlist to Firebase for the current user
     wishlistController.addToWishlist(wishlistItem);
+  }
+
+  void showSizeSelectionDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Select Size'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: widget.productModel.productSizes.map((size) {
+                  return InkWell(
+                    onTap: () {
+                      setState(() {
+                        selectedSize = size;
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Row(
+                        children: [
+                          Radio<String>(
+                            value: size,
+                            groupValue: selectedSize,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedSize = value!;
+                              });
+                            },
+                          ),
+                          SizedBox(width: 8),
+                          Text(size),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (selectedSize.isNotEmpty) {
+                      // Process the selected size here
+                      // For example, add to cart with selected size
+                      addToCartWithSize(selectedSize);
+                      Navigator.of(context).pop(); // Close the dialog
+                    } else {
+                      // Show a message or handle empty selection
+                    }
+                  },
+                  child: Text('Confirm'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void addToCartWithSize(String size) {
+    // Add to cart logic with selected size
+    if (widget.productModel.quantity == "0") {
+      Fluttertoast.showToast(msg: "Product is unavailable");
+    } else {
+      cartController.email(widget.productModel.sellerEmail);
+      cartController.addToCart(
+        CartItem(
+          productId: widget.productModel.productId,
+          productName: widget.productModel.productName,
+          productImage: widget.productModel.productImages[0],
+          price: widget.productModel.salePrice,
+          quantity: 1, // Assign selected size to cart item
+        ),
+      );
+      Fluttertoast.showToast(msg: "Added to cart");
+    }
   }
 
   @override
@@ -176,8 +262,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 children: [
                   ElevatedButton.icon(
                     onPressed: sendWhatsAp,
-                    icon: Icon(FontAwesomeIcons.whatsapp , color: Colors.white,),
-                    label: Text("Contact Us", style: TextStyle(color: Colors.white),),
+                    icon: Icon(FontAwesomeIcons.whatsapp, color: Colors.white),
+                    label: Text(
+                      "Contact Us",
+                      style: TextStyle(color: Colors.white),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                     ),
@@ -187,21 +276,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       if (widget.productModel.quantity == "0") {
                         Fluttertoast.showToast(msg: "Product is unavailable");
                       } else {
-                        cartController.email(widget.productModel.sellerEmail);
-                        cartController.addToCart(
-                          CartItem(
-                            productId: widget.productModel.productId,
-                            productName: widget.productModel.productName,
-                            productImage: widget.productModel.productImages[0],
-                            price: widget.productModel.salePrice,
-                            quantity: 1,
-                          ),
-                        );
-                        Fluttertoast.showToast(msg: "Added to cart");
+                        showSizeSelectionDialog(); // Show the size selection dialog
                       }
                     },
-                    icon: Icon(Icons.add_shopping_cart , color: Colors.white,),
-                    label: Text("Add to Cart",style: TextStyle(color: Colors.white),),
+                    icon: Icon(Icons.add_shopping_cart, color: Colors.white),
+                    label: Text(
+                      "Add to Cart",
+                      style: TextStyle(color: Colors.white),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColor().colorRed,
                     ),
@@ -272,7 +354,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               break;
             case 2:
               // Handle the Categories item tap
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>AllCategoriesScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => AllCategoriesScreen()));
               break;
             case 3:
               Navigator.push(
@@ -284,7 +366,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               break;
             case 4:
               // Handle the Profile item tap
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>SettingsScreen(email: user!.email.toString(),)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen(email: user!.email.toString(),)));
               break;
           }
         },
