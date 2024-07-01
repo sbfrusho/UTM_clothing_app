@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, avoid_print, prefer_const_declarations, unused_element
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -97,11 +99,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void showSizeSelectionDialog() {
-    if (widget.productModel.categoryName == 'Cap' || widget.productModel.categoryName == 'Cup') {
+    if (widget.productModel.categoryName == 'Cap' ||
+        widget.productModel.categoryName == 'Cup') {
       addToCartWithSize(''); // Add to cart without size selection
       return;
     }
-    
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -181,7 +184,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           productName: widget.productModel.productName,
           productImage: widget.productModel.productImages[0],
           price: widget.productModel.salePrice,
-          quantity: 1, 
+          quantity: 1,
         ),
       );
       Fluttertoast.showToast(msg: "Added to cart");
@@ -270,64 +273,76 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: sendWhatsAp,
-                      icon: Icon(FontAwesomeIcons.whatsapp, color: Colors.white),
-                      label: Text(
-                        "Contact Us",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      ),
-                    ),
-                    ElevatedButton.icon(
-  onPressed: () {
-    if (widget.productModel.quantity == "0") {
-      Fluttertoast.showToast(msg: "Product is unavailable");
-    } else {
-      showSizeSelectionDialog(); // Show the size selection dialog
-    }
-  },
-  icon: Icon(Icons.add_shopping_cart, color: Colors.white),
-  label: Text(
-    "Add to Cart",
-    style: TextStyle(color: Colors.white),
-  ),
-  style: ElevatedButton.styleFrom(
-    backgroundColor: AppColor().colorRed,
-  ),
-),
-SizedBox(height: 10), // Add some spacing between the buttons
-ElevatedButton.icon(
-  onPressed: _isButtonPressed
-      ? null
-      : () {
-          setState(() {
-            _isButtonPressed = true;
-          });
-          addToWishlist();
-        },
-  icon: Icon(
-    isInWishlist ? Icons.favorite : Icons.favorite_border,
-    color: Colors.white,
-  ),
-  label: Text(
-    isInWishlist ? "Added to Wishlist" : "Add to Wishlist",
-    style: TextStyle(color: Colors.white),
-  ),
-  style: ElevatedButton.styleFrom(
-    backgroundColor: isInWishlist ? Colors.red : Colors.grey,
+  padding: const EdgeInsets.all(20.0),
+  child: Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: sendWhatsAp,
+              icon: Icon(FontAwesomeIcons.whatsapp, color: Colors.white),
+              label: Text(
+                "Contact Us",
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
+            ),
+          ),
+          SizedBox(width: 10), // Add spacing between the buttons
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: () {
+                if (widget.productModel.quantity == "0") {
+                  Fluttertoast.showToast(msg: "Product is unavailable");
+                } else {
+                  showSizeSelectionDialog(); // Show the size selection dialog
+                }
+              },
+              icon: Icon(Icons.add_shopping_cart, color: Colors.white),
+              label: Text(
+                "Add to Cart",
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColor().colorRed,
+              ),
+            ),
+          ),
+        ],
+      ),
+      SizedBox(height: 10), // Add spacing between the row and the wishlist button
+      Center(
+        child: ElevatedButton.icon(
+          onPressed: _isButtonPressed
+              ? null
+              : () {
+                  setState(() {
+                    _isButtonPressed = true;
+                  });
+                  addToWishlist();
+                },
+          icon: Icon(
+            isInWishlist ? Icons.favorite : Icons.favorite_border,
+            color: Colors.white,
+          ),
+          label: Text(
+            isInWishlist ? "Added to Wishlist" : "Add to Wishlist",
+            style: TextStyle(color: Colors.white),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: isInWishlist ? Colors.red : Colors.grey,
+          ),
+        ),
+      ),
+    ],
   ),
 )
 
-                  ],
-                ),
-              ),
             ],
           ),
         ),
@@ -377,7 +392,10 @@ ElevatedButton.icon(
                 break;
               case 2:
                 // Handle the Categories item tap
-                Navigator.push(context, MaterialPageRoute(builder: (context) => AllCategoriesScreen()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AllCategoriesScreen()));
                 break;
               case 3:
                 Navigator.push(
@@ -389,7 +407,12 @@ ElevatedButton.icon(
                 break;
               case 4:
                 // Handle the Profile item tap
-                Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen(email: user!.email.toString(),)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SettingsScreen(
+                              email: user!.email.toString(),
+                            )));
                 break;
             }
           },
