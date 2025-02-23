@@ -20,22 +20,40 @@ The **E-commerce User App** is a Flutter-based mobile application that provides 
 - **Other Tools:** Git, REST API, Cloud Messaging
 
 ## 📸 Screenshots
-| Home Screen | Product Page | Cart Page |
-|---|---|---|
-| ![](screenshots/Screenshot_20250223_182800.png) | ![](screenshots/Screenshot_20250223_182812.png) | ![](screenshots/Screenshot_20250223_182843.png) |
+# E-commerce User App
 
-| Checkout Page | Order Summary | Payment Confirmation |
-|---|---|---|
-| ![](screenshots/Screenshot_20250223_183915.png) | ![](screenshots/Screenshot_20250223_183922.png) | ![](screenshots/Screenshot_20250223_183926.png) |
+## 📌 Overview
+The **E-commerce User App** is a Flutter-based mobile application that provides a seamless online shopping experience. The app integrates **Firebase** for backend services, **Stripe API** for secure payments, and real-time updates to ensure a smooth user experience.
 
-| Order Tracking | Profile Page | Settings Page |
-|---|---|---|
-| ![](screenshots/Screenshot_20250223_183944.png) | ![](screenshots/Screenshot_20250223_184015.png) | ![](screenshots/Screenshot_20250223_184042.png) |
+## 🚀 Features
+- 🔐 **User Authentication** (Email/Password, Google Sign-In)
+- 🛍 **Product Listing with Search & Filtering**
+- 🛒 **Cart Management & Wishlist**
+- 💳 **Secure Payment via Stripe**
+- 📦 **Order Tracking & History**
+- 🔔 **Push Notifications for Offers & Order Updates**
+- 🌙 **Dark Mode Support**
 
-| Notifications | Wishlist | Logout |
-|---|---|---|
-| ![](screenshots/Screenshot_20250223_184046.png) | ![](screenshots/Screenshot_20250223_184054.png) | ![](screenshots/Screenshot_20250223_184054.png) |
+## 🖥 Tech Stack
+- **Frontend:** Flutter, Dart
+- **Backend:** Firebase (Authentication, Firestore, Storage, Cloud Functions)
+- **Payment Gateway:** Stripe API
+- **State Management:** Provider / Riverpod / GetX
+- **Other Tools:** Git, REST API, Cloud Messaging
 
+## 📸 Screenshots
+
+![](screenshots/Screenshot_20250223_182800.png)
+![](screenshots/Screenshot_20250223_182812.png)
+![](screenshots/Screenshot_20250223_182843.png)
+![](screenshots/Screenshot_20250223_183915.png)
+![](screenshots/Screenshot_20250223_183922.png)
+![](screenshots/Screenshot_20250223_183926.png)
+![](screenshots/Screenshot_20250223_183944.png)
+![](screenshots/Screenshot_20250223_184015.png)
+![](screenshots/Screenshot_20250223_184042.png)
+![](screenshots/Screenshot_20250223_184046.png)
+![](screenshots/Screenshot_20250223_184054.png)
 ## 🛠 Setup & Installation
 1. Clone the repository:
    ```sh
