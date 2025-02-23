@@ -43,17 +43,17 @@ The **E-commerce User App** is a Flutter-based mobile application that provides 
 
 ## 📸 Screenshots
 
-![Home](screenshots/Screenshot_20250223_182800.png)
-![Categories](screenshots/Screenshot_20250223_182812.png)
-![Product Details](screenshots/Screenshot_20250223_182843.png)
-![abc](screenshots/Screenshot_20250223_183915.png)
-![def](screenshots/Screenshot_20250223_183922.png)
-![ghi](screenshots/Screenshot_20250223_183926.png)
-![jkl](screenshots/Screenshot_20250223_183944.png)
-![mno](screenshots/Screenshot_20250223_184015.png)
-![pqr](screenshots/Screenshot_20250223_184042.png)
-![stu](screenshots/Screenshot_20250223_184046.png)
-![vwx](screenshots/Screenshot_20250223_184054.png)
+![Home](Screenshot_20250223_182800.png)
+![Categories](Screenshot_20250223_182812.png)
+![Product Details](Screenshot_20250223_182843.png)
+![abc](Screenshot_20250223_183915.png)
+![def](Screenshot_20250223_183922.png)
+![ghi](Screenshot_20250223_183926.png)
+![jkl](Screenshot_20250223_183944.png)
+![mno](Screenshot_20250223_184015.png)
+![pqr](Screenshot_20250223_184042.png)
+![stu](Screenshot_20250223_184046.png)
+![vwx](Screenshot_20250223_184054.png)
 ## 🛠 Setup & Installation
 1. Clone the repository:
    ```sh
