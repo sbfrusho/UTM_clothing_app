@@ -1,16 +1,61 @@
-# shopping_app
+# E-commerce User App
 
-A new Flutter project.
+## 📌 Overview
+The **E-commerce User App** is a Flutter-based mobile application that provides a seamless online shopping experience. The app integrates **Firebase** for backend services, **Stripe API** for secure payments, and real-time updates to ensure a smooth user experience.
 
-## Getting Started
+## 🚀 Features
+- 🔐 **User Authentication** (Email/Password)
+- 🛍 **Product Listing with Search & Filtering**
+- 🛒 **Cart Management & Wishlist**
+- 💳 **Secure Payment via Stripe**
+- 📦 **Order Tracking & History**
 
-This project is a starting point for a Flutter application.
+## 🖥 Tech Stack
+- **Frontend:** Flutter, Dart
+- **Backend:** Firebase (Authentication, Firestore, Storage, Cloud Functions)
+- **Payment Gateway:** Stripe API
+- **State Management:** Provider / Riverpod / GetX
+- **Other Tools:** Git, REST API, Cloud Messaging
 
-A few resources to get you started if this is your first Flutter project:
+## 📸 Screenshots
+| Home Screen  | Product Page  | Cart Page |
+|---|---|---|
+| ![Home]([screenshots/home.png](https://github.com/sbfrusho/UTM_clothing_app/blob/main/Screenshot_20250223_182800.png?raw=true)) | 
+![Product](screenshots/product.png) | ![Cart](screenshots/cart.png) |
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 🛠 Setup & Installation
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/sbfrusho/UTM_clothing_app.git
+   cd UTM_clothing_app
+   ```
+2. Install dependencies:
+   ```sh
+   flutter pub get
+   ```
+3. Configure Firebase:
+   - Create a Firebase project.
+   - Enable Authentication & Firestore.
+   - Download and place `google-services.json` (Android) & `GoogleService-Info.plist` (iOS) in respective directories.
+4. Run the app:
+   ```sh
+   flutter run
+   ```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 💡 Challenges & Solutions
+### 🔄 Real-time Inventory Management
+- **Issue:** Keeping product stock updated in real-time.
+- **Solution:** Used Firestore triggers and Cloud Functions to update stock immediately after an order is placed.
+
+### 🔐 Secure Payment Handling
+- **Issue:** Ensuring safe and fast payment processing.
+- **Solution:** Integrated Stripe API with tokenized transactions and PCI-compliant workflows.
+
+## 👨‍💻 Author
+Developed by **Sakib Bin Faruque Rusho**
+
+📧 Contact: [rushocseru28@gmail.com](mailto:rushocseru28@gmail.com)
+
+🔗 GitHub: [sbfrusho](https://github.com/sbfrusho)
+
+Feel free to contribute and report any issues! 🚀
