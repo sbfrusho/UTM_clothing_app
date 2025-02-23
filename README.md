@@ -14,11 +14,11 @@ The **E-commerce User App** is a Flutter-based mobile application that provides 
 - **Frontend:** Flutter, Dart
 - **Backend:** Firebase (Authentication, Firestore, Storage, Cloud Functions)
 - **Payment Gateway:** Stripe API
-- **State Management:** Provider / Riverpod / GetX
-- **Other Tools:** Git, REST API, Cloud Messaging
+- **State Management:** Provider / GetX
+- **Other Tools:** Git, REST API
 
 ## 📸 Screenshots
-[home](Screenshot_20250223_182800.png)
+(Screenshot_20250223_182800.png)
 
 ## 🛠 Setup & Installation
 1. Clone the repository:
