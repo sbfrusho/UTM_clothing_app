@@ -9,15 +9,13 @@ The **E-commerce User App** is a Flutter-based mobile application that provides 
 - 🛒 **Cart Management & Wishlist**
 - 💳 **Secure Payment via Stripe**
 - 📦 **Order Tracking & History**
-- 🔔 **Push Notifications for Offers & Order Updates**
-- 🌙 **Dark Mode Support**
 
 ## 🖥 Tech Stack
 - **Frontend:** Flutter, Dart
 - **Backend:** Firebase (Authentication, Firestore, Storage, Cloud Functions)
 - **Payment Gateway:** Stripe API
-- **State Management:** Provider / Riverpod / GetX
-- **Other Tools:** Git, REST API, Cloud Messaging
+- **State Management:** Provider / GetX
+- **Other Tools:** Git, REST API
 
 ## 📸 Screenshots
 # E-commerce User App
@@ -31,15 +29,13 @@ The **E-commerce User App** is a Flutter-based mobile application that provides 
 - 🛒 **Cart Management & Wishlist**
 - 💳 **Secure Payment via Stripe**
 - 📦 **Order Tracking & History**
-- 🔔 **Push Notifications for Offers & Order Updates**
-- 🌙 **Dark Mode Support**
 
 ## 🖥 Tech Stack
 - **Frontend:** Flutter, Dart
 - **Backend:** Firebase (Authentication, Firestore, Storage, Cloud Functions)
 - **Payment Gateway:** Stripe API
-- **State Management:** Provider / Riverpod / GetX
-- **Other Tools:** Git, REST API, Cloud Messaging
+- **State Management:** Provider / GetX
+- **Other Tools:** Git, REST API
 
 ## 📸 Screenshots
 
@@ -85,9 +81,6 @@ The **E-commerce User App** is a Flutter-based mobile application that provides 
 ### 🔐 Secure Payment Handling
 - **Issue:** Ensuring safe and fast payment processing.
 - **Solution:** Integrated Stripe API with tokenized transactions and PCI-compliant workflows.
-
-## 📄 License
-This project is licensed under the MIT License.
 
 ## 👨‍💻 Author
 Developed by **Sakib Bin Faruque Rusho**
