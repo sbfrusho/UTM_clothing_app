@@ -18,10 +18,7 @@ The **E-commerce User App** is a Flutter-based mobile application that provides 
 - **Other Tools:** Git, REST API, Cloud Messaging
 
 ## 📸 Screenshots
-| Home Screen  | Product Page  | Cart Page |
-|---|---|---|
-| ![Home]([screenshots/home.png](https://github.com/sbfrusho/UTM_clothing_app/blob/main/Screenshot_20250223_182800.png?raw=true)) | 
-![Product](screenshots/product.png) | ![Cart](screenshots/cart.png) |
+[home](Screenshot_20250223_182800.png)
 
 ## 🛠 Setup & Installation
 1. Clone the repository:
