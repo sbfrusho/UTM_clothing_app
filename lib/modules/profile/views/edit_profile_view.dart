@@ -25,9 +25,9 @@ class EditProfileView extends GetView<EditProfileViewModel> {
                     TextFormField(
                       initialValue: controller.email,
                       enabled: false,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email_outlined),
+                      decoration: InputDecoration(
+                        labelText: 'Email'.tr,
+                        prefixIcon: const Icon(Icons.email_outlined),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -35,9 +35,9 @@ class EditProfileView extends GetView<EditProfileViewModel> {
                       controller: controller.nameController,
                       textCapitalization: TextCapitalization.words,
                       validator: (v) => Validators.required(v, field: 'Name'),
-                      decoration: const InputDecoration(
-                        labelText: 'Full name',
-                        prefixIcon: Icon(Icons.person_outline),
+                      decoration: InputDecoration(
+                        labelText: 'Full name'.tr,
+                        prefixIcon: const Icon(Icons.person_outline),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -45,9 +45,9 @@ class EditProfileView extends GetView<EditProfileViewModel> {
                       controller: controller.phoneController,
                       keyboardType: TextInputType.phone,
                       validator: Validators.phone,
-                      decoration: const InputDecoration(
-                        labelText: 'Phone',
-                        prefixIcon: Icon(Icons.phone_outlined),
+                      decoration: InputDecoration(
+                        labelText: 'Phone'.tr,
+                        prefixIcon: const Icon(Icons.phone_outlined),
                       ),
                     ),
                     const SizedBox(height: 24),

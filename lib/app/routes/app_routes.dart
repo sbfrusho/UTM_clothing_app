@@ -20,6 +20,11 @@ abstract final class AppRoutes {
   static const orders = '/orders';
   static const orderDetail = '/orders/detail';
   static const editProfile = '/profile/edit';
+  static const deleteAccount = '/profile/delete';
+
+  /// Privacy policy or terms; pass a `LegalPage`. Public (linked from
+  /// registration).
+  static const legal = '/legal';
 
   /// Address book; pass `AddressBookArgs.select` to pick one.
   static const address = '/profile/address';

@@ -53,7 +53,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordViewModel> {
                       const SizedBox(height: 32),
                       FilledButton(
                         onPressed: () => Get.back<void>(),
-                        child: const Text('Back to log in'),
+                        child: Text('Back to log in'.tr),
                       ),
                     ],
                   )
@@ -73,9 +73,11 @@ class ForgotPasswordView extends GetView<ForgotPasswordViewModel> {
                           keyboardType: TextInputType.emailAddress,
                           validator: Validators.email,
                           onFieldSubmitted: (_) => controller.sendResetLink(),
-                          decoration: const InputDecoration(
-                            labelText: 'Email',
-                            prefixIcon: Icon(Icons.alternate_email_rounded),
+                          decoration: InputDecoration(
+                            labelText: 'Email'.tr,
+                            prefixIcon: const Icon(
+                              Icons.alternate_email_rounded,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 28),

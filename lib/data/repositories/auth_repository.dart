@@ -6,8 +6,10 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../../core/config/app_config.dart';
 import '../../core/constants/firestore_paths.dart';
 import '../../core/errors/app_exception.dart';
+import '../../core/services/functions_client.dart';
 import '../../core/services/notification_service.dart';
 import '../models/user_model.dart';
+import 'user_repository.dart';
 
 /// Firebase Authentication plus the `users/{uid}` profile it owns.
 ///
@@ -196,6 +198,80 @@ class AuthRepository {
       } catch (_) {}
     }
     await _auth.signOut();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Account deletion
+  // ---------------------------------------------------------------------------
+
+  /// Confirms the user's identity right before a sensitive action.
+  /// Password accounts pass [password]; Google accounts get the Google
+  /// sheet. Returns `false` if the user cancels Google.
+  Future<bool> reauthenticate({String? password}) async {
+    final user = _current;
+    if (user == null) throw const AppException('Please sign in again.');
+    try {
+      final AuthCredential credential;
+      if (password != null) {
+        credential = EmailAuthProvider.credential(
+          email: user.email ?? '',
+          password: password,
+        );
+      } else {
+        await _ensureGoogleReady();
+        final account = await _google.authenticate();
+        final idToken = account.authentication.idToken;
+        if (idToken == null) {
+          throw const AppException('Google did not return a sign-in token.');
+        }
+        credential = GoogleAuthProvider.credential(idToken: idToken);
+      }
+      await user.reauthenticateWithCredential(credential);
+      await user.getIdToken(true);
+      return true;
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) return false;
+      throw AppException('Google sign-in failed. Please try again.', cause: e);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-mismatch') {
+        throw AppException(
+          'Choose the Google account you signed in with.',
+          cause: e,
+        );
+      }
+      throw AppException.from(e);
+    } catch (e) {
+      throw AppException.from(e);
+    }
+  }
+
+  /// Permanently deletes the account. Call [reauthenticate] first.
+  ///
+  /// With the backend deployed, the `deleteAccount` function removes the
+  /// data, anonymises orders and refuses while an order is in progress.
+  /// Without it, the app deletes the profile data and the Auth user itself.
+  Future<void> deleteAccount({FunctionsClient? functions}) async {
+    final user = _current;
+    if (user == null) throw const AppException('Please sign in again.');
+    final uid = user.uid;
+    if (Get.isRegistered<NotificationService>()) {
+      await Get.find<NotificationService>().detach(uid);
+    }
+    try {
+      if (AppConfig.isBackendConfigured) {
+        await (functions ?? FunctionsClient()).call('deleteAccount', const {});
+      } else {
+        await UserRepository(firestore: _db).deleteUserData(uid);
+        await user.delete();
+      }
+    } catch (e) {
+      // Keep receiving order updates if nothing was deleted.
+      if (Get.isRegistered<NotificationService>()) {
+        await Get.find<NotificationService>().attach(uid);
+      }
+      throw AppException.from(e);
+    }
+    await signOut();
   }
 
   /// Older versions stored a plain-text password in the profile.

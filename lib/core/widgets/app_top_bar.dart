@@ -55,12 +55,12 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(title ?? '', style: theme.textTheme.headlineMedium),
+                  Text((title ?? '').tr, style: theme.textTheme.headlineMedium),
                   if (subtitle != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 2),
                       child: Text(
-                        subtitle!,
+                        subtitle!.tr,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: context.palette.mutedText,
                         ),
@@ -68,7 +68,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                 ],
               )
-            : (title == null ? null : Text(title!)));
+            : (title == null ? null : Text(title!.tr)));
 
     return AppBar(
       toolbarHeight: _toolbarHeight,

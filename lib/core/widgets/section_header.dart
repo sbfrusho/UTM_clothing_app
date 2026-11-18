@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../theme/app_palette.dart';
 
@@ -30,12 +31,12 @@ class SectionHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: theme.textTheme.headlineSmall),
+                Text(title.tr, style: theme.textTheme.headlineSmall),
                 if (subtitle != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
-                      subtitle!,
+                      subtitle!.tr,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: context.palette.mutedText,
                       ),
@@ -45,7 +46,7 @@ class SectionHeader extends StatelessWidget {
             ),
           ),
           if (onAction != null)
-            TextButton(onPressed: onAction, child: Text(actionLabel)),
+            TextButton(onPressed: onAction, child: Text(actionLabel.tr)),
         ],
       ),
     );

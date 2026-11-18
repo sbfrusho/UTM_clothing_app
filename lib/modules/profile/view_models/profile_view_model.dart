@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../app/routes/app_routes.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/services/biometric_service.dart';
+import '../../../core/services/language_service.dart';
 import '../../../core/services/notification_service.dart';
 import '../../../core/services/theme_service.dart';
 import '../../../core/utils/app_snackbar.dart';
 import '../../../data/models/user_model.dart';
 import '../../../data/repositories/auth_repository.dart';
 import '../../../data/repositories/user_repository.dart';
+import '../../legal/legal_content.dart';
 
 class ProfileViewModel extends GetxController {
   ProfileViewModel(
@@ -18,17 +21,23 @@ class ProfileViewModel extends GetxController {
     this._users,
     this._authRepo,
     this._biometrics,
-    this._theme,
-  );
+    this._theme, {
+    ImagePicker? picker,
+  }) : _picker = picker ?? ImagePicker();
 
   final AuthService _auth;
   final UserRepository _users;
   final AuthRepository _authRepo;
   final BiometricService _biometrics;
   final ThemeService _theme;
+  final ImagePicker _picker;
 
   final Rxn<UserModel> user = Rxn<UserModel>();
   final RxBool isLoading = false.obs;
+  final RxBool isUploadingPhoto = false.obs;
+
+  String get photoUrl => user.value?.photoUrl ?? '';
+  bool get hasPhoto => photoUrl.isNotEmpty;
 
   RxBool get isAppLockEnabled => _biometrics.isLockEnabled;
 
@@ -121,6 +130,71 @@ class ProfileViewModel extends GetxController {
       );
     }
   }
+
+  // ----- profile photo ------------------------------------------------------
+
+  Future<void> pickPhoto(ImageSource source) async {
+    final uid = _auth.uid;
+    if (uid == null || isUploadingPhoto.value) return;
+    final XFile? file;
+    try {
+      file = await _picker.pickImage(
+        source: source,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 85,
+      );
+    } catch (_) {
+      AppSnackbar.error('Could not open the camera or gallery.');
+      return;
+    }
+    if (file == null) return;
+    isUploadingPhoto.value = true;
+    try {
+      final url = await _users.uploadAvatar(uid, await file.readAsBytes());
+      user.value = (user.value ?? UserModel(uid: uid, email: email)).copyWith(
+        photoUrl: url,
+      );
+      AppSnackbar.success('Profile photo updated.');
+    } on AppException catch (e) {
+      AppSnackbar.error(e.message);
+    } finally {
+      isUploadingPhoto.value = false;
+    }
+  }
+
+  Future<void> removePhoto() async {
+    final uid = _auth.uid;
+    if (uid == null || !hasPhoto) return;
+    isUploadingPhoto.value = true;
+    try {
+      await _users.removeAvatar(uid);
+      user.value = user.value?.copyWith(photoUrl: '');
+    } on AppException catch (e) {
+      AppSnackbar.error(e.message);
+    } finally {
+      isUploadingPhoto.value = false;
+    }
+  }
+
+  // ----- language -----------------------------------------------------------
+
+  /// `null` = phone language, otherwise `en` or `ms`.
+  String? get languageCode => Get.isRegistered<LanguageService>()
+      ? Get.find<LanguageService>().code.value
+      : null;
+
+  Future<void> setLanguage(String? code) async {
+    if (!Get.isRegistered<LanguageService>()) return;
+    await Get.find<LanguageService>().setLanguage(code);
+  }
+
+  // ----- legal and account --------------------------------------------------
+
+  void openLegal(LegalPage page) =>
+      Get.toNamed<void>(AppRoutes.legal, arguments: page);
+
+  void openDeleteAccount() => Get.toNamed<void>(AppRoutes.deleteAccount);
 
   /// [SessionService] routes to the welcome screen once the session ends.
   Future<void> signOut() => _authRepo.signOut();

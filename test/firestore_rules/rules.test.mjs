@@ -81,6 +81,11 @@ describe("profiles", () => {
   test("new profile without admin flag is allowed", async () => {
     await assertSucceeds(setDoc(doc(as({ uid: "eve", email: "e@x.com" }), "users/eve"), { name: "Eve", isAdmin: false }));
   });
+  test("can delete own profile only, and set a photo", async () => {
+    await assertSucceeds(updateDoc(doc(as(alice), "users/alice"), { photoUrl: "https://x/y.jpg" }));
+    await assertFails(deleteDoc(doc(as(alice), "users/bob")));
+    await assertSucceeds(deleteDoc(doc(as(alice), "users/alice")));
+  });
 });
 
 describe("cart, wishlist, addresses", () => {

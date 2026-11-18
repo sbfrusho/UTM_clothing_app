@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../core/theme/app_palette.dart';
 
@@ -15,10 +16,10 @@ class AuthHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: theme.textTheme.headlineLarge),
+        Text(title.tr, style: theme.textTheme.headlineLarge),
         const SizedBox(height: 8),
         Text(
-          subtitle,
+          subtitle.tr,
           style: theme.textTheme.bodyLarge?.copyWith(
             color: context.palette.mutedText,
           ),

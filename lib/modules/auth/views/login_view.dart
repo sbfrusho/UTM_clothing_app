@@ -35,9 +35,9 @@ class LoginView extends GetView<LoginViewModel> {
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.email],
                     validator: Validators.email,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.alternate_email_rounded),
+                    decoration: InputDecoration(
+                      labelText: 'Email'.tr,
+                      prefixIcon: const Icon(Icons.alternate_email_rounded),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -51,12 +51,12 @@ class LoginView extends GetView<LoginViewModel> {
                           Validators.required(v, field: 'Password'),
                       onFieldSubmitted: (_) => controller.signIn(),
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: 'Password'.tr,
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
                         suffixIcon: IconButton(
                           tooltip: controller.obscurePassword.value
-                              ? 'Show password'
-                              : 'Hide password',
+                              ? 'Show password'.tr
+                              : 'Hide password'.tr,
                           onPressed: controller.obscurePassword.toggle,
                           icon: Icon(
                             controller.obscurePassword.value
@@ -74,7 +74,7 @@ class LoginView extends GetView<LoginViewModel> {
                         AppRoutes.forgotPassword,
                         arguments: controller.emailController.text.trim(),
                       ),
-                      child: const Text('Forgot password?'),
+                      child: Text('Forgot password?'.tr),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -93,7 +93,7 @@ class LoginView extends GetView<LoginViewModel> {
                       const Text("Don't have an account?"),
                       TextButton(
                         onPressed: () => Get.offNamed(AppRoutes.register),
-                        child: const Text('Sign up'),
+                        child: Text('Sign up'.tr),
                       ),
                     ],
                   ),

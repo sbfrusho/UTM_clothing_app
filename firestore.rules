@@ -55,7 +55,9 @@ service cloud.firestore {
         request.resource.data.get('isAdmin', false) == false;
       allow update: if isAdmin() ||
         (isOwner(uid) && !changes().hasAny(['isAdmin', 'uId', 'email']));
-      allow delete: if isAdmin();
+      // Owners may delete their own profile (account deletion fallback when
+      // the deleteAccount function isn't deployed).
+      allow delete: if isOwner(uid) || isAdmin();
 
       match /cart/{key} {
         allow read, delete: if isOwner(uid);

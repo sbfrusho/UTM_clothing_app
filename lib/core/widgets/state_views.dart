@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../theme/app_palette.dart';
 
@@ -49,14 +50,14 @@ class EmptyView extends StatelessWidget {
             const SizedBox(height: 20),
             if (title != null) ...[
               Text(
-                title!,
+                title!.tr,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.headlineSmall,
               ),
               const SizedBox(height: 8),
             ],
             Text(
-              message,
+              message.tr,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: context.palette.mutedText,
@@ -88,7 +89,7 @@ class ErrorView extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Try again'),
+              label: Text('Try again'.tr),
             ),
           ),
   );

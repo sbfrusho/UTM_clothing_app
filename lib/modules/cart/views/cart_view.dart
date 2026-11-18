@@ -41,7 +41,7 @@ class CartView extends GetView<CartViewModel> {
                   child: FilledButton(
                     onPressed: () =>
                         Get.find<ShellViewModel>().goTo(ShellTab.home),
-                    child: const Text('Start shopping'),
+                    child: Text('Start shopping'.tr),
                   ),
                 ),
               )
@@ -173,7 +173,7 @@ class _CartLine extends GetView<CartViewModel> {
                         else
                           TextButton(
                             onPressed: () => controller.remove(item.key),
-                            child: const Text('Remove'),
+                            child: Text('Remove'.tr),
                           ),
                       ],
                     ),
@@ -232,7 +232,7 @@ class _NoticeBanner extends StatelessWidget {
             ),
           ),
           IconButton(
-            tooltip: 'Dismiss',
+            tooltip: 'Dismiss'.tr,
             visualDensity: VisualDensity.compact,
             icon: const Icon(Icons.close_rounded, size: 18),
             onPressed: onClose,
@@ -272,7 +272,7 @@ class _UnavailableBar extends StatelessWidget {
             const SizedBox(height: 8),
             FilledButton(
               onPressed: onRemove,
-              child: const Text('Remove unavailable items'),
+              child: Text('Remove unavailable items'.tr),
             ),
           ],
         ),
@@ -322,7 +322,7 @@ class _CheckoutBar extends StatelessWidget {
               width: 180,
               child: FilledButton(
                 onPressed: () => Get.toNamed<void>(AppRoutes.checkout),
-                child: const Text('Checkout'),
+                child: Text('Checkout'.tr),
               ),
             ),
           ],

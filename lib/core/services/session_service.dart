@@ -38,6 +38,7 @@ class SessionService extends GetxService with WidgetsBindingObserver {
     AppRoutes.login,
     AppRoutes.register,
     AppRoutes.forgotPassword,
+    AppRoutes.legal,
   };
 
   DateTime? _backgroundedAt;

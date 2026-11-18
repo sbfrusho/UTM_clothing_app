@@ -14,6 +14,9 @@
  *                         prices, reserves stock, empties the cart.
  *  - cancelOrder          HTTPS: customer cancellation with restock and,
  *                         for Stripe-paid orders, a refund.
+ *  - deleteAccount        HTTPS: deletes the caller's profile, cart,
+ *                         wishlist, addresses, avatar and Auth account.
+ *                         Orders are kept (anonymised) for accounting.
  *
  * With `firestore.rules` deployed, these are the only way stock, orders and
  * payment state change for customers.
@@ -24,6 +27,7 @@
 import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getMessaging } from "firebase-admin/messaging";
+import { getStorage } from "firebase-admin/storage";
 import {
   FieldValue,
   getFirestore,
@@ -41,6 +45,8 @@ import Stripe from "stripe";
 
 import {
   cancelDecision,
+  deletionBlocker,
+  isRecentLogin,
   canPay,
   cartKey,
   checkStock,
@@ -442,6 +448,63 @@ export const cancelOrder = onRequest(
         logger.error("cancelOrder failed", e);
         res.status(500).json({ error: "Could not cancel the order. Please try again." });
       }
+    }
+  },
+);
+
+// ---------------------------------------------------------------------------
+// Account deletion (Google Play requires it in the app)
+// ---------------------------------------------------------------------------
+
+export const deleteAccount = onRequest(
+  { region: REGION },
+  async (req, res) => {
+    const caller = await callerOf(req, res);
+    if (!caller) return;
+    if (!isRecentLogin(caller.auth_time, new Date())) {
+      res.status(401).json({ error: "Please sign in again to delete your account." });
+      return;
+    }
+    const uid = caller.uid;
+    try {
+      const own = await orders().where("customerId", "==", uid).get();
+      const blocker = deletionBlocker(own.docs.map((d) => d.get("status")));
+      if (blocker) {
+        res.status(409).json({ error: blocker });
+        return;
+      }
+
+      // Orders stay for tax records, without personal details.
+      const writer = db.bulkWriter();
+      for (const order of own.docs) {
+        writer.update(order.ref, {
+          customerDeleted: true,
+          customerName: "Deleted user",
+          customerEmail: FieldValue.delete(),
+          customerPhone: FieldValue.delete(),
+          customerAddress: FieldValue.delete(),
+          customerDeviceToken: FieldValue.delete(),
+        });
+      }
+      const email = caller.email;
+      if (email) {
+        writer.delete(db.collection("wishlist").doc(email));
+        const legacy = await db.collection("addresses").where("email", "==", email).get();
+        legacy.docs.forEach((d) => writer.delete(d.ref));
+      }
+      await writer.close();
+
+      // Profile plus cart, wishlist and addresses subcollections.
+      await db.recursiveDelete(db.collection("users").doc(uid));
+      await getStorage()
+        .bucket()
+        .deleteFiles({ prefix: `users/${uid}/` })
+        .catch((e) => logger.warn("avatar cleanup failed", e));
+      await getAuth().deleteUser(uid);
+      res.json({ deleted: true });
+    } catch (e) {
+      logger.error("deleteAccount failed", e);
+      res.status(500).json({ error: "Could not delete your account. Please try again." });
     }
   },
 );

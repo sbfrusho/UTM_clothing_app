@@ -16,6 +16,7 @@ class UserModel {
     this.road = '',
     this.postalCode = '',
     this.address = '',
+    this.photoUrl = '',
   });
 
   final String uid;
@@ -31,6 +32,9 @@ class UserModel {
   final String postalCode;
   final String address;
 
+  /// Profile photo in Firebase Storage (`users/{uid}/avatar.jpg`).
+  final String photoUrl;
+
   factory UserModel.fromMap(Map<String, dynamic> map, {String? uid}) =>
       UserModel(
         uid: asString(map['uId'], fallback: uid ?? ''),
@@ -45,6 +49,7 @@ class UserModel {
         road: asString(map['road']),
         postalCode: asString(map['postalCode']),
         address: asString(map['adress']),
+        photoUrl: asString(map['photoUrl']),
       );
 
   Map<String, dynamic> toMap() => {
@@ -60,6 +65,7 @@ class UserModel {
     'road': road,
     'postalCode': postalCode,
     'adress': address,
+    'photoUrl': photoUrl,
   };
 
   /// Fields a customer may edit themselves.
@@ -83,6 +89,7 @@ class UserModel {
     String? road,
     String? postalCode,
     String? address,
+    String? photoUrl,
   }) => UserModel(
     uid: uid,
     email: email,
@@ -96,5 +103,6 @@ class UserModel {
     road: road ?? this.road,
     postalCode: postalCode ?? this.postalCode,
     address: address ?? this.address,
+    photoUrl: photoUrl ?? this.photoUrl,
   );
 }

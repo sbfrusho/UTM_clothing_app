@@ -3,6 +3,8 @@ import { test } from "node:test";
 
 import {
   canPay,
+  deletionBlocker,
+  isRecentLogin,
   computeTotal,
   isExpired,
   livePrice,
@@ -125,4 +127,16 @@ test("cancel rules: owner, pending, refund only for stripe-paid", () => {
     cancelDecision({ ...base, paymentStatus: "paid", paymentGateway: "stripe" }, "u1"),
     { ok: true, refund: true },
   );
+});
+
+test("account deletion: recent sign-in and no open orders", () => {
+  const now = new Date("2026-01-01T00:10:00Z");
+  const sec = (iso: string) => Date.parse(iso) / 1000;
+  assert.equal(isRecentLogin(sec("2026-01-01T00:06:00Z"), now), true);
+  assert.equal(isRecentLogin(sec("2026-01-01T00:04:00Z"), now), false);
+  assert.equal(isRecentLogin(undefined, now), false);
+  assert.equal(deletionBlocker([]), null);
+  assert.equal(deletionBlocker(["Delivered", "Cancelled"]), null);
+  assert.match(deletionBlocker(["Delivered", "Shipped"]) ?? "", /an order in progress/);
+  assert.match(deletionBlocker(["Pending", "Confirmed"]) ?? "", /2 orders/);
 });

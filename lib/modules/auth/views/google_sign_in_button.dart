@@ -50,7 +50,7 @@ class GoogleSignInSection extends GetView<SocialSignInViewModel> {
                 else
                   const _GoogleMark(size: 20),
                 const SizedBox(width: 12),
-                const Text('Continue with Google'),
+                Text('Continue with Google'.tr),
               ],
             ),
           );

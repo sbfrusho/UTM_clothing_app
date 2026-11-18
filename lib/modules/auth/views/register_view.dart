@@ -5,6 +5,7 @@ import '../../../app/routes/app_routes.dart';
 import '../../../core/utils/validators.dart';
 import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/loading_button.dart';
+import '../../legal/legal_content.dart';
 import '../view_models/register_view_model.dart';
 import 'auth_header.dart';
 import 'google_sign_in_button.dart';
@@ -35,9 +36,9 @@ class RegisterView extends GetView<RegisterViewModel> {
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.name],
                     validator: (v) => Validators.required(v, field: 'Name'),
-                    decoration: const InputDecoration(
-                      labelText: 'Full name',
-                      prefixIcon: Icon(Icons.person_outline_rounded),
+                    decoration: InputDecoration(
+                      labelText: 'Full name'.tr,
+                      prefixIcon: const Icon(Icons.person_outline_rounded),
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -47,9 +48,9 @@ class RegisterView extends GetView<RegisterViewModel> {
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.email],
                     validator: Validators.email,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.alternate_email_rounded),
+                    decoration: InputDecoration(
+                      labelText: 'Email'.tr,
+                      prefixIcon: const Icon(Icons.alternate_email_rounded),
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -59,9 +60,9 @@ class RegisterView extends GetView<RegisterViewModel> {
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.telephoneNumber],
                     validator: Validators.phone,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone',
-                      prefixIcon: Icon(Icons.phone_outlined),
+                    decoration: InputDecoration(
+                      labelText: 'Phone'.tr,
+                      prefixIcon: const Icon(Icons.phone_outlined),
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -73,14 +74,14 @@ class RegisterView extends GetView<RegisterViewModel> {
                       autofillHints: const [AutofillHints.newPassword],
                       validator: Validators.password,
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: 'Password'.tr,
                         helperText:
                             'At least 8 characters, with letters and numbers',
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
                         suffixIcon: IconButton(
                           tooltip: controller.obscurePassword.value
-                              ? 'Show password'
-                              : 'Hide password',
+                              ? 'Show password'.tr
+                              : 'Hide password'.tr,
                           onPressed: controller.obscurePassword.toggle,
                           icon: Icon(
                             controller.obscurePassword.value
@@ -99,13 +100,15 @@ class RegisterView extends GetView<RegisterViewModel> {
                       textInputAction: TextInputAction.done,
                       validator: controller.confirmPassword,
                       onFieldSubmitted: (_) => controller.register(),
-                      decoration: const InputDecoration(
-                        labelText: 'Confirm password',
-                        prefixIcon: Icon(Icons.lock_outline_rounded),
+                      decoration: InputDecoration(
+                        labelText: 'Confirm password'.tr,
+                        prefixIcon: const Icon(Icons.lock_outline_rounded),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 20),
+                  const _LegalNotice(),
+                  const SizedBox(height: 16),
                   Obx(
                     () => LoadingButton(
                       label: 'Create account',
@@ -118,10 +121,10 @@ class RegisterView extends GetView<RegisterViewModel> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Already have an account?'),
+                      Text('Already have an account?'.tr),
                       TextButton(
                         onPressed: () => Get.offNamed<void>(AppRoutes.login),
-                        child: const Text('Log in'),
+                        child: Text('Log in'.tr),
                       ),
                     ],
                   ),
@@ -131,6 +134,43 @@ class RegisterView extends GetView<RegisterViewModel> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// "By creating an account you agree to the Terms and Privacy policy."
+class _LegalNotice extends StatelessWidget {
+  const _LegalNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    Widget link(String label, LegalPage page) => InkWell(
+      onTap: () => Get.toNamed<void>(AppRoutes.legal, arguments: page),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Text(
+          label.tr,
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontWeight: FontWeight.w600,
+            decoration: TextDecoration.underline,
+          ),
+        ),
+      ),
+    );
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 4,
+      children: [
+        Text(
+          'By creating an account you agree to our'.tr,
+          style: theme.textTheme.bodySmall,
+        ),
+        link('Terms of use', LegalPage.terms),
+        Text('and'.tr, style: theme.textTheme.bodySmall),
+        link('Privacy policy', LegalPage.privacy),
+      ],
     );
   }
 }

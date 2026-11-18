@@ -57,6 +57,19 @@ abstract final class AppConfig {
 
   static bool get isGoogleSignInEnabled => googleServerClientId.isNotEmpty;
 
+  /// Hosted privacy policy and terms (required on the Play Store listing).
+  /// Host docs/PRIVACY_POLICY.md and docs/TERMS.md, e.g. on GitHub Pages or
+  /// Firebase Hosting. The app always shows its own copy; when set, the
+  /// screens also offer "Open in browser".
+  static const String privacyPolicyUrl = String.fromEnvironment(
+    'PRIVACY_POLICY_URL',
+  );
+  static const String termsUrl = String.fromEnvironment('TERMS_URL');
+
+  /// Shown in the privacy policy and on the delete-account screen.
+  /// Required before release: Play needs a contact for privacy requests.
+  static const String supportEmail = String.fromEnvironment('SUPPORT_EMAIL');
+
   /// Real card payments need both the publishable key and the backend.
   /// Without them the app falls back to the demo gateway.
   static bool get isStripeConfigured =>

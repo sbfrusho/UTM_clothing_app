@@ -119,13 +119,13 @@ class WishlistView extends GetView<WishlistViewModel> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              tooltip: 'Remove from saved',
+                              tooltip: 'Remove from saved'.tr,
                               onPressed: () =>
                                   controller.remove(item.productId),
                               icon: const Icon(Icons.favorite_rounded),
                             ),
                             IconButton(
-                              tooltip: 'Add to cart',
+                              tooltip: 'Add to cart'.tr,
                               onPressed: soldOut || live == null
                                   ? null
                                   : () => controller.moveToCart(item),

@@ -166,7 +166,10 @@ lib/
 - FCM push notifications for order status changes (Cloud Function trigger), notification permission flow (Android 13+).
 - Firebase App Check, Crashlytics, Analytics events (view_item, add_to_cart, purchase).
 
-### Sprint 9: Profile, settings, compliance and polish
+### Sprint 9: Profile, settings, compliance and polish (mostly done)
+- Done: profile photo (camera or gallery, resized, Firebase Storage with `storage.rules`); **Delete account** (re-authentication, then the `deleteAccount` function, or an in-app fallback without the backend); privacy policy and terms screens (Profile → About, and linked from sign-up) with hosted copies in docs/; English and Bahasa Melayu via GetX translations with a Profile language picker; offline banner; text scaling capped at 200%.
+- Partly done: Malay covers navigation, sign-in, profile, account, cart, saved, addresses, validation and errors. Product, checkout and order screens still have English strings that aren't wrapped in `.tr`. The legal text is English only.
+- Not done yet: a full contrast and screen-reader audit.
 - Edit profile and avatar (Firebase Storage).
 - **Delete account** (Auth plus user data, through a Cloud Function).
 - Privacy policy and terms screens with links.

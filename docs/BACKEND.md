@@ -9,6 +9,8 @@ Code: [`functions/`](../functions) (TypeScript, Firebase Functions v2, region `a
 | `createPaymentIntent` | HTTPS `POST {orderId}` with the user's Firebase ID token | Checks the order belongs to the caller and is awaiting payment, **recomputes the total from live product prices**, refuses if it differs from the order, and creates (or reuses) a Stripe PaymentIntent. |
 | `stripeWebhook` | HTTPS from Stripe | Verifies the signature. On `payment_intent.succeeded`, marks the order `paid`. A payment arriving after the order was released is refunded automatically. |
 | `expireUnpaidOrders` | Every 10 minutes | Card orders still `awaiting_payment` after 30 minutes are cancelled, their stock is put back and the PaymentIntent is cancelled. |
+| `placeOrder` / `cancelOrder` | HTTPS with the user's ID token | Create orders from the cart at live prices with stock reserved; cancel pending orders with restock and Stripe refund. |
+| `deleteAccount` | HTTPS with a sign-in from the last 5 minutes | Refuses while an order is in progress. Deletes the profile, cart, wishlist, addresses, legacy wishlist/addresses and `users/{uid}/` files in Storage, anonymises past orders, then deletes the Auth user. |
 | `onOrderWritten` | Firestore `orders/{id}` | Records `statusHistory.<Status>` when the admin app changes the status, and queues emails (order received, payment received, status changes) in `mail`. |
 
 ## How a card order flows
@@ -31,7 +33,7 @@ firebase functions:secrets:set STRIPE_SECRET_KEY        # sk_test_... first
 firebase functions:secrets:set STRIPE_WEBHOOK_SECRET    # whsec_..., see below
 
 cd functions && npm ci && npm test && cd ..
-firebase deploy --only functions
+firebase deploy --only functions,firestore,storage
 ```
 
 Optional parameters (prompted on first deploy, or set in `functions/.env`): `CURRENCY` (default `myr`) and `SHOP_NAME` (default `Your Shop`).
@@ -47,9 +49,9 @@ Copy the signing secret (`whsec_...`) into `STRIPE_WEBHOOK_SECRET` and redeploy.
 In `env/dev.json` (and `env/prod.json` with live keys):
 ```json
 "STRIPE_PUBLISHABLE_KEY": "pk_test_...",
-"PAYMENT_BACKEND_URL": "https://asia-southeast1-nabilrayhanshopping.cloudfunctions.net/createPaymentIntent"
+"FUNCTIONS_BASE_URL": "https://asia-southeast1-nabilrayhanshopping.cloudfunctions.net"
 ```
-With both set, the app switches from the demo gateway to Stripe automatically.
+With both set, the app switches from the demo gateway to Stripe automatically. `FUNCTIONS_BASE_URL` alone moves ordering, cancelling and account deletion to the server.
 
 ### Order emails
 Install the **Trigger Email from Firestore** extension (`firebase ext:install firebase/firestore-send-email`) with collection `mail` and your SMTP provider (for example SendGrid, Mailgun or Gmail with an app password). The functions already write the documents it sends.
@@ -59,6 +61,8 @@ Install the **Trigger Email from Firestore** extension (`firebase ext:install fi
 2. The order page shows **Paid** within a few seconds (that's the webhook).
 3. Place another card order and close the sheet. The order shows **Awaiting payment** with a Pay button. After 30 minutes it becomes **Cancelled** and the stock is back.
 
-## Still to do (Sprint 8)
-- `firestore.rules`: customers must not write `products`, `paymentStatus` or `status`. Then move order creation and cancellation into functions as well (today the app's transaction does them, which the open rules allow).
+## Storage
+Profile photos are stored at `users/{uid}/avatar.jpg`. `storage.rules` lets only the owner write them (images under 5 MB). Enable Storage in the Firebase console first. New projects need the Blaze plan for a default bucket.
+
+## Still to do
 - bKash and SSLCommerz: add a `PaymentGateway` in the app and a matching session/IPN function here. Both need merchant (or sandbox) credentials.

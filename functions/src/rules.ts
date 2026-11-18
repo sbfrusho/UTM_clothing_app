@@ -189,3 +189,25 @@ export function cancelDecision(
   const paid = order.paymentStatus === PaymentStatus.paid;
   return { ok: true, refund: paid && order.paymentGateway === "stripe" };
 }
+
+/** Account deletion needs a sign-in this recent (Firebase `auth_time`). */
+export const RECENT_LOGIN_MS = 5 * 60 * 1000;
+
+export function isRecentLogin(authTimeSeconds: unknown, now: Date): boolean {
+  const t = Number(authTimeSeconds);
+  return Number.isFinite(t) && now.getTime() - t * 1000 <= RECENT_LOGIN_MS;
+}
+
+/**
+ * An account can't be deleted while one of its orders is still in progress
+ * (someone has to receive, refund or cancel it). Returns the error, or null.
+ */
+export function deletionBlocker(orderStatuses: unknown[]): string | null {
+  const open = orderStatuses.filter(
+    (s) => s !== OrderStatus.delivered && s !== OrderStatus.cancelled,
+  ).length;
+  if (open === 0) return null;
+  return open === 1
+    ? "You have an order in progress. Cancel it or wait until it is delivered, then try again."
+    : `You have ${open} orders in progress. Cancel them or wait until they are delivered, then try again.`;
+}

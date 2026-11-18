@@ -43,12 +43,12 @@ class AppLockView extends GetView<AppLockViewModel> {
                           ? null
                           : controller.unlock,
                       icon: const Icon(Icons.fingerprint),
-                      label: const Text('Unlock'),
+                      label: Text('Unlock'.tr),
                     ),
                   ),
                   TextButton(
                     onPressed: controller.useAnotherAccount,
-                    child: const Text('Use another account'),
+                    child: Text('Use another account'.tr),
                   ),
                 ],
               ),

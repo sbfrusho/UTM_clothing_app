@@ -95,7 +95,7 @@ class VerifyEmailView extends GetView<VerifyEmailViewModel> {
                 const SizedBox(height: 8),
                 TextButton(
                   onPressed: controller.useAnotherAccount,
-                  child: const Text('Use a different account'),
+                  child: Text('Use a different account'.tr),
                 ),
               ],
             ),

@@ -45,6 +45,11 @@ dependencies:
   http: ^1.2.1
   url_launcher: ^6.2.6
   google_sign_in: ^7.2.0
+  firebase_storage: ^14.1.0
+  image_picker: ^1.2.4
+  connectivity_plus: ^7.3.2
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

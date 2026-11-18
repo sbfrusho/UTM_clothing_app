@@ -80,7 +80,7 @@ class OrderSuccessView extends GetView<OrderSuccessViewModel> {
                                 onPressed: controller.isAsking.value
                                     ? null
                                     : controller.enableNotifications,
-                                child: const Text('Turn on'),
+                                child: Text('Turn on'.tr),
                               ),
                             ],
                           ),
@@ -91,12 +91,12 @@ class OrderSuccessView extends GetView<OrderSuccessViewModel> {
                 if (controller.orderId != null)
                   OutlinedButton(
                     onPressed: controller.viewOrder,
-                    child: const Text('View order'),
+                    child: Text('View order'.tr),
                   ),
                 const SizedBox(height: 12),
                 FilledButton(
                   onPressed: controller.backToShop,
-                  child: const Text('Continue shopping'),
+                  child: Text('Continue shopping'.tr),
                 ),
               ],
             ),

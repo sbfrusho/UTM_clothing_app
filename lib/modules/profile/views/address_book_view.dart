@@ -20,7 +20,7 @@ class AddressBookView extends GetView<AddressBookViewModel> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: controller.add,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Add address'),
+        label: Text('Add address'.tr),
       ),
       body: Obx(() {
         if (controller.isLoading.value) return const ListSkeleton(itemCount: 3);
@@ -131,7 +131,7 @@ class _AddressCard extends GetView<AddressBookViewModel> {
                 ),
               ),
               PopupMenuButton<String>(
-                tooltip: 'More',
+                tooltip: 'More'.tr,
                 onSelected: (v) => switch (v) {
                   'edit' => controller.edit(address),
                   'default' => controller.makeDefault(address),
@@ -159,16 +159,16 @@ class _AddressCard extends GetView<AddressBookViewModel> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete address?'),
+        title: Text('Delete address?'.tr),
         content: Text(address.formatted),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text('Cancel'.tr),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text('Delete'.tr),
           ),
         ],
       ),

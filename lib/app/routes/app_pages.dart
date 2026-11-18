@@ -12,6 +12,8 @@ import '../../modules/catalog/views/product_list_view.dart';
 import '../../modules/checkout/bindings/checkout_binding.dart';
 import '../../modules/checkout/views/checkout_view.dart';
 import '../../modules/checkout/views/order_success_view.dart';
+import '../../modules/legal/bindings/legal_binding.dart';
+import '../../modules/legal/views/legal_view.dart';
 import '../../modules/orders/bindings/orders_bindings.dart';
 import '../../modules/orders/views/order_detail_view.dart';
 import '../../modules/orders/views/orders_view.dart';
@@ -21,6 +23,7 @@ import '../../modules/product/views/product_gallery_view.dart';
 import '../../modules/profile/bindings/profile_bindings.dart';
 import '../../modules/profile/views/address_book_view.dart';
 import '../../modules/profile/views/address_form_view.dart';
+import '../../modules/profile/views/delete_account_view.dart';
 import '../../modules/profile/views/edit_profile_view.dart';
 import '../../modules/search/bindings/search_binding.dart';
 import '../../modules/search/views/search_view.dart';
@@ -133,6 +136,17 @@ abstract final class AppPages {
       page: EditProfileView.new,
       binding: EditProfileBinding(),
       middlewares: _auth,
+    ),
+    GetPage(
+      name: AppRoutes.deleteAccount,
+      page: DeleteAccountView.new,
+      binding: DeleteAccountBinding(),
+      middlewares: _auth,
+    ),
+    GetPage(
+      name: AppRoutes.legal,
+      page: LegalView.new,
+      binding: LegalBinding(),
     ),
     GetPage(
       name: AppRoutes.address,

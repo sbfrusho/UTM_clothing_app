@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 /// Filled button that shows a spinner and disables itself while [isLoading].
 class LoadingButton extends StatelessWidget {
@@ -29,7 +30,7 @@ class LoadingButton extends StatelessWidget {
                 color: scheme.onPrimary,
               ),
             )
-          : Text(label, key: const ValueKey('label')),
+          : Text(label.tr, key: const ValueKey('label')),
     );
     final callback = isLoading ? null : onPressed;
     final style = FilledButton.styleFrom(

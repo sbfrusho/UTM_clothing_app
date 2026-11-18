@@ -48,12 +48,12 @@ class WelcomeView extends StatelessWidget {
               const SizedBox(height: 28),
               FilledButton(
                 onPressed: () => Get.toNamed<void>(AppRoutes.register),
-                child: const Text('Get started'),
+                child: Text('Get started'.tr),
               ),
               const SizedBox(height: 12),
               OutlinedButton(
                 onPressed: () => Get.toNamed<void>(AppRoutes.login),
-                child: const Text('I already have an account'),
+                child: Text('I already have an account'.tr),
               ),
             ],
           ),

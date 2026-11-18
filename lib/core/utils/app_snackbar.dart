@@ -27,7 +27,7 @@ abstract final class AppSnackbar {
         Get.closeCurrentSnackbar();
         onAction();
       },
-      child: Text(actionLabel),
+      child: Text(actionLabel.tr),
     ),
   );
 
@@ -45,8 +45,8 @@ abstract final class AppSnackbar {
         : scheme.onInverseSurface;
     if (Get.isSnackbarOpen) Get.closeCurrentSnackbar();
     Get.snackbar(
-      title,
-      message,
+      title.tr,
+      message.tr,
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: background,
       colorText: foreground,

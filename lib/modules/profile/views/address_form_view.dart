@@ -126,7 +126,7 @@ class AddressFormView extends GetView<AddressFormViewModel> {
               Obx(
                 () => SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Use as default address'),
+                  title: Text('Use as default address'.tr),
                   value: controller.isDefault.value,
                   onChanged: (v) => controller.isDefault.value = v,
                 ),

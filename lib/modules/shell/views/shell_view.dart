@@ -41,15 +41,15 @@ class ShellView extends GetView<ShellViewModel> {
             onDestinationSelected: controller.select,
             labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
             destinations: [
-              const NavigationDestination(
-                icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home_rounded),
-                label: 'Home',
+              NavigationDestination(
+                icon: const Icon(Icons.home_outlined),
+                selectedIcon: const Icon(Icons.home_rounded),
+                label: 'Home'.tr,
               ),
-              const NavigationDestination(
-                icon: Icon(Icons.grid_view_outlined),
-                selectedIcon: Icon(Icons.grid_view_rounded),
-                label: 'Shop',
+              NavigationDestination(
+                icon: const Icon(Icons.grid_view_outlined),
+                selectedIcon: const Icon(Icons.grid_view_rounded),
+                label: 'Shop'.tr,
               ),
               NavigationDestination(
                 icon: Badge(
@@ -62,7 +62,7 @@ class ShellView extends GetView<ShellViewModel> {
                   label: Text('${wishlist.count}'),
                   child: const Icon(Icons.favorite_rounded),
                 ),
-                label: 'Saved',
+                label: 'Saved'.tr,
               ),
               NavigationDestination(
                 icon: Badge(
@@ -75,12 +75,12 @@ class ShellView extends GetView<ShellViewModel> {
                   label: Text('${cart.itemCount}'),
                   child: const Icon(Icons.shopping_bag_rounded),
                 ),
-                label: 'Cart',
+                label: 'Cart'.tr,
               ),
-              const NavigationDestination(
-                icon: Icon(Icons.person_outline_rounded),
-                selectedIcon: Icon(Icons.person_rounded),
-                label: 'Profile',
+              NavigationDestination(
+                icon: const Icon(Icons.person_outline_rounded),
+                selectedIcon: const Icon(Icons.person_rounded),
+                label: 'Profile'.tr,
               ),
             ],
           ),
