@@ -16,6 +16,7 @@ A Flutter e-commerce app for clothing and merchandise, built on Firebase with Ge
 | Layer | Choice |
 |-------|--------|
 | UI | Flutter (Material 3) |
+| Architecture | MVVM (`data/` = Model, `*ViewModel` = GetX controllers, `GetView` views) |
 | State, DI, routing | GetX |
 | Backend | Firebase Auth, Cloud Firestore, Cloud Messaging |
 | Payments | Pluggable `PaymentGateway`: demo gateway now; Stripe, bKash or SSLCommerz through a server backend |

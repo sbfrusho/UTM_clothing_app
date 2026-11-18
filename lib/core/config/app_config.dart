@@ -8,26 +8,40 @@ abstract final class AppConfig {
   static const String appName = 'Your Shop';
 
   /// `dev`, `staging` or `prod`.
-  static const String environment =
-      String.fromEnvironment('APP_ENV', defaultValue: 'dev');
+  static const String environment = String.fromEnvironment(
+    'APP_ENV',
+    defaultValue: 'dev',
+  );
 
   static bool get isProduction => environment == 'prod';
 
   /// ISO-4217 currency used for prices and payments.
-  static const String currency =
-      String.fromEnvironment('CURRENCY', defaultValue: 'MYR');
+  static const String currency = String.fromEnvironment(
+    'CURRENCY',
+    defaultValue: 'MYR',
+  );
 
-  static const String currencySymbol =
-      String.fromEnvironment('CURRENCY_SYMBOL', defaultValue: 'RM');
+  static const String currencySymbol = String.fromEnvironment(
+    'CURRENCY_SYMBOL',
+    defaultValue: 'RM',
+  );
 
   /// Stripe **publishable** key (`pk_...`). Safe to ship in the client.
-  static const String stripePublishableKey =
-      String.fromEnvironment('STRIPE_PUBLISHABLE_KEY');
+  static const String stripePublishableKey = String.fromEnvironment(
+    'STRIPE_PUBLISHABLE_KEY',
+  );
 
   /// HTTPS endpoint (Cloud Function) that creates a Stripe PaymentIntent
   /// using the secret key on the server and returns `{ "clientSecret": ... }`.
-  static const String paymentBackendUrl =
-      String.fromEnvironment('PAYMENT_BACKEND_URL');
+  static const String paymentBackendUrl = String.fromEnvironment(
+    'PAYMENT_BACKEND_URL',
+  );
+
+  /// WhatsApp number (international format, digits only) for "Contact us".
+  /// Empty hides the button.
+  static const String supportWhatsApp = String.fromEnvironment(
+    'SUPPORT_WHATSAPP',
+  );
 
   /// Real card payments need both the publishable key and a backend.
   /// Without them the app falls back to the demo gateway.

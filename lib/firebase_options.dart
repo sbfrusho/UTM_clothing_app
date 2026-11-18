@@ -85,5 +85,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'nabilrayhanshopping.appspot.com',
     measurementId: 'G-J0TFVE6TSG',
   );
-
 }

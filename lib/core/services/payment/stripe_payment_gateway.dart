@@ -13,10 +13,11 @@ import 'payment_gateway.dart';
 ///
 /// Backend contract:
 ///   POST {amount: int (minor units), currency: string}
-///   Authorization: Bearer <Firebase ID token>
+///   Authorization: Bearer {Firebase ID token}
 ///   -> 200 {clientSecret: string, paymentIntentId: string}
 class StripePaymentGateway implements PaymentGateway {
-  StripePaymentGateway({http.Client? client}) : _client = client ?? http.Client();
+  StripePaymentGateway({http.Client? client})
+    : _client = client ?? http.Client();
 
   final http.Client _client;
 

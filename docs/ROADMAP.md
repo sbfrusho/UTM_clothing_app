@@ -79,36 +79,44 @@ Each sprint ends with a working, runnable app and a ready-to-use commit message.
 - Deleted dead code, unused bundled assets and generated icon sets; screenshots moved to `docs/`.
 - Deferred to Sprint 2: strict lint set (needs the file renames first).
 
-### Sprint 2: Architecture restructure (GetX)
+### Sprint 2: Architecture restructure (GetX + MVVM) ✅
 ```
 lib/
-  main.dart
+  main.dart                      # bootstraps Firebase, Stripe, BiometricService
   app/
-    app.dart                 # GetMaterialApp
-    routes/ app_pages.dart, app_routes.dart
-    bindings/ initial_binding.dart
-  core/
-    config/ theme/ constants/ utils/ widgets/ errors/
-    services/ (auth_service, storage_service, connectivity_service)
-  data/
-    models/ (typed, fromJson/toJson, num prices)
-    repositories/ (auth, product, category, cart, wishlist, order, user, address)
-    providers/ (firestore_provider)
-  modules/
-    splash/ onboarding/ auth/ home/ catalog/ product/ search/
-    cart/ wishlist/ checkout/ orders/ profile/ settings/
-      each: bindings/ controllers/ views/ widgets/
+    app.dart                     # GetMaterialApp
+    bindings/initial_binding.dart
+    middlewares/auth_middleware.dart
+    routes/ app_routes.dart, app_pages.dart
+  core/                          # no feature knowledge
+    config/ constants/ errors/ theme/ utils/
+    services/ auth, biometric, payment/*, push_token
+    widgets/ product_card, app_network_image, state_views, loading_button…
+  data/                          # MVVM Model layer
+    models/        product, category, user, address, cart_item, wishlist_item, order
+    repositories/  auth, user, catalog, wishlist, address, order
+  modules/<feature>/             # splash auth shell home catalog product search
+    bindings/                    # cart wishlist checkout orders profile
+    view_models/                 # XxxViewModel extends GetxController
+    views/                       # GetView<XxxViewModel>
 ```
-- Named routes with `GetPage` + `Bindings`; `AuthMiddleware` for guarded routes.
-- All Firestore access goes through repositories; controllers hold only reactive state.
-- Remove Provider entirely.
+- **MVVM** with GetX: Views only render `Obx` state and forward events; ViewModels hold state and call repositories; no Firestore outside `data/`.
+- Named routes (`AppRoutes`/`AppPages`) with per-route Bindings; `AuthMiddleware` guards signed-in routes.
+- One bottom-navigation **shell** (`IndexedStack` + `NavigationBar` with cart badge) replaces 12 copy-pasted nav bars and the drawer; the Profile tab hosts orders, address, edit profile, password reset, app lock, log out.
+- Typed models tolerant of the admin app's string-typed numbers; Firestore field names unchanged (shared DB).
+- `placeOrder` is a **Firestore transaction** (atomic stock check, decrement, order and items write); `verifyCart` re-checks stock and prices before payment (fixes B2).
+- Cart keyed by product + size with stock limits (fixes B4, B5: all sellers recorded in `sellerIds`).
+- Cursor pagination for category products; debounced search behind `CatalogRepository.search` (fixes B8; indexed search in Sprint 5).
+- Login: email verification gate with resend, admin accounts rejected; register: validation and password confirmation.
+- Removed `flutter_screenutil`, `fluttertoast`, `font_awesome_flutter`; WhatsApp contact uses `SUPPORT_WHATSAPP` config instead of a hard-coded personal number.
+- Stricter lints (`strict-casts`, `strict-raw-types` and more), 0 analyzer issues, 19 unit tests (models, cart, payment).
 
 ### Sprint 3: Design system and redesign
 - Material 3 theme, light and dark, brand colour tokens, typography scale (Google Fonts).
 - Reusable components: buttons, text fields with validation, product card, price tag, rating, badges, bottom sheets, dialogs, snackbars.
 - Loading (shimmer), empty and error states for every list.
 - New splash (`flutter_native_splash`), onboarding, adaptive app icon (`flutter_launcher_icons`).
-- Bottom navigation shell with persistent tabs (`IndexedStack`), not pushed screens.
+- Dark theme, typography, component polish on the Sprint 2 shell.
 
 ### Sprint 4: Authentication
 - Email/password sign up and sign in with validation, email verification gate, password reset.

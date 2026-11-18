@@ -11,3 +11,6 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+# Kotlin compiler daemon sessions (Gradle build artifact)
+.kotlin/

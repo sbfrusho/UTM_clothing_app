@@ -42,25 +42,6 @@
           "other_platform_oauth_client": []
         }
       }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1076136965050:android:2baced96cb7b17a1896383",
-        "android_client_info": {
-          "package_name": "com.sbfrusho.yourshop"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyANlPXM6LcGPab6nOYciq83d-cnNaeqKFg"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
     }
   ],
   "configuration_version": "1"

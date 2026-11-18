@@ -6,11 +6,11 @@ class PaymentResult {
   const PaymentResult._(this.status, {this.message, this.reference});
 
   const PaymentResult.success({String? reference})
-      : this._(PaymentStatus.success, reference: reference);
+    : this._(PaymentStatus.success, reference: reference);
   const PaymentResult.cancelled()
-      : this._(PaymentStatus.cancelled, message: 'Payment cancelled');
+    : this._(PaymentStatus.cancelled, message: 'Payment cancelled');
   const PaymentResult.failed(String message)
-      : this._(PaymentStatus.failed, message: message);
+    : this._(PaymentStatus.failed, message: message);
 
   final PaymentStatus status;
   final String? message;
