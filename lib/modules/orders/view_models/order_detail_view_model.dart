@@ -70,16 +70,18 @@ class OrderDetailViewModel extends GetxController {
     }
   }
 
+  bool canCancel(OrderModel o) => _orders.canCancel(o);
+
   Future<void> cancel() async {
     final uid = _auth.uid;
     final o = order.value;
-    if (uid == null || o == null || !o.canCancel || isBusy.value) return;
+    if (uid == null || o == null || !canCancel(o) || isBusy.value) return;
     isBusy.value = true;
     try {
-      await _orders.cancel(o.id, uid: uid);
+      final refunded = await _orders.cancel(o.id, uid: uid);
       AppSnackbar.success(
-        o.paymentStatus == PaymentStatusValue.paid
-            ? 'Order cancelled and the test payment refunded.'
+        refunded
+            ? 'Order cancelled. Your payment will be refunded.'
             : 'Order cancelled.',
       );
     } on AppException catch (e) {

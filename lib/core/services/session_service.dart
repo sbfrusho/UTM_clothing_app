@@ -10,7 +10,7 @@ import '../errors/app_exception.dart';
 import '../utils/app_logger.dart';
 import 'auth_service.dart';
 import 'biometric_service.dart';
-import 'push_token_service.dart';
+import 'notification_service.dart';
 
 /// Owns the signed-in session lifecycle:
 ///
@@ -122,8 +122,9 @@ class SessionService extends GetxService with WidgetsBindingObserver {
   }
 
   Future<void> _registerDeviceToken(String uid) async {
-    final token = await PushTokenService.getToken();
-    if (token != null) await _users.updateDeviceToken(uid, token);
+    if (Get.isRegistered<NotificationService>()) {
+      await Get.find<NotificationService>().attach(uid);
+    }
   }
 
   // ---------------------------------------------------------------------------

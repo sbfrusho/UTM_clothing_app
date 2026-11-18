@@ -16,6 +16,7 @@ import 'package:your_shop/app/routes/app_pages.dart';
 import 'package:your_shop/app/routes/app_routes.dart';
 import 'package:your_shop/core/services/auth_service.dart';
 import 'package:your_shop/core/services/biometric_service.dart';
+import 'package:your_shop/core/services/notification_service.dart';
 import 'package:your_shop/core/services/payment/payment_service.dart';
 import 'package:your_shop/core/services/session_service.dart';
 import 'package:your_shop/core/services/theme_service.dart';
@@ -241,6 +242,7 @@ void _registerFakes() {
     ..put<AuthService>(_Auth(), permanent: true)
     ..put(ThemeService(), permanent: true)
     ..put(BiometricService(), permanent: true)
+    ..put(NotificationService(), permanent: true)
     ..put(
       SessionService(Get.find(), Get.find<BiometricService>()),
       permanent: true,

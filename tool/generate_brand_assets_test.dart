@@ -4,6 +4,9 @@
 //   flutter test tool/generate_brand_assets_test.dart
 //   dart run flutter_launcher_icons
 //   dart run flutter_native_splash:create
+//
+// It also writes the Android status-bar notification icon
+// (res/drawable-*/ic_stat_notify.png) directly.
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -22,6 +25,7 @@ Future<void> _render(
   required Color letter,
   Color? background,
   bool circle = false,
+  String dir = _out,
 }) async {
   final recorder = ui.PictureRecorder();
   final canvas = Canvas(recorder);
@@ -43,7 +47,7 @@ Future<void> _render(
 
   final image = await recorder.endRecording().toImage(size, size);
   final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-  File('$_out/$name').writeAsBytesSync(bytes!.buffer.asUint8List());
+  File('$dir/$name').writeAsBytesSync(bytes!.buffer.asUint8List());
 }
 
 void main() {
@@ -119,5 +123,27 @@ void main() {
       bag: AppColors.cream200,
       letter: AppColors.night900,
     );
+
+    // Android status-bar notification icon: white silhouette on
+    // transparent (Android tints it), 24 dp at every density.
+    const densities = {
+      'mdpi': 24,
+      'hdpi': 36,
+      'xhdpi': 48,
+      'xxhdpi': 72,
+      'xxxhdpi': 96,
+    };
+    for (final MapEntry(key: d, value: px) in densities.entries) {
+      final dir = 'android/app/src/main/res/drawable-$d';
+      Directory(dir).createSync(recursive: true);
+      await _render(
+        'ic_stat_notify.png',
+        size: px,
+        markFraction: 0.9,
+        bag: const Color(0xFFFFFFFF),
+        letter: const Color(0x00000000),
+        dir: dir,
+      );
+    }
   });
 }

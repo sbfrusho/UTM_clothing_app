@@ -113,6 +113,7 @@ abstract final class AppPages {
     GetPage(
       name: AppRoutes.orderSuccess,
       page: OrderSuccessView.new,
+      binding: OrderSuccessBinding(),
       middlewares: _auth,
     ),
     GetPage(

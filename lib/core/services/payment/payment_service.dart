@@ -26,6 +26,11 @@ class PaymentService extends GetxService {
   String get gatewayId => gateway.id;
   bool get isTestMode => !AppConfig.isStripeConfigured;
 
+  /// With the server in charge of orders, card orders need real Stripe
+  /// (the server can't accept app-recorded test payments).
+  bool get isCardAvailable =>
+      AppConfig.isStripeConfigured || !AppConfig.isBackendConfigured;
+
   /// Pays for [orderId] and, for test payments, records the result.
   /// Real payments are recorded by the server webhook.
   Future<PaymentResult> payForOrder(String orderId, double amount) async {

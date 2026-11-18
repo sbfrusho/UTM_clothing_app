@@ -1,0 +1,119 @@
+rules_version = '2';
+
+// Your Shop security rules.
+//
+// Customers read the catalogue and manage only their own profile, cart,
+// wishlist and addresses. Orders, stock and payment state change only
+// through Cloud Functions (functions/src/index.ts), which use the Admin SDK
+// and bypass these rules. Admins (users/{uid}.isAdmin == true, i.e. the admin
+// app) keep full access.
+//
+// Deploy together with the functions and a release build that has
+// FUNCTIONS_BASE_URL set: without them the app falls back to writing orders
+// and stock itself, which these rules deny. Tests: test/firestore_rules.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return signedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid))
+          .data.get('isAdmin', false) == true;
+    }
+
+    function changes() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // ----- Catalogue: readable by anyone, written by the admin app --------
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ----- Profiles -------------------------------------------------------
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+
+      // A customer can never make themselves an admin.
+      allow create: if isOwner(uid) &&
+        request.resource.data.get('isAdmin', false) == false;
+      allow update: if isAdmin() ||
+        (isOwner(uid) && !changes().hasAny(['isAdmin', 'uId', 'email']));
+      allow delete: if isAdmin();
+
+      match /cart/{key} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid) &&
+          request.resource.data.productId is string &&
+          request.resource.data.quantity is int &&
+          request.resource.data.quantity >= 1 &&
+          request.resource.data.quantity <= 99;
+      }
+      match /wishlist/{productId} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid) &&
+          request.resource.data.productId == productId;
+      }
+      match /addresses/{addressId} {
+        allow read, write: if isOwner(uid);
+      }
+      match /{rest=**} {
+        allow read, write: if isAdmin();
+      }
+    }
+
+    // ----- Orders: read your own; changes only via functions or admins ----
+    match /orders/{orderId} {
+      allow read: if isAdmin() ||
+        (signedIn() && resource.data.customerId == request.auth.uid);
+      allow write: if isAdmin();
+
+      match /items/{itemId} {
+        allow read: if isAdmin() ||
+          (signedIn() &&
+            get(/databases/$(database)/documents/orders/$(orderId))
+              .data.customerId == request.auth.uid);
+        allow write: if isAdmin();
+      }
+    }
+
+    // ----- Legacy data: read once by its owner to migrate ------------------
+    match /wishlist/{email} {
+      allow read: if isAdmin() ||
+        (signedIn() && request.auth.token.email == email);
+      allow write: if isAdmin();
+    }
+    match /addresses/{addressId} {
+      allow read: if isAdmin() ||
+        (signedIn() && resource.data.email == request.auth.token.email);
+      allow write: if isAdmin();
+    }
+
+    // ----- Server: written by functions (Admin SDK). Rules are OR-ed, so
+    //       the admin catch-all below still applies to admins. -------------
+    match /mail/{mailId} {
+      allow read, write: if false;
+    }
+
+    // ----- Anything else: admin app only ------------------------------------
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

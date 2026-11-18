@@ -75,16 +75,17 @@ class CheckoutView extends GetView<CheckoutViewModel> {
                       title: Text('Cash on Delivery'),
                       subtitle: Text('Pay the courier when it arrives'),
                     ),
-                    RadioListTile(
-                      value: PaymentMethod.card,
-                      secondary: const Icon(Icons.credit_card),
-                      title: const Text('Card'),
-                      subtitle: Text(
-                        controller.isTestPayments
-                            ? 'Test mode: no money is charged'
-                            : 'Visa, Mastercard, Google Pay',
+                    if (controller.isCardAvailable)
+                      RadioListTile(
+                        value: PaymentMethod.card,
+                        secondary: const Icon(Icons.credit_card),
+                        title: const Text('Card'),
+                        subtitle: Text(
+                          controller.isTestPayments
+                              ? 'Test mode: no money is charged'
+                              : 'Visa, Mastercard, Google Pay',
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),

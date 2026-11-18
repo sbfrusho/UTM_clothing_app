@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import '../view_models/checkout_view_model.dart';
+import '../view_models/order_success_view_model.dart';
 
 class CheckoutBinding extends Bindings {
   @override
@@ -15,4 +16,9 @@ class CheckoutBinding extends Bindings {
       ),
     );
   }
+}
+
+class OrderSuccessBinding extends Bindings {
+  @override
+  void dependencies() => Get.lazyPut(() => OrderSuccessViewModel(Get.find()));
 }

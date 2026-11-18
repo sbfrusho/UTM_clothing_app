@@ -84,3 +84,45 @@ test("only the owner can pay an awaiting stripe order", () => {
   assert.equal(canPay({ ...order, status: "Cancelled" }, "u1").ok, false);
   assert.equal(canPay({ ...order, paymentGateway: "demo" }, "u1").ok, false);
 });
+
+import { cancelDecision, cartKey, checkStock, parseLines } from "../src/rules";
+
+test("checkout lines are validated", () => {
+  assert.equal(parseLines([]), "Your cart is empty.");
+  assert.equal(parseLines([{ productId: "", quantity: 1 }]), "Invalid cart item.");
+  assert.equal(parseLines([{ productId: "a", quantity: 0 }]), "Invalid cart item.");
+  assert.deepEqual(parseLines([{ productId: "a", size: "M", quantity: "2" }]), [
+    { productId: "a", size: "M", quantity: 2 },
+  ]);
+});
+
+test("cart keys match the app", () => {
+  assert.equal(cartKey("p1", ""), "p1__");
+  assert.equal(cartKey("p1", "UK 8/9"), "p1__UK%208%2F9");
+});
+
+test("stock is shared across sizes", () => {
+  const products = new Map<string, Record<string, unknown> | undefined>([
+    ["a", { quantity: "3", productName: "Tee" }],
+  ]);
+  const lines = [
+    { productId: "a", size: "S", quantity: 2 },
+    { productId: "a", size: "M", quantity: 2 },
+  ];
+  const r = checkStock(lines, products);
+  assert.equal(r.ok, false);
+  assert.match((r as { error: string }).error, /Only 3/);
+  assert.equal(checkStock(lines.slice(0, 1), products).ok, true);
+  assert.equal(checkStock([{ productId: "x", size: "", quantity: 1 }], products).ok, false);
+});
+
+test("cancel rules: owner, pending, refund only for stripe-paid", () => {
+  const base = { customerId: "u1", status: "Pending", paymentStatus: "unpaid", paymentGateway: "cod" };
+  assert.deepEqual(cancelDecision(base, "u1"), { ok: true, refund: false });
+  assert.equal(cancelDecision(base, "u2").ok, false);
+  assert.equal(cancelDecision({ ...base, status: "Shipped" }, "u1").ok, false);
+  assert.deepEqual(
+    cancelDecision({ ...base, paymentStatus: "paid", paymentGateway: "stripe" }, "u1"),
+    { ok: true, refund: true },
+  );
+});

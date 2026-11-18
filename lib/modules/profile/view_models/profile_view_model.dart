@@ -5,6 +5,7 @@ import '../../../app/routes/app_routes.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/services/biometric_service.dart';
+import '../../../core/services/notification_service.dart';
 import '../../../core/services/theme_service.dart';
 import '../../../core/utils/app_snackbar.dart';
 import '../../../data/models/user_model.dart';
@@ -30,6 +31,31 @@ class ProfileViewModel extends GetxController {
   final RxBool isLoading = false.obs;
 
   RxBool get isAppLockEnabled => _biometrics.isLockEnabled;
+
+  NotificationService get _notifications => Get.find<NotificationService>();
+  bool get notificationsOn =>
+      Get.isRegistered<NotificationService>() &&
+      (_notifications.enabled.value ?? false);
+
+  /// Android can't revoke a granted permission from the app, and won't
+  /// prompt again after a denial, so both cases point to system settings.
+  Future<void> setNotifications(bool on) async {
+    if (on && !notificationsOn) {
+      final ok = await _notifications.requestPermission();
+      if (!ok) {
+        AppSnackbar.info(
+          'Allow notifications for Your Shop in your phone settings.',
+          title: 'Notifications are off',
+        );
+      }
+    } else if (!on && notificationsOn) {
+      AppSnackbar.info(
+        'Turn off notifications for Your Shop in your phone settings.',
+        title: 'Notifications',
+      );
+    }
+  }
+
   Rx<ThemeMode> get themeMode => _theme.mode;
 
   String get initials {

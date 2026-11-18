@@ -31,11 +31,16 @@ abstract final class AppConfig {
     'STRIPE_PUBLISHABLE_KEY',
   );
 
-  /// HTTPS endpoint (Cloud Function) that creates a Stripe PaymentIntent
-  /// using the secret key on the server and returns `{ "clientSecret": ... }`.
-  static const String paymentBackendUrl = String.fromEnvironment(
-    'PAYMENT_BACKEND_URL',
+  /// Base URL of the deployed Cloud Functions, e.g.
+  /// `https://asia-southeast1-<project>.cloudfunctions.net`
+  /// (see docs/BACKEND.md). When set, orders, cancellations and card
+  /// payments go through the server; required once `firestore.rules` is
+  /// deployed.
+  static const String functionsBaseUrl = String.fromEnvironment(
+    'FUNCTIONS_BASE_URL',
   );
+
+  static bool get isBackendConfigured => functionsBaseUrl.isNotEmpty;
 
   /// WhatsApp number (international format, digits only) for "Contact us".
   /// Empty hides the button.
@@ -52,8 +57,8 @@ abstract final class AppConfig {
 
   static bool get isGoogleSignInEnabled => googleServerClientId.isNotEmpty;
 
-  /// Real card payments need both the publishable key and a backend.
+  /// Real card payments need both the publishable key and the backend.
   /// Without them the app falls back to the demo gateway.
   static bool get isStripeConfigured =>
-      stripePublishableKey.isNotEmpty && paymentBackendUrl.isNotEmpty;
+      stripePublishableKey.isNotEmpty && isBackendConfigured;
 }

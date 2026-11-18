@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../core/config/app_config.dart';
 import '../../core/constants/firestore_paths.dart';
 import '../../core/errors/app_exception.dart';
+import '../../core/services/notification_service.dart';
 import '../models/user_model.dart';
 
 /// Firebase Authentication plus the `users/{uid}` profile it owns.
@@ -185,12 +187,8 @@ class AuthRepository {
   /// Detaches this device from push notifications and ends every session.
   Future<void> signOut() async {
     final uid = _current?.uid;
-    if (uid != null) {
-      try {
-        await _users.doc(uid).update({'deviceToken': ''});
-      } catch (_) {
-        // Offline or no profile; the session still ends.
-      }
+    if (uid != null && Get.isRegistered<NotificationService>()) {
+      await Get.find<NotificationService>().detach(uid);
     }
     if (_googleReady) {
       try {

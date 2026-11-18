@@ -159,7 +159,9 @@ lib/
 - App and server share the same money rounding (`toMinorUnits`), tested on both sides.
 - bKash and SSLCommerz are deferred: both need merchant or sandbox credentials. The `PaymentGateway` interface is ready for them.
 
-### Sprint 8: Backend hardening and notifications
+### Sprint 8: Backend hardening and notifications (mostly done)
+- Done: `firestore.rules` (18 emulator tests in test/firestore_rules), `firestore.indexes.json`, `placeOrder`/`cancelOrder` functions (the app uses them when `FUNCTIONS_BASE_URL` is set), multi-device FCM tokens, push on status change, contextual permission, "Order updates" channel and icon.
+- Not done yet: App Check, Crashlytics, Analytics.
 - `firestore.rules` (users read/write only their own data; products read-only for customers) and `firestore.indexes.json`, both in the repo.
 - FCM push notifications for order status changes (Cloud Function trigger), notification permission flow (Android 13+).
 - Firebase App Check, Crashlytics, Analytics events (view_item, add_to_cart, purchase).

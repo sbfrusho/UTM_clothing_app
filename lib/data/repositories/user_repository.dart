@@ -31,11 +31,28 @@ class UserRepository {
     }
   }
 
-  Future<void> updateDeviceToken(String uid, String token) async {
+  /// `fcmTokens` holds every signed-in device; `deviceToken` keeps the
+  /// latest one for the admin app.
+  Future<void> addDeviceToken(String uid, String token) async {
     try {
-      await _doc(uid).set({'deviceToken': token}, SetOptions(merge: true));
+      await _doc(uid).set({
+        'deviceToken': token,
+        'fcmTokens': FieldValue.arrayUnion([token]),
+      }, SetOptions(merge: true));
     } catch (_) {
       // Non-critical.
+    }
+  }
+
+  Future<void> removeDeviceToken(String uid, String token) async {
+    try {
+      final snap = await _doc(uid).get();
+      await _doc(uid).update({
+        'fcmTokens': FieldValue.arrayRemove([token]),
+        if (snap.data()?['deviceToken'] == token) 'deviceToken': '',
+      });
+    } catch (_) {
+      // Offline or no profile; the session still ends.
     }
   }
 }

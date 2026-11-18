@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/notification_service.dart';
 import '../../../core/services/payment/payment_gateway.dart';
 import '../../../core/services/payment/payment_service.dart';
-import '../../../core/services/push_token_service.dart';
 import '../../../core/utils/app_logger.dart';
 import '../../../core/utils/app_snackbar.dart';
 import '../../../core/utils/formatters.dart';
@@ -57,6 +57,7 @@ class CheckoutViewModel extends GetxController {
 
   String get deliveryDateLabel => Formatters.date(deliveryDate.value);
   bool get isTestPayments => _payments.isTestMode;
+  bool get isCardAvailable => _payments.isCardAvailable;
 
   @override
   void onInit() {
@@ -139,7 +140,7 @@ class CheckoutViewModel extends GetxController {
         deliveryType: deliveryType.value.label,
         paymentMethod: paymentMethod.value,
         paymentGateway: isCard ? _payments.gatewayId : GatewayId.cod,
-        deviceToken: await PushTokenService.getToken(),
+        deviceToken: await Get.find<NotificationService>().token(),
         sellerIds: cart.sellerIds,
         items: [
           for (final i in lines)

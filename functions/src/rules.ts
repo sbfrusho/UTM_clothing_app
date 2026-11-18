@@ -118,3 +118,74 @@ export function canPay(order: Record<string, unknown>, uid: string): PayCheck {
 export function sameAmount(a: number, b: number): boolean {
   return Math.abs(a - b) < 0.005;
 }
+
+// ---------------------------------------------------------------------------
+// Order creation and cancellation
+// ---------------------------------------------------------------------------
+
+export interface RequestedLine {
+  productId: string;
+  size: string;
+  quantity: number;
+}
+
+/** Validates the checkout request body. Returns an error message or lines. */
+export function parseLines(raw: unknown): RequestedLine[] | string {
+  if (!Array.isArray(raw) || raw.length === 0) return "Your cart is empty.";
+  if (raw.length > 50) return "Too many items in one order.";
+  const lines: RequestedLine[] = [];
+  for (const r of raw) {
+    const productId = String((r as Record<string, unknown>)?.productId ?? "");
+    const size = String((r as Record<string, unknown>)?.size ?? "");
+    const quantity = Math.trunc(toNumber((r as Record<string, unknown>)?.quantity));
+    if (!productId || quantity < 1 || quantity > 99) return "Invalid cart item.";
+    lines.push({ productId, size, quantity });
+  }
+  return lines;
+}
+
+/** Same key as the app's `CartItemModel.keyFor`. */
+export function cartKey(productId: string, size: string): string {
+  return `${productId}__${encodeURIComponent(size)}`;
+}
+
+export type StockCheck = { ok: true } | { ok: false; error: string };
+
+/** Every product exists, is not oversold (sizes share stock). */
+export function checkStock(
+  lines: RequestedLine[],
+  products: Map<string, Record<string, unknown> | undefined>,
+): StockCheck {
+  const needed = restockPlan(lines);
+  for (const [id, qty] of needed) {
+    const p = products.get(id);
+    if (!p) return { ok: false, error: "An item in your cart is no longer available." };
+    const stock = Math.trunc(toNumber(p.quantity));
+    const name = String(p.productName ?? "An item");
+    if (stock < qty) {
+      return {
+        ok: false,
+        error: stock <= 0 ? `"${name}" is out of stock.` : `Only ${stock} of "${name}" left in stock.`,
+      };
+    }
+  }
+  return { ok: true };
+}
+
+/**
+ * Customers may cancel while the order is Pending. Card payments taken by
+ * Stripe are refunded by the server; nothing else may be cancelled.
+ */
+export function cancelDecision(
+  order: Record<string, unknown>,
+  uid: string,
+): { ok: true; refund: boolean } | { ok: false; status: number; error: string } {
+  if (order.customerId !== uid) {
+    return { ok: false, status: 403, error: "You can only cancel your own orders." };
+  }
+  if (order.status !== OrderStatus.pending) {
+    return { ok: false, status: 409, error: "This order can no longer be cancelled." };
+  }
+  const paid = order.paymentStatus === PaymentStatus.paid;
+  return { ok: true, refund: paid && order.paymentGateway === "stripe" };
+}

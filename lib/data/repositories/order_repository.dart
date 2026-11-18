@@ -2,15 +2,29 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../core/constants/firestore_paths.dart';
 import '../../core/errors/app_exception.dart';
+import '../../core/services/functions_client.dart';
 import '../../core/utils/json_parsing.dart';
 import '../models/cart_item_model.dart';
 import '../models/order_model.dart';
 
+/// Orders. With the backend configured (`FUNCTIONS_BASE_URL`), creating
+/// and cancelling go through Cloud Functions, as `firestore.rules` requires;
+/// otherwise (local development before deploying) the same steps run as
+/// client transactions.
 class OrderRepository {
-  OrderRepository({FirebaseFirestore? firestore})
-    : _db = firestore ?? FirebaseFirestore.instance;
+  OrderRepository({FirebaseFirestore? firestore, FunctionsClient? functions})
+    : _db = firestore ?? FirebaseFirestore.instance,
+      _functions = functions ?? FunctionsClient();
 
   final FirebaseFirestore _db;
+  final FunctionsClient _functions;
+
+  bool get usesServer => _functions.isConfigured;
+
+  /// The server can refund Stripe payments, so with it customers may cancel
+  /// any pending order; without it, only orders with no real money taken.
+  bool canCancel(OrderModel order) =>
+      usesServer ? order.orderStatus == OrderStatus.pending : order.canCancel;
 
   CollectionReference<Map<String, dynamic>> get _orders =>
       _db.collection(FirestorePaths.orders);
@@ -40,6 +54,7 @@ class OrderRepository {
   /// charges exactly the stored total, and nobody can pay for an order that
   /// failed to be created.
   Future<String> placeOrder(OrderDraft draft, List<CartItemModel> cart) async {
+    if (usesServer) return _placeOnServer(draft, cart);
     try {
       return await _db.runTransaction((tx) async {
         final needed = _quantitiesByProduct(cart);
@@ -101,6 +116,30 @@ class OrderRepository {
     } catch (e) {
       throw AppException.from(e);
     }
+  }
+
+  Future<String> _placeOnServer(
+    OrderDraft draft,
+    List<CartItemModel> cart,
+  ) async {
+    final result = await _functions.call('placeOrder', {
+      'items': [
+        for (final l in cart)
+          {'productId': l.productId, 'size': l.size, 'quantity': l.quantity},
+      ],
+      'address': {
+        'fullName': draft.customerName,
+        'phone': draft.customerPhone,
+        'formatted': draft.customerAddress,
+      },
+      'deliveryDate': draft.deliveryDate,
+      'deliveryType': draft.deliveryType,
+      'paymentMethod': draft.paymentMethod == PaymentMethod.card
+          ? 'card'
+          : 'cod',
+      'expectedTotal': draft.total,
+    });
+    return result['orderId'] as String;
   }
 
   /// Live list, newest first. Sorted on the client so no composite index
@@ -186,7 +225,13 @@ class OrderRepository {
   /// Allowed for the owner while the order is still pending and no real
   /// money was taken ([OrderModel.canCancel]). Sprint 8 moves this into a
   /// Cloud Function once security rules stop clients writing stock.
-  Future<void> cancel(String orderId, {required String uid}) async {
+  /// Returns whether a payment was refunded.
+  Future<bool> cancel(String orderId, {required String uid}) async {
+    if (usesServer) {
+      final r = await _functions.call('cancelOrder', {'orderId': orderId});
+      return r['refunded'] == true;
+    }
+    var refunded = false;
     try {
       final items = await _items(orderId);
       final needed = <String, int>{};
@@ -220,6 +265,7 @@ class OrderRepository {
           final stock = asInt(p.data()?['quantity']);
           tx.update(p.reference, {'quantity': '${stock + qty}'});
         }
+        refunded = order.paymentStatus == PaymentStatusValue.paid;
         tx.update(ref, {
           'status': OrderStatus.cancelled.label,
           'statusHistory.${OrderStatus.cancelled.label}':
@@ -231,6 +277,7 @@ class OrderRepository {
               : PaymentStatusValue.voided,
         });
       });
+      return refunded;
     } catch (e) {
       throw AppException.from(e);
     }

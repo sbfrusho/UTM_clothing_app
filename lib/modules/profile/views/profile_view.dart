@@ -142,6 +142,15 @@ class ProfileView extends GetView<ProfileViewModel> {
                   ),
                 Obx(
                   () => SwitchListTile(
+                    secondary: const Icon(Icons.notifications_none_rounded),
+                    title: const Text('Order updates'),
+                    subtitle: const Text('Shipped, delivered and more'),
+                    value: controller.notificationsOn,
+                    onChanged: controller.setNotifications,
+                  ),
+                ),
+                Obx(
+                  () => SwitchListTile(
                     secondary: const Icon(Icons.fingerprint_rounded),
                     title: const Text('App lock'),
                     subtitle: const Text('Require biometrics to open the app'),

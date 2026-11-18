@@ -1,30 +1,26 @@
-import 'dart:convert';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:http/http.dart' as http;
 
 import '../../../data/models/order_model.dart';
 import '../../config/app_config.dart';
+import '../../errors/app_exception.dart';
 import '../../utils/app_logger.dart';
 import '../../utils/money.dart';
+import '../functions_client.dart';
 import 'payment_gateway.dart';
 
 /// Stripe PaymentSheet backed by the `createPaymentIntent` Cloud Function
 /// (`functions/src/index.ts`). The secret key never ships in the app and the
 /// amount is read from the stored order on the server.
 ///
-/// Backend contract:
-///   POST {orderId}
-///   Authorization: Bearer {Firebase ID token}
-///   -> 200 {clientSecret, paymentIntentId, amount (minor units), currency}
+/// Backend: `createPaymentIntent` POST {orderId}
+///   -> {clientSecret, paymentIntentId, amount (minor units), currency}
 ///
 /// The order is marked paid by the Stripe webhook, not by the app.
 class StripePaymentGateway implements PaymentGateway {
-  StripePaymentGateway({http.Client? client})
-    : _client = client ?? http.Client();
+  StripePaymentGateway({FunctionsClient? functions})
+    : _functions = functions ?? FunctionsClient();
 
-  final http.Client _client;
+  final FunctionsClient _functions;
 
   @override
   String get id => GatewayId.stripe;
@@ -75,26 +71,18 @@ class StripePaymentGateway implements PaymentGateway {
   Future<({String clientSecret, String id, int amount})> _createPaymentIntent(
     String orderId,
   ) async {
-    final idToken = await FirebaseAuth.instance.currentUser?.getIdToken();
-    final response = await _client.post(
-      Uri.parse(AppConfig.paymentBackendUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        if (idToken != null) 'Authorization': 'Bearer $idToken',
-      },
-      body: jsonEncode({'orderId': orderId}),
-    );
-    final body = jsonDecode(response.body) as Map<String, dynamic>;
-    if (response.statusCode != 200) {
-      throw _BackendError(
-        body['error'] as String? ?? 'Payment could not be started.',
+    try {
+      final body = await _functions.call('createPaymentIntent', {
+        'orderId': orderId,
+      });
+      return (
+        clientSecret: body['clientSecret'] as String,
+        id: body['paymentIntentId'] as String,
+        amount: (body['amount'] as num).toInt(),
       );
+    } on AppException catch (e) {
+      throw _BackendError(e.message);
     }
-    return (
-      clientSecret: body['clientSecret'] as String,
-      id: body['paymentIntentId'] as String,
-      amount: (body['amount'] as num).toInt(),
-    );
   }
 }
 

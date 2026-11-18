@@ -20,7 +20,7 @@ class OrderDetailView extends GetView<OrderDetailViewModel> {
       builder: (context) => AlertDialog(
         title: const Text('Cancel this order?'),
         content: const Text(
-          'The items go back on sale and you will not be charged.',
+          'The items go back on sale. Anything you paid is refunded.',
         ),
         actions: [
           TextButton(
@@ -171,7 +171,7 @@ class OrderDetailView extends GetView<OrderDetailViewModel> {
                 ),
               ],
             ),
-            if (order.canCancel) ...[
+            if (controller.canCancel(order)) ...[
               const SizedBox(height: 24),
               OutlinedButton(
                 style: OutlinedButton.styleFrom(
