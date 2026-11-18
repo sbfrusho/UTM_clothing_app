@@ -18,12 +18,24 @@ abstract final class AppConfig {
   /// ISO-4217 currency used for prices and payments.
   static const String currency = String.fromEnvironment(
     'CURRENCY',
-    defaultValue: 'MYR',
+    defaultValue: 'BDT',
   );
 
   static const String currencySymbol = String.fromEnvironment(
     'CURRENCY_SYMBOL',
-    defaultValue: 'RM',
+    defaultValue: 'Tk',
+  );
+
+  /// ISO-3166 country of the shop (Google Pay merchant country).
+  static const String countryCode = String.fromEnvironment(
+    'COUNTRY_CODE',
+    defaultValue: 'BD',
+  );
+
+  /// Pre-filled in new addresses.
+  static const String defaultCountry = String.fromEnvironment(
+    'DEFAULT_COUNTRY',
+    defaultValue: 'Bangladesh',
   );
 
   /// Stripe **publishable** key (`pk_...`). Safe to ship in the client.

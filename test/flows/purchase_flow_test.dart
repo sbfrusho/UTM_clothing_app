@@ -74,11 +74,11 @@ void main() {
       'alice',
       const AddressModel(
         fullName: 'Alice Tan',
-        phone: '0123456789',
+        phone: '01712345678',
         address: '12A',
-        city: 'Johor Bahru',
-        postalCode: '81300',
-        country: 'Malaysia',
+        city: 'Dhaka',
+        postalCode: '1205',
+        country: 'Bangladesh',
       ),
     );
     Get.put(

@@ -42,8 +42,7 @@ abstract final class LegalContent {
         'Who we are',
         '${AppConfig.appName} is an online clothing shop. This policy '
             'explains what personal data the app collects, why, and the '
-            'choices you have. It follows the Malaysian Personal Data '
-            'Protection Act 2010.',
+            'choices you have. It follows the laws of Bangladesh.',
       ),
       (
         'What we collect',
@@ -136,7 +135,7 @@ abstract final class LegalContent {
         'Liability',
         'The app is provided as is. To the extent the law allows, we are not '
             'liable for indirect losses. Nothing here limits your rights '
-            'under the Malaysian Consumer Protection Act 1999.',
+            'under the Consumer Rights Protection Act 2009 of Bangladesh.',
       ),
       (
         'Changes',

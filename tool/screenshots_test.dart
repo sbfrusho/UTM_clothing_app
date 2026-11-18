@@ -68,15 +68,15 @@ final _products = [
     '1',
     'Linen Overshirt',
     'Shirts',
-    '89',
-    '119',
+    '1890',
+    '2490',
     sizes: ['S', 'M', 'L', 'XL'],
   ),
-  _p('2', 'Everyday Cap', 'Caps', '35', '35', stock: 3),
-  _p('3', 'Stoneware Mug', 'Mugs', '29', '39'),
-  _p('4', 'Heavyweight Tee', 'T-shirts', '49', '49', sizes: ['S', 'M', 'L']),
-  _p('5', 'Corporate Polo', 'Corporate', '69', '79', stock: 0),
-  _p('6', 'Canvas Tote', 'Bags', '25', '25'),
+  _p('2', 'Everyday Cap', 'Caps', '650', '650', stock: 3),
+  _p('3', 'Stoneware Mug', 'Mugs', '450', '590'),
+  _p('4', 'Heavyweight Tee', 'T-shirts', '790', '790', sizes: ['S', 'M', 'L']),
+  _p('5', 'Corporate Polo', 'Corporate', '1290', '1490', stock: 0),
+  _p('6', 'Canvas Tote', 'Bags', '390', '390'),
 ];
 
 const _categories = [
@@ -168,12 +168,12 @@ class _Orders extends Fake implements OrderRepository {
   @override
   Stream<List<OrderModel>> watchForCustomer(String uid) => Stream.value([
     OrderModel.fromMap({
-      'totalPrice': 118,
+      'totalPrice': 2540,
       'status': 'Shipped',
       'createdAt': DateTime(2026, 11, 12, 14, 30),
     }, id: 'a1b2c3d4'),
     OrderModel.fromMap({
-      'totalPrice': 35,
+      'totalPrice': 650,
       'status': 'Delivered',
       'createdAt': DateTime(2026, 10, 2, 9, 10),
     }, id: 'f9e8d7c6'),
@@ -185,12 +185,12 @@ class _Addresses extends Fake implements AddressRepository {
     id: 'a1',
     label: 'Home',
     fullName: 'Aisha Rahman',
-    phone: '012-345 6789',
-    address: '12 Jalan Bunga',
-    city: 'Johor Bahru',
-    state: 'Johor',
-    postalCode: '81310',
-    country: 'Malaysia',
+    phone: '01712-345678',
+    address: 'House 12, Road 5',
+    city: 'Dhaka',
+    state: 'Dhanmondi',
+    postalCode: '1205',
+    country: 'Bangladesh',
     isDefault: true,
   );
 

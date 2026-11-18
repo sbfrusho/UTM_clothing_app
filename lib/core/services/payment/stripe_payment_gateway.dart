@@ -44,7 +44,7 @@ class StripePaymentGateway implements PaymentGateway {
           paymentIntentClientSecret: intent.clientSecret,
           merchantDisplayName: AppConfig.appName,
           googlePay: PaymentSheetGooglePay(
-            merchantCountryCode: 'MY',
+            merchantCountryCode: AppConfig.countryCode,
             currencyCode: currency,
             testEnv: !AppConfig.isProduction,
           ),

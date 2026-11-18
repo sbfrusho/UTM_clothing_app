@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/utils/app_snackbar.dart';
@@ -30,7 +31,7 @@ class AddressFormViewModel extends GetxController {
   final city = TextEditingController();
   final state = TextEditingController();
   final postalCode = TextEditingController();
-  final country = TextEditingController(text: 'Malaysia');
+  final country = TextEditingController(text: AppConfig.defaultCountry);
 
   final RxString label = 'Home'.obs;
   final RxBool isDefault = false.obs;

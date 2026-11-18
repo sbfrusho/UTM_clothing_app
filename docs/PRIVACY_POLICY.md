@@ -5,7 +5,7 @@ _Last updated 18 November 2026_
 The in-app copy is in `lib/modules/legal/legal_content.dart`. Keep the two in sync. Replace `[support email]` before you publish.
 
 ## Who we are
-Your Shop is an online clothing shop. This policy explains what personal data the app collects, why, and the choices you have. It follows the Malaysian Personal Data Protection Act 2010.
+Your Shop is an online clothing shop. This policy explains what personal data the app collects, why, and the choices you have. It follows the laws of Bangladesh.
 
 ## What we collect
 - **Account:** your name, email address, phone number and, if you add one, a profile photo.

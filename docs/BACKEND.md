@@ -36,7 +36,7 @@ cd functions && npm ci && npm test && cd ..
 firebase deploy --only functions,firestore,storage
 ```
 
-Optional parameters (prompted on first deploy, or set in `functions/.env`): `CURRENCY` (default `myr`) and `SHOP_NAME` (default `Your Shop`).
+Optional parameters (prompted on first deploy, or set in `functions/.env`): `CURRENCY` (default `bdt`) and `SHOP_NAME` (default `Your Shop`).
 
 ### Stripe webhook
 In the Stripe Dashboard, go to **Developers → Webhooks → Add endpoint**:

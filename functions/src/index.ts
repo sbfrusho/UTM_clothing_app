@@ -70,7 +70,7 @@ const db = getFirestore();
 const REGION = "asia-southeast1";
 const STRIPE_SECRET_KEY = defineSecret("STRIPE_SECRET_KEY");
 const STRIPE_WEBHOOK_SECRET = defineSecret("STRIPE_WEBHOOK_SECRET");
-const CURRENCY = defineString("CURRENCY", { default: "myr" });
+const CURRENCY = defineString("CURRENCY", { default: "bdt" });
 const SHOP_NAME = defineString("SHOP_NAME", { default: "Your Shop" });
 
 // API version is pinned by the installed stripe SDK.
