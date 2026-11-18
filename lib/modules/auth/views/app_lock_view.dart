@@ -33,6 +33,9 @@ class AppLockView extends GetView<AppLockViewModel> {
                 const SizedBox(height: 32),
                 Obx(
                   () => FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(220, 54),
+                    ),
                     onPressed: controller.isAuthenticating.value
                         ? null
                         : controller.unlock,

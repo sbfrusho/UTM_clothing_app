@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/utils/validators.dart';
+import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../../../core/widgets/state_views.dart';
 import '../view_models/address_view_model.dart';
@@ -27,7 +28,7 @@ class AddressView extends GetView<AddressViewModel> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Shipping address')),
+      appBar: const AppTopBar(title: 'Shipping address'),
       body: Obx(
         () => controller.isLoading.value
             ? const LoadingView()

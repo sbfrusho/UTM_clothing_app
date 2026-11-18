@@ -2,37 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../app/routes/app_routes.dart';
-import '../../../core/constants/app_assets.dart';
 import '../../../core/utils/validators.dart';
+import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../view_models/login_view_model.dart';
+import 'auth_header.dart';
 
 class LoginView extends GetView<LoginViewModel> {
   const LoginView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Log in')),
+      appBar: const AppTopBar(),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           child: Form(
             key: controller.formKey,
             child: AutofillGroup(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Image.asset(AppAssets.logo, height: 120),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Welcome back',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  const AuthHeader(
+                    title: 'Welcome back',
+                    subtitle: 'Log in to continue shopping.',
                   ),
-                  const SizedBox(height: 24),
                   TextFormField(
                     controller: controller.emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -41,7 +36,7 @@ class LoginView extends GetView<LoginViewModel> {
                     validator: Validators.email,
                     decoration: const InputDecoration(
                       labelText: 'Email',
-                      prefixIcon: Icon(Icons.email_outlined),
+                      prefixIcon: Icon(Icons.alternate_email_rounded),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -56,7 +51,7 @@ class LoginView extends GetView<LoginViewModel> {
                       onFieldSubmitted: (_) => controller.signIn(),
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        prefixIcon: const Icon(Icons.lock_outline),
+                        prefixIcon: const Icon(Icons.lock_outline_rounded),
                         suffixIcon: IconButton(
                           tooltip: 'Show password',
                           onPressed: controller.obscurePassword.toggle,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../app/routes/app_routes.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../shell/view_models/shell_view_model.dart';
 
 /// Static confirmation screen; the order id comes in as the route argument.
@@ -30,7 +31,21 @@ class OrderSuccessView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(Icons.check_circle, color: Colors.green, size: 96),
+                Center(
+                  child: Container(
+                    width: 112,
+                    height: 112,
+                    decoration: BoxDecoration(
+                      color: context.palette.success.withValues(alpha: 0.14),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.check_rounded,
+                      size: 56,
+                      color: context.palette.success,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 24),
                 Text(
                   'Order placed!',

@@ -17,17 +17,29 @@ class LoadingButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final child = isLoading
-        ? const SizedBox.square(
-            dimension: 22,
-            child: CircularProgressIndicator(strokeWidth: 2.5),
-          )
-        : Text(label);
+    final scheme = Theme.of(context).colorScheme;
+    final child = AnimatedSwitcher(
+      duration: const Duration(milliseconds: 180),
+      child: isLoading
+          ? SizedBox.square(
+              key: const ValueKey('spinner'),
+              dimension: 22,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.4,
+                color: scheme.onPrimary,
+              ),
+            )
+          : Text(label, key: const ValueKey('label')),
+    );
     final callback = isLoading ? null : onPressed;
+    final style = FilledButton.styleFrom(
+      disabledBackgroundColor: isLoading ? scheme.primary : null,
+    );
     return icon == null || isLoading
-        ? FilledButton(onPressed: callback, child: child)
+        ? FilledButton(onPressed: callback, style: style, child: child)
         : FilledButton.icon(
             onPressed: callback,
+            style: style,
             icon: Icon(icon),
             label: child,
           );

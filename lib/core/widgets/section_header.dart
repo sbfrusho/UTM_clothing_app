@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_palette.dart';
+
 class SectionHeader extends StatelessWidget {
   const SectionHeader({
     super.key,
     required this.title,
     this.subtitle,
-    this.actionLabel = 'View all',
+    this.actionLabel = 'See all',
     this.onAction,
   });
 
@@ -18,21 +20,27 @@ class SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 8, 8),
+      padding: const EdgeInsets.fromLTRB(20, 28, 12, 12),
       child: Row(
+        crossAxisAlignment: subtitle == null
+            ? CrossAxisAlignment.center
+            : CrossAxisAlignment.end,
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(title, style: theme.textTheme.headlineSmall),
                 if (subtitle != null)
-                  Text(subtitle!, style: theme.textTheme.bodySmall),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      subtitle!,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: context.palette.mutedText,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

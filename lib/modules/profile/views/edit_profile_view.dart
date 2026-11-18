@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/utils/validators.dart';
+import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../../../core/widgets/state_views.dart';
 import '../view_models/edit_profile_view_model.dart';
@@ -12,7 +13,7 @@ class EditProfileView extends GetView<EditProfileViewModel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit profile')),
+      appBar: const AppTopBar(title: 'Edit profile'),
       body: Obx(
         () => controller.isLoading.value
             ? const LoadingView()

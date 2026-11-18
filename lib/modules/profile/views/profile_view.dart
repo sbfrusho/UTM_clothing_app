@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../app/routes/app_routes.dart';
-import '../../../core/constants/app_assets.dart';
+import '../../../core/theme/app_palette.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/app_top_bar.dart';
 import '../view_models/profile_view_model.dart';
 
 class ProfileView extends GetView<ProfileViewModel> {
@@ -13,12 +15,14 @@ class ProfileView extends GetView<ProfileViewModel> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Log out?'),
+        content: const Text('You can log back in at any time.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
           FilledButton(
+            style: FilledButton.styleFrom(minimumSize: const Size(100, 44)),
             onPressed: () => Navigator.pop(context, true),
             child: const Text('Log out'),
           ),
@@ -31,74 +35,116 @@ class ProfileView extends GetView<ProfileViewModel> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final palette = context.palette;
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: const AppTopBar.large(title: 'Profile'),
       body: RefreshIndicator(
         onRefresh: controller.load,
         child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
           children: [
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 32,
-                    backgroundImage: AssetImage(AppAssets.avatarPlaceholder),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Obx(
-                      () => Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            controller.displayName,
-                            style: theme.textTheme.titleLarge,
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Obx(
+                  () => Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 30,
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: theme.colorScheme.onPrimary,
+                        child: Text(
+                          controller.initials,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: theme.colorScheme.onPrimary,
                           ),
-                          Text(
-                            controller.email,
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              controller.displayName,
+                              style: theme.textTheme.titleLarge,
+                            ),
+                            Text(
+                              controller.email,
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                      AppIconButton(
+                        icon: Icons.edit_outlined,
+                        tooltip: 'Edit profile',
+                        onPressed: controller.openEditProfile,
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-            _Section(
+            const _Label('Shopping'),
+            _Group(
               children: [
-                ListTile(
-                  leading: const Icon(Icons.receipt_long_outlined),
-                  title: const Text('My orders'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Get.toNamed(AppRoutes.orders),
+                _Tile(
+                  icon: Icons.receipt_long_outlined,
+                  title: 'My orders',
+                  onTap: () => Get.toNamed<void>(AppRoutes.orders),
                 ),
-                ListTile(
-                  leading: const Icon(Icons.location_on_outlined),
-                  title: const Text('Shipping address'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Get.toNamed(AppRoutes.address),
+                _Tile(
+                  icon: Icons.location_on_outlined,
+                  title: 'Shipping address',
+                  onTap: () => Get.toNamed<void>(AppRoutes.address),
                 ),
               ],
             ),
-            _Section(
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.person_outline),
-                  title: const Text('Edit profile'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: controller.openEditProfile,
+            const _Label('Appearance'),
+            Obx(
+              () => SegmentedButton<ThemeMode>(
+                showSelectedIcon: false,
+                style: SegmentedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(48),
+                  selectedBackgroundColor: theme.colorScheme.primary,
+                  selectedForegroundColor: theme.colorScheme.onPrimary,
+                  side: BorderSide(color: theme.colorScheme.outlineVariant),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
                 ),
-                ListTile(
-                  leading: const Icon(Icons.lock_reset),
-                  title: const Text('Change password'),
-                  subtitle: const Text('We will email you a reset link'),
+                segments: const [
+                  ButtonSegment(
+                    value: ThemeMode.system,
+                    label: Text('System'),
+                  ),
+                  ButtonSegment(
+                    value: ThemeMode.light,
+                    label: Text('Light'),
+                  ),
+                  ButtonSegment(
+                    value: ThemeMode.dark,
+                    label: Text('Dark'),
+                  ),
+                ],
+                selected: {controller.themeMode.value},
+                onSelectionChanged: (s) => controller.setThemeMode(s.first),
+              ),
+            ),
+            const _Label('Security'),
+            _Group(
+              children: [
+                _Tile(
+                  icon: Icons.lock_reset_rounded,
+                  title: 'Change password',
+                  subtitle: 'We will email you a reset link',
                   onTap: controller.sendPasswordReset,
+                  showChevron: false,
                 ),
                 Obx(
                   () => SwitchListTile(
-                    secondary: const Icon(Icons.fingerprint),
+                    secondary: const Icon(Icons.fingerprint_rounded),
                     title: const Text('App lock'),
                     subtitle: const Text('Require biometrics to open the app'),
                     value: controller.isAppLockEnabled.value,
@@ -107,17 +153,24 @@ class ProfileView extends GetView<ProfileViewModel> {
                 ),
               ],
             ),
-            _Section(
-              children: [
-                ListTile(
-                  leading: Icon(Icons.logout, color: theme.colorScheme.error),
-                  title: Text(
-                    'Log out',
-                    style: TextStyle(color: theme.colorScheme.error),
-                  ),
-                  onTap: () => _confirmSignOut(context),
+            const SizedBox(height: 24),
+            OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: theme.colorScheme.error,
+                side: BorderSide(color: theme.colorScheme.outlineVariant),
+              ),
+              onPressed: () => _confirmSignOut(context),
+              icon: const Icon(Icons.logout_rounded),
+              label: const Text('Log out'),
+            ),
+            const SizedBox(height: 16),
+            Center(
+              child: Text(
+                'Your Shop · v1.0.0',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: palette.mutedText,
                 ),
-              ],
+              ),
             ),
           ],
         ),
@@ -126,15 +179,63 @@ class ProfileView extends GetView<ProfileViewModel> {
   }
 }
 
-class _Section extends StatelessWidget {
-  const _Section({required this.children});
+class _Label extends StatelessWidget {
+  const _Label(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(4, 28, 4, 10),
+    child: Text(
+      text.toUpperCase(),
+      style: Theme.of(
+        context,
+      ).textTheme.labelSmall?.copyWith(letterSpacing: 1.4),
+    ),
+  );
+}
+
+class _Group extends StatelessWidget {
+  const _Group({required this.children});
 
   final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) => Card(
-    margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-    clipBehavior: Clip.antiAlias,
-    child: Column(children: children),
+  Widget build(BuildContext context) {
+    final divided = <Widget>[];
+    for (var i = 0; i < children.length; i++) {
+      if (i > 0) divided.add(const Divider(indent: 56));
+      divided.add(children[i]);
+    }
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Column(children: divided),
+    );
+  }
+}
+
+class _Tile extends StatelessWidget {
+  const _Tile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+    this.subtitle,
+    this.showChevron = true,
+  });
+
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+  final VoidCallback onTap;
+  final bool showChevron;
+
+  @override
+  Widget build(BuildContext context) => ListTile(
+    leading: Icon(icon),
+    title: Text(title),
+    subtitle: subtitle == null ? null : Text(subtitle!),
+    trailing: showChevron ? const Icon(Icons.chevron_right_rounded) : null,
+    onTap: onTap,
   );
 }

@@ -1,26 +1,43 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../app/routes/app_routes.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/services/biometric_service.dart';
+import '../../../core/services/theme_service.dart';
 import '../../../core/utils/app_snackbar.dart';
 import '../../../data/models/user_model.dart';
 import '../../../data/repositories/auth_repository.dart';
 import '../../../data/repositories/user_repository.dart';
 
 class ProfileViewModel extends GetxController {
-  ProfileViewModel(this._auth, this._users, this._authRepo, this._biometrics);
+  ProfileViewModel(
+    this._auth,
+    this._users,
+    this._authRepo,
+    this._biometrics,
+    this._theme,
+  );
 
   final AuthService _auth;
   final UserRepository _users;
   final AuthRepository _authRepo;
   final BiometricService _biometrics;
+  final ThemeService _theme;
 
   final Rxn<UserModel> user = Rxn<UserModel>();
   final RxBool isLoading = false.obs;
 
   RxBool get isAppLockEnabled => _biometrics.isLockEnabled;
+  Rx<ThemeMode> get themeMode => _theme.mode;
+
+  String get initials {
+    final parts = displayName.trim().split(RegExp(r'\s+'));
+    return parts.take(2).map((p) => p.isEmpty ? '' : p[0].toUpperCase()).join();
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) => _theme.setMode(mode);
   String get email => _auth.email ?? '';
   String get displayName {
     final name = user.value?.name ?? '';

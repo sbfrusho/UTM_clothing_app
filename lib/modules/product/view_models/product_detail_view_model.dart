@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -59,15 +58,11 @@ class ProductDetailViewModel extends GetxController {
     switch (result) {
       case CartAddResult.added:
       case CartAddResult.increased:
-        Get.snackbar(
+        AppSnackbar.action(
           'Added to cart',
           product.value.name,
-          snackPosition: SnackPosition.BOTTOM,
-          margin: const EdgeInsets.all(12),
-          mainButton: TextButton(
-            onPressed: goToCart,
-            child: const Text('View cart'),
-          ),
+          actionLabel: 'View cart',
+          onAction: goToCart,
         );
       case CartAddResult.sizeRequired:
         AppSnackbar.info('Please choose a size first.', title: 'Select size');

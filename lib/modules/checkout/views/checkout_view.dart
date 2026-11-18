@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/validators.dart';
+import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../../../data/models/order_model.dart';
 import '../view_models/checkout_view_model.dart';
@@ -27,12 +28,12 @@ class CheckoutView extends GetView<CheckoutViewModel> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Checkout')),
+      appBar: const AppTopBar(title: 'Checkout'),
       body: Obx(
         () => Form(
           key: controller.formKey,
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
             children: [
               if (controller.isLoadingProfile.value)
                 const LinearProgressIndicator(),
@@ -99,9 +100,9 @@ class CheckoutView extends GetView<CheckoutViewModel> {
               ListTile(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: theme.colorScheme.outline),
+                  side: BorderSide(color: theme.colorScheme.outlineVariant),
                 ),
-                tileColor: Colors.white,
+                tileColor: theme.colorScheme.surfaceContainerLowest,
                 leading: const Icon(Icons.calendar_today_outlined),
                 title: const Text('Delivery date'),
                 subtitle: Text(

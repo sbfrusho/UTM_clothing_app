@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/theme/app_palette.dart';
 import '../../../core/utils/validators.dart';
+import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../view_models/forgot_password_view_model.dart';
+import 'auth_header.dart';
 
 class ForgotPasswordView extends GetView<ForgotPasswordViewModel> {
   const ForgotPasswordView({super.key});
@@ -12,34 +15,44 @@ class ForgotPasswordView extends GetView<ForgotPasswordViewModel> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Reset password')),
+      appBar: const AppTopBar(),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           child: Obx(
             () => controller.emailSent.value
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.mark_email_read_outlined,
-                        size: 72,
-                        color: theme.colorScheme.primary,
+                      Container(
+                        width: 96,
+                        height: 96,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceContainerHigh,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.mark_email_read_outlined,
+                          size: 40,
+                        ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
                       Text(
                         'Check your inbox',
-                        style: theme.textTheme.headlineSmall,
+                        style: theme.textTheme.headlineMedium,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'We sent a password reset link to '
                         '${controller.emailController.text.trim()}.',
                         textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: context.palette.mutedText,
+                        ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 32),
                       FilledButton(
-                        onPressed: Get.back,
+                        onPressed: () => Get.back<void>(),
                         child: const Text('Back to log in'),
                       ),
                     ],
@@ -49,12 +62,12 @@ class ForgotPasswordView extends GetView<ForgotPasswordViewModel> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
-                          'Enter the email you registered with and we will '
-                          'send you a link to choose a new password.',
-                          style: theme.textTheme.bodyLarge,
+                        const AuthHeader(
+                          title: 'Reset password',
+                          subtitle:
+                              'Enter the email you registered with and '
+                              'we will send you a link to choose a new one.',
                         ),
-                        const SizedBox(height: 24),
                         TextFormField(
                           controller: controller.emailController,
                           keyboardType: TextInputType.emailAddress,
@@ -62,10 +75,10 @@ class ForgotPasswordView extends GetView<ForgotPasswordViewModel> {
                           onFieldSubmitted: (_) => controller.sendResetLink(),
                           decoration: const InputDecoration(
                             labelText: 'Email',
-                            prefixIcon: Icon(Icons.email_outlined),
+                            prefixIcon: Icon(Icons.alternate_email_rounded),
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 28),
                         LoadingButton(
                           label: 'Send reset link',
                           isLoading: controller.isLoading.value,

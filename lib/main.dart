@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'app/app.dart';
 import 'core/config/app_config.dart';
 import 'core/services/biometric_service.dart';
+import 'core/services/theme_service.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -18,7 +19,8 @@ Future<void> main() async {
     await Stripe.instance.applySettings();
   }
 
-  // Needed synchronously by the splash route decision.
+  // Needed synchronously at startup (theme, splash route decision).
+  await Get.putAsync(() => ThemeService().init(), permanent: true);
   await Get.putAsync(() => BiometricService().init(), permanent: true);
 
   runApp(const YourShopApp());

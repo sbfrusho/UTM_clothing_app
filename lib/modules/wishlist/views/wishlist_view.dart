@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/app_network_image.dart';
+import '../../../core/widgets/app_top_bar.dart';
+import '../../../core/widgets/skeleton.dart';
 import '../../../core/widgets/state_views.dart';
 import '../view_models/wishlist_view_model.dart';
 
@@ -13,10 +16,13 @@ class WishlistView extends GetView<WishlistViewModel> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Wishlist')),
+      appBar: const AppTopBar.large(
+        title: 'Saved',
+        subtitle: 'Pieces you love, in one place',
+      ),
       body: Obx(() {
         if (controller.isLoading.value && controller.items.isEmpty) {
-          return const LoadingView();
+          return const ListSkeleton();
         }
         if (controller.error.value != null && controller.items.isEmpty) {
           return ErrorView(
@@ -26,38 +32,62 @@ class WishlistView extends GetView<WishlistViewModel> {
         }
         if (controller.items.isEmpty) {
           return const EmptyView(
-            message: 'Tap the heart on a product to save it here.',
-            icon: Icons.favorite_border,
+            title: 'Nothing saved yet',
+            message: 'Tap the heart on any product to keep it here.',
+            icon: Icons.favorite_border_rounded,
           );
         }
         return RefreshIndicator(
           onRefresh: controller.load,
           child: ListView.separated(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
             itemCount: controller.items.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 8),
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final item = controller.items[index];
               return Card(
-                child: ListTile(
-                  contentPadding: const EdgeInsets.all(8),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
                   onTap: () => controller.open(item),
-                  leading: AppNetworkImage(
-                    item.thumbnail,
-                    width: 56,
-                    height: 56,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  title: Text(item.name),
-                  subtitle: Text(
-                    Formatters.price(item.price),
-                    style: TextStyle(color: theme.colorScheme.primary),
-                  ),
-                  trailing: IconButton(
-                    tooltip: 'Remove',
-                    onPressed: () => controller.remove(item.productId),
-                    icon: const Icon(Icons.favorite),
-                    color: theme.colorScheme.primary,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        AppNetworkImage(
+                          item.thumbnail,
+                          width: 72,
+                          height: 84,
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.name,
+                                style: theme.textTheme.titleSmall,
+                              ),
+                              if (item.categoryName.isNotEmpty)
+                                Text(
+                                  item.categoryName,
+                                  style: theme.textTheme.bodySmall,
+                                ),
+                              const SizedBox(height: 8),
+                              Text(
+                                Formatters.price(item.price),
+                                style: theme.textTheme.titleMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          tooltip: 'Remove from saved',
+                          onPressed: () => controller.remove(item.productId),
+                          icon: const Icon(Icons.favorite_rounded),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );

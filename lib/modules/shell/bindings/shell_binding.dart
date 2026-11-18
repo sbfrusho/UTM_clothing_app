@@ -10,10 +10,16 @@ class ShellBinding extends Bindings {
   @override
   void dependencies() {
     Get.put(ShellViewModel());
-    Get.lazyPut(() => HomeViewModel(Get.find()));
+    Get.lazyPut(() => HomeViewModel(Get.find(), Get.find(), Get.find()));
     Get.lazyPut(() => CategoriesViewModel(Get.find()));
     Get.lazyPut(
-      () => ProfileViewModel(Get.find(), Get.find(), Get.find(), Get.find()),
+      () => ProfileViewModel(
+        Get.find(),
+        Get.find(),
+        Get.find(),
+        Get.find(),
+        Get.find(),
+      ),
     );
   }
 }

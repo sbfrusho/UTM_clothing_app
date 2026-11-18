@@ -15,7 +15,7 @@ A Flutter e-commerce app for clothing and merchandise, built on Firebase with Ge
 ## Tech stack
 | Layer | Choice |
 |-------|--------|
-| UI | Flutter (Material 3) |
+| UI | Flutter (Material 3), custom grey/cream design system, light + dark |
 | Architecture | MVVM (`data/` = Model, `*ViewModel` = GetX controllers, `GetView` views) |
 | State, DI, routing | GetX |
 | Backend | Firebase Auth, Cloud Firestore, Cloud Messaging |
@@ -23,11 +23,15 @@ A Flutter e-commerce app for clothing and merchandise, built on Firebase with Ge
 
 ## Screenshots
 <p>
-  <img src="docs/screenshots/Screenshot_20250223_182800.png" width="200">
-  <img src="docs/screenshots/Screenshot_20250223_182812.png" width="200">
-  <img src="docs/screenshots/Screenshot_20250223_182843.png" width="200">
-  <img src="docs/screenshots/Screenshot_20250223_183915.png" width="200">
+  <img src="docs/screenshots/01_welcome.png" width="180">
+  <img src="docs/screenshots/03_home.png" width="180">
+  <img src="docs/screenshots/05_product.png" width="180">
+  <img src="docs/screenshots/06_cart.png" width="180">
+  <img src="docs/screenshots/07_profile.png" width="180">
+  <img src="docs/screenshots/09_home_dark.png" width="180">
 </p>
+
+Regenerate with `flutter test tool/screenshots_test.dart --update-goldens` (renders the real views with fake data).
 
 ## Getting started
 
@@ -57,6 +61,15 @@ If `STRIPE_PUBLISHABLE_KEY` or `PAYMENT_BACKEND_URL` is empty, card payments use
 
 ### Firebase
 The Android app ID is `com.sbfrusho.yourshop`. Register it in the Firebase console, then download `google-services.json` into `android/app/` (or run `flutterfire configure`).
+
+## Brand assets
+The logo is vector code (`lib/core/widgets/brand/brand_mark_painter.dart`). After changing it:
+```sh
+flutter test tool/generate_brand_assets_test.dart   # renders assets/branding/*.png
+dart run flutter_launcher_icons                      # launcher + adaptive icons
+dart run flutter_native_splash:create                # native splash
+```
+Fonts: Manrope and Playfair Display (SIL OFL, bundled in `assets/fonts`).
 
 ## Testing
 ```sh

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../core/config/app_config.dart';
+import '../core/services/theme_service.dart';
 import '../core/theme/app_theme.dart';
 import 'bindings/initial_binding.dart';
 import 'routes/app_pages.dart';
@@ -16,10 +17,12 @@ class YourShopApp extends StatelessWidget {
       title: AppConfig.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: Get.find<ThemeService>().mode.value,
       initialBinding: InitialBinding(),
       initialRoute: AppRoutes.splash,
       getPages: AppPages.routes,
-      defaultTransition: Transition.cupertino,
+      defaultTransition: Transition.native,
     );
   }
 }

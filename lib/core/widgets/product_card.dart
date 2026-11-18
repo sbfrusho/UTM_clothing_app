@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../data/models/product_model.dart';
+import '../theme/app_palette.dart';
+import '../theme/app_theme.dart';
 import '../utils/formatters.dart';
 import 'app_network_image.dart';
 
-/// Grid/list card for a product. Stateless: wishlist state and actions are
-/// passed in by the view that owns the view model.
+/// Product tile: image on a soft cream card, name and price beneath.
+/// Stateless: wishlist state and actions come from the owning view.
 class ProductCard extends StatelessWidget {
   const ProductCard({
     super.key,
@@ -25,12 +27,15 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final palette = context.palette;
     return SizedBox(
       width: width,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
+      child: Semantics(
+        button: true,
+        label: '${product.name}, ${Formatters.price(product.price)}',
+        child: GestureDetector(
           onTap: onTap,
+          behavior: HitTestBehavior.opaque,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -38,82 +43,73 @@ class ProductCard extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    AppNetworkImage(product.thumbnail),
-                    if (product.hasDiscount)
-                      Positioned(
-                        left: 8,
-                        top: 8,
-                        child: _Badge(
-                          '-${product.discountPercent}%',
-                          color: theme.colorScheme.primary,
-                        ),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: palette.imageBackground,
+                        borderRadius: BorderRadius.circular(AppRadius.lg),
                       ),
-                    if (!product.inStock)
-                      const Positioned(
-                        left: 8,
-                        bottom: 8,
-                        child: _Badge('Out of stock', color: Colors.black87),
+                      child: AppNetworkImage(
+                        product.thumbnail,
+                        borderRadius: BorderRadius.circular(AppRadius.lg),
+                      ),
+                    ),
+                    if (product.hasDiscount || !product.inStock)
+                      Positioned(
+                        left: 10,
+                        top: 10,
+                        child: _Tag(
+                          !product.inStock
+                              ? 'Sold out'
+                              : '-${product.discountPercent}%',
+                          dark: !product.inStock,
+                        ),
                       ),
                     if (onToggleWishlist != null)
                       Positioned(
-                        right: 4,
-                        top: 4,
-                        child: IconButton.filledTonal(
-                          visualDensity: VisualDensity.compact,
-                          tooltip: isWishlisted
-                              ? 'Remove from wishlist'
-                              : 'Add to wishlist',
-                          onPressed: onToggleWishlist,
-                          icon: Icon(
-                            isWishlisted
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: isWishlisted
-                                ? theme.colorScheme.primary
-                                : null,
-                          ),
+                        right: 8,
+                        top: 8,
+                        child: _HeartButton(
+                          active: isWishlisted,
+                          onPressed: onToggleWishlist!,
                         ),
                       ),
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      product.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleSmall,
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
-                          Formatters.price(product.price),
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+              const SizedBox(height: 10),
+              Text(
+                product.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleSmall,
+              ),
+              if (product.categoryName.isNotEmpty)
+                Text(
+                  product.categoryName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall,
+                ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Text(
+                    Formatters.price(product.price),
+                    style: theme.textTheme.titleMedium,
+                  ),
+                  if (product.hasDiscount) ...[
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        Formatters.price(product.fullPrice),
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          decoration: TextDecoration.lineThrough,
                         ),
-                        if (product.hasDiscount) ...[
-                          const SizedBox(width: 6),
-                          Flexible(
-                            child: Text(
-                              Formatters.price(product.fullPrice),
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                decoration: TextDecoration.lineThrough,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
+                      ),
                     ),
                   ],
-                ),
+                ],
               ),
             ],
           ),
@@ -123,26 +119,66 @@ class ProductCard extends StatelessWidget {
   }
 }
 
-class _Badge extends StatelessWidget {
-  const _Badge(this.label, {required this.color});
+class _HeartButton extends StatelessWidget {
+  const _HeartButton({required this.active, required this.onPressed});
 
-  final String label;
-  final Color color;
+  final bool active;
+  final VoidCallback onPressed;
 
   @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: Text(
-      label,
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 11,
-        fontWeight: FontWeight.bold,
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: scheme.surfaceContainerLowest.withValues(alpha: 0.92),
+      shape: const CircleBorder(),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onPressed,
+        child: Tooltip(
+          message: active ? 'Remove from wishlist' : 'Add to wishlist',
+          child: SizedBox.square(
+            dimension: 36,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              transitionBuilder: (child, a) =>
+                  ScaleTransition(scale: a, child: child),
+              child: Icon(
+                active ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                key: ValueKey(active),
+                size: 19,
+                color: scheme.onSurface,
+              ),
+            ),
+          ),
+        ),
       ),
-    ),
-  );
+    );
+  }
+}
+
+class _Tag extends StatelessWidget {
+  const _Tag(this.label, {this.dark = false});
+
+  final String label;
+  final bool dark;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final palette = context.palette;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: dark ? scheme.inverseSurface : palette.accent,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: dark ? scheme.onInverseSurface : scheme.onSurface,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
 }

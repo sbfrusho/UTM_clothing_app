@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 
 import '../../../app/routes/app_routes.dart';
 import '../../../core/utils/formatters.dart';
+import '../../../core/widgets/app_top_bar.dart';
+import '../../../core/widgets/skeleton.dart';
 import '../../../core/widgets/state_views.dart';
 import '../view_models/orders_view_model.dart';
 import 'order_status_chip.dart';
@@ -14,9 +16,9 @@ class OrdersView extends GetView<OrdersViewModel> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('My orders')),
+      appBar: const AppTopBar(title: 'My orders'),
       body: Obx(() {
-        if (controller.isLoading.value) return const LoadingView();
+        if (controller.isLoading.value) return const ListSkeleton();
         if (controller.error.value != null) {
           return ErrorView(
             message: controller.error.value!,

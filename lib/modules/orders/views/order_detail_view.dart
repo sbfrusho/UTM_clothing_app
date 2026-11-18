@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/app_network_image.dart';
+import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/state_views.dart';
 import '../view_models/order_detail_view_model.dart';
 import 'order_status_chip.dart';
@@ -14,7 +15,7 @@ class OrderDetailView extends GetView<OrderDetailViewModel> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Order details')),
+      appBar: const AppTopBar(title: 'Order details'),
       body: Obx(() {
         if (controller.isLoading.value) return const LoadingView();
         final order = controller.order.value;

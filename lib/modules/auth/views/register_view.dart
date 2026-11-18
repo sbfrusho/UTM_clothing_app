@@ -3,38 +3,31 @@ import 'package:get/get.dart';
 
 import '../../../app/routes/app_routes.dart';
 import '../../../core/utils/validators.dart';
+import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../view_models/register_view_model.dart';
+import 'auth_header.dart';
 
 class RegisterView extends GetView<RegisterViewModel> {
   const RegisterView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Create account')),
+      appBar: const AppTopBar(),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           child: Form(
             key: controller.formKey,
             child: AutofillGroup(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Join us',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  const AuthHeader(
+                    title: 'Create account',
+                    subtitle: 'It only takes a minute.',
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'It only takes a minute.',
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 24),
                   TextFormField(
                     controller: controller.nameController,
                     textCapitalization: TextCapitalization.words,
@@ -43,10 +36,10 @@ class RegisterView extends GetView<RegisterViewModel> {
                     validator: (v) => Validators.required(v, field: 'Name'),
                     decoration: const InputDecoration(
                       labelText: 'Full name',
-                      prefixIcon: Icon(Icons.person_outline),
+                      prefixIcon: Icon(Icons.person_outline_rounded),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   TextFormField(
                     controller: controller.emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -55,10 +48,10 @@ class RegisterView extends GetView<RegisterViewModel> {
                     validator: Validators.email,
                     decoration: const InputDecoration(
                       labelText: 'Email',
-                      prefixIcon: Icon(Icons.email_outlined),
+                      prefixIcon: Icon(Icons.alternate_email_rounded),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   TextFormField(
                     controller: controller.phoneController,
                     keyboardType: TextInputType.phone,
@@ -70,7 +63,7 @@ class RegisterView extends GetView<RegisterViewModel> {
                       prefixIcon: Icon(Icons.phone_outlined),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   Obx(
                     () => TextFormField(
                       controller: controller.passwordController,
@@ -81,20 +74,22 @@ class RegisterView extends GetView<RegisterViewModel> {
                       decoration: InputDecoration(
                         labelText: 'Password',
                         helperText: 'At least 8 characters',
-                        prefixIcon: const Icon(Icons.lock_outline),
+                        prefixIcon: const Icon(Icons.lock_outline_rounded),
                         suffixIcon: IconButton(
-                          tooltip: 'Show password',
+                          tooltip: controller.obscurePassword.value
+                              ? 'Show password'
+                              : 'Hide password',
                           onPressed: controller.obscurePassword.toggle,
                           icon: Icon(
                             controller.obscurePassword.value
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   Obx(
                     () => TextFormField(
                       controller: controller.confirmController,
@@ -104,11 +99,11 @@ class RegisterView extends GetView<RegisterViewModel> {
                       onFieldSubmitted: (_) => controller.register(),
                       decoration: const InputDecoration(
                         labelText: 'Confirm password',
-                        prefixIcon: Icon(Icons.lock_outline),
+                        prefixIcon: Icon(Icons.lock_outline_rounded),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 28),
                   Obx(
                     () => LoadingButton(
                       label: 'Create account',
@@ -122,7 +117,7 @@ class RegisterView extends GetView<RegisterViewModel> {
                     children: [
                       const Text('Already have an account?'),
                       TextButton(
-                        onPressed: () => Get.offNamed(AppRoutes.login),
+                        onPressed: () => Get.offNamed<void>(AppRoutes.login),
                         child: const Text('Log in'),
                       ),
                     ],

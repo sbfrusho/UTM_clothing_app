@@ -111,12 +111,16 @@ lib/
 - Removed `flutter_screenutil`, `fluttertoast`, `font_awesome_flutter`; WhatsApp contact uses `SUPPORT_WHATSAPP` config instead of a hard-coded personal number.
 - Stricter lints (`strict-casts`, `strict-raw-types` and more), 0 analyzer issues, 19 unit tests (models, cart, payment).
 
-### Sprint 3: Design system and redesign
-- Material 3 theme, light and dark, brand colour tokens, typography scale (Google Fonts).
-- Reusable components: buttons, text fields with validation, product card, price tag, rating, badges, bottom sheets, dialogs, snackbars.
-- Loading (shimmer), empty and error states for every list.
-- New splash (`flutter_native_splash`), onboarding, adaptive app icon (`flutter_launcher_icons`).
-- Dark theme, typography, component polish on the Sprint 2 shell.
+### Sprint 3: Design system and redesign ✅
+- New original brand: **Your Shop** mark (bag + "Y") drawn as vector (`BrandMarkPainter`), wordmark in Playfair Display; all UTM logos and images removed.
+- Grey and cream palette (`AppColors`), semantic `AppPalette` theme extension (success/warning/info/accent/skeleton), full **light and dark** `ColorScheme`s; System/Light/Dark switch in Profile (`ThemeService`, persisted).
+- Typography: Manrope (UI) + Playfair Display (headlines), bundled under SIL OFL.
+- Modern top bars: page-colored, no tint, hairline on scroll; `AppTopBar.large` serif headers on tabs, soft-square back/action buttons (`AppIconButton`); home has a greeting header, logo, cart badge and search pill instead of an app bar; product page uses floating controls over a full-bleed image.
+- Component theming: inputs, buttons, cards, chips, navigation bar, dialogs, sheets, date picker, snackbars.
+- Skeleton loaders (home, grids, lists), redesigned empty/error states, stock and order-status indicators from the palette.
+- Launcher icon (adaptive + Android 13 themed/monochrome + iOS), Play Store icon and native splash (light/dark, Android 12+) generated from the same painter (`tool/generate_brand_assets_test.dart`).
+- Screenshot harness `tool/screenshots_test.dart` renders the real views with fake data; caught and fixed a skeleton overflow on 360 dp phones and a segmented-button wrap.
+- Found: product images in Firebase Storage return 402 because Storage now requires the Blaze plan. The UI falls back to placeholders; images return once the project is on Blaze.
 
 ### Sprint 4: Authentication
 - Email/password sign up and sign in with validation, email verification gate, password reset.

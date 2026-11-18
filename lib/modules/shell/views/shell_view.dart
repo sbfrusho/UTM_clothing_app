@@ -23,50 +23,57 @@ class ShellView extends GetView<ShellViewModel> {
   @override
   Widget build(BuildContext context) {
     final cart = Get.find<CartViewModel>();
+    final scheme = Theme.of(context).colorScheme;
     return Obx(
       () => Scaffold(
         body: IndexedStack(
           index: controller.currentTab.value.index,
           children: _tabs,
         ),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: controller.currentTab.value.index,
-          onDestinationSelected: controller.select,
-          destinations: [
-            const NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            const NavigationDestination(
-              icon: Icon(Icons.grid_view_outlined),
-              selectedIcon: Icon(Icons.grid_view),
-              label: 'Categories',
-            ),
-            const NavigationDestination(
-              icon: Icon(Icons.favorite_border),
-              selectedIcon: Icon(Icons.favorite),
-              label: 'Wishlist',
-            ),
-            NavigationDestination(
-              icon: Badge(
-                isLabelVisible: cart.itemCount > 0,
-                label: Text('${cart.itemCount}'),
-                child: const Icon(Icons.shopping_bag_outlined),
+        bottomNavigationBar: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border(top: BorderSide(color: scheme.outlineVariant)),
+          ),
+          child: NavigationBar(
+            selectedIndex: controller.currentTab.value.index,
+            onDestinationSelected: controller.select,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            destinations: [
+              const NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home_rounded),
+                label: 'Home',
               ),
-              selectedIcon: Badge(
-                isLabelVisible: cart.itemCount > 0,
-                label: Text('${cart.itemCount}'),
-                child: const Icon(Icons.shopping_bag),
+              const NavigationDestination(
+                icon: Icon(Icons.grid_view_outlined),
+                selectedIcon: Icon(Icons.grid_view_rounded),
+                label: 'Shop',
               ),
-              label: 'Cart',
-            ),
-            const NavigationDestination(
-              icon: Icon(Icons.person_outline),
-              selectedIcon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
+              const NavigationDestination(
+                icon: Icon(Icons.favorite_border_rounded),
+                selectedIcon: Icon(Icons.favorite_rounded),
+                label: 'Saved',
+              ),
+              NavigationDestination(
+                icon: Badge(
+                  isLabelVisible: cart.itemCount > 0,
+                  label: Text('${cart.itemCount}'),
+                  child: const Icon(Icons.shopping_bag_outlined),
+                ),
+                selectedIcon: Badge(
+                  isLabelVisible: cart.itemCount > 0,
+                  label: Text('${cart.itemCount}'),
+                  child: const Icon(Icons.shopping_bag_rounded),
+                ),
+                label: 'Cart',
+              ),
+              const NavigationDestination(
+                icon: Icon(Icons.person_outline_rounded),
+                selectedIcon: Icon(Icons.person_rounded),
+                label: 'Profile',
+              ),
+            ],
+          ),
         ),
       ),
     );
