@@ -1,0 +1,7 @@
+{
+  "APP_ENV": "dev",
+  "CURRENCY": "MYR",
+  "CURRENCY_SYMBOL": "RM",
+  "STRIPE_PUBLISHABLE_KEY": "",
+  "PAYMENT_BACKEND_URL": ""
+}

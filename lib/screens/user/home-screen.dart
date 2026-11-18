@@ -1,19 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/My%20Cart/my_cart_view.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/controller/cart-controller.dart';
-import 'package:shopping_app/controller/wishlist-controller.dart';
-import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
-import 'package:shopping_app/screens/user/all-category.dart';
-import 'package:shopping_app/screens/user/settings.dart';
-import 'package:shopping_app/screens/user/wish-list.dart';
-import 'package:shopping_app/widgets/banner-widget.dart';
-import 'package:shopping_app/widgets/custom-drawer-widget.dart';
-import 'package:shopping_app/widgets/heading-widget.dart';
+import 'package:your_shop/screens/user/my-cart-screen.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/controller/cart-controller.dart';
+import 'package:your_shop/controller/wishlist-controller.dart';
+import 'package:your_shop/screens/auth-ui/welcome-screen.dart';
+import 'package:your_shop/screens/user/all-category.dart';
+import 'package:your_shop/screens/user/settings.dart';
+import 'package:your_shop/screens/user/wish-list.dart';
+import 'package:your_shop/widgets/banner-widget.dart';
+import 'package:your_shop/widgets/custom-drawer-widget.dart';
+import 'package:your_shop/widgets/heading-widget.dart';
 import '../../widgets/Categories.dart';
 import 'search-result-screen.dart';
 
@@ -26,30 +25,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final CartController cartController = Get.put(CartController());
+  final CartController cartController = Get.find<CartController>();
   TextEditingController searchController = TextEditingController();
-  WishlistController wishlistController = Get.put(WishlistController());
+  final WishlistController wishlistController = Get.find<WishlistController>();
   User? user = FirebaseAuth.instance.currentUser;
-  late String password;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchPassword();
-  }
-
-  Future<void> fetchPassword() async {
-    try {
-      // Fetch password from Firestore based on the current user's UID
-      DocumentSnapshot userData = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
-      setState(() {
-        password = userData['password'];
-      });
-    } catch (e) {
-      print("Failed to fetch password: $e");
-      // Handle error gracefully, show a message, retry, etc.
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: const Icon(Icons.logout, color: Colors.white),
               onPressed: () async {
                 await _auth.signOut();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => WelcomeScreen(user: user, password: password)),
-                );
+                Get.offAll(() => const WelcomeScreen());
               },
             ),
           ],

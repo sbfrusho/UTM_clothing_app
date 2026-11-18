@@ -2,18 +2,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/My%20Cart/my_cart_view.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/models/user-model.dart';
-import 'package:shopping_app/screens/user/all-category.dart';
-import 'package:shopping_app/screens/user/home-screen.dart';
-import 'package:shopping_app/screens/user/user-details-screen.dart';
-import 'package:shopping_app/screens/user/wish-list.dart';
+import 'package:your_shop/screens/user/my-cart-screen.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/screens/user/all-category.dart';
+import 'package:your_shop/screens/user/home-screen.dart';
+import 'package:your_shop/screens/user/wish-list.dart';
 
 class SettingsScreen extends StatefulWidget {
   final String email;
 
-  SettingsScreen({required this.email});
+  const SettingsScreen({super.key, required this.email});
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();

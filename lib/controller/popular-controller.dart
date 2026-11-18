@@ -25,13 +25,14 @@
 //         bannerUrls.value = urls;
 //       }
 //     } catch (e) {
-//       print("Error: $e");
+//       AppLogger.debug("Error: $e");
 //     }
 //   }
 // }
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/models/product-model.dart';
+import 'package:your_shop/models/product-model.dart';
+import 'package:your_shop/core/utils/app_logger.dart';
 
 class PopularController extends GetxController {
   RxList<ProductModel> products = RxList<ProductModel>([]);
@@ -57,7 +58,7 @@ class PopularController extends GetxController {
         products.value = productList;
       }
     } catch (e) {
-      print("Error: $e");
+      AppLogger.debug("Error: $e");
     }
   }
   Future<void> fetchBannerUrls() async {
@@ -74,7 +75,7 @@ class PopularController extends GetxController {
         bannerUrls.value = urls;
       }
     } catch (e) {
-      print("Error: $e");
+      AppLogger.debug("Error: $e");
     }
   }
 }

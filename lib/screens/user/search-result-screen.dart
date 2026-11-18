@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/screens/user/product-detailscreen.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/screens/user/product-detailscreen.dart';
 import '../../controller/search-controller.dart';
-import '../../models/product-model.dart';
 
 class SearchResultsScreen extends StatelessWidget {
   final String query;
 
-  const SearchResultsScreen({Key? key, required this.query}) : super(key: key);
+  const SearchResultsScreen({super.key, required this.query});
 
   @override
   Widget build(BuildContext context) {
     
     SearchControllerAll searchController = Get.put(SearchControllerAll());
     // Call searchProducts initially
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       searchController.searchProducts(query);
     });
 

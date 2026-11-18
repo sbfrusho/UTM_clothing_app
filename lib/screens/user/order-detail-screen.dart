@@ -1,19 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:get/get.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/screens/user/all-category.dart';
-import 'package:shopping_app/screens/user/home-screen.dart';
-import 'package:shopping_app/screens/user/settings.dart';
-import 'package:shopping_app/screens/user/wish-list.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/screens/user/all-category.dart';
+import 'package:your_shop/screens/user/home-screen.dart';
+import 'package:your_shop/screens/user/settings.dart';
+import 'package:your_shop/screens/user/wish-list.dart';
 
-import '../../My Cart/my_cart_view.dart';
+import 'package:your_shop/screens/user/my-cart-screen.dart';
 
 class OrderDetailPage extends StatelessWidget {
   final String orderId;
 
-  OrderDetailPage({required this.orderId});
+  const OrderDetailPage({super.key, required this.orderId});
 
   @override
   Widget build(BuildContext context) {

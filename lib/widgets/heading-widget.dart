@@ -1,9 +1,8 @@
 //ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print, unused_field , unused_import, prefer_const_constructors_in_immutables
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/widgets/slider-image.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/widgets/slider-image.dart';
 
 class HeadingWidget extends StatelessWidget {
   HeadingWidget({

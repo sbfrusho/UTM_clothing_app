@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:your_shop/core/utils/app_logger.dart';
 
 class AddressController extends GetxController {
   var address = ''.obs;
@@ -24,10 +25,10 @@ class AddressController extends GetxController {
         final addressData = querySnapshot.docs.first.data();
         address.value = addressData['address'] ?? '';
       } else {
-        print('No data found for this address');
+        AppLogger.debug('No data found for this address');
       }
     } catch (error) {
-      print('Error fetching address data: $error');
+      AppLogger.debug('Error fetching address data: $error');
     }
   }
 
@@ -40,7 +41,7 @@ class AddressController extends GetxController {
 
       address.value = newAddress;
     } catch (error) {
-      print('Error updating address data: $error');
+      AppLogger.debug('Error updating address data: $error');
     }
   }
 }

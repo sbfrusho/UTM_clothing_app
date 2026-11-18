@@ -64,15 +64,15 @@ class CartItem {
 }
 
 class CartModelController extends ChangeNotifier {
-  List<CartItem> _cartItems = [];
+  final List<CartItem> _cartItems = [];
 
   List<CartItem> get cartItems => _cartItems;
 
   double get totalPrice {
     double total = 0;
-    _cartItems.forEach((item) {
+    for (var item in _cartItems) {
       total += double.parse(item.price) * item.quantity;
-    });
+    }
     return total;
   }
 

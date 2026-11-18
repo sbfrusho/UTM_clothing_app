@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/screens/user/all-category.dart';
-import 'package:shopping_app/screens/user/home-screen.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/screens/user/all-category.dart';
 
 class OrderConfirmationScreen extends StatelessWidget {
   // final String orderId;
 
   const OrderConfirmationScreen({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

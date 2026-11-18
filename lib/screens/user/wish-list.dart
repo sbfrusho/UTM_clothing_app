@@ -1,28 +1,29 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
-import 'package:shopping_app/My%20Cart/my_cart_view.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/controller/wishlist-controller.dart';
-import 'package:shopping_app/models/wishlist-model.dart';
-import 'package:shopping_app/screens/user/all-category.dart';
-import 'package:shopping_app/screens/user/home-screen.dart';
-import 'package:shopping_app/screens/user/settings.dart';
+import 'package:your_shop/screens/user/my-cart-screen.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/controller/wishlist-controller.dart';
+import 'package:your_shop/models/wishlist-model.dart';
+import 'package:your_shop/screens/user/all-category.dart';
+import 'package:your_shop/screens/user/home-screen.dart';
+import 'package:your_shop/screens/user/settings.dart';
 
 class WishlistScreen extends StatefulWidget {
+  const WishlistScreen({super.key});
+
   @override
   _WishlistScreenState createState() => _WishlistScreenState();
 }
 
 class _WishlistScreenState extends State<WishlistScreen> {
   late Future<void> _wishlistFuture;
+  final WishlistController wishlistController = Get.find<WishlistController>();
   User? user = FirebaseAuth.instance.currentUser;
   @override
   void initState() {
     super.initState();
-    _wishlistFuture = Provider.of<WishlistController>(context, listen: false).fetchWishlist();
+    _wishlistFuture = wishlistController.fetchWishlist();
   }
 
   void _showEditDialog(WishListModel item) {
@@ -47,8 +48,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
             TextButton(
               onPressed: () {
                 if (timeSlotController.text.isNotEmpty) {
-                  Provider.of<WishlistController>(context, listen: false)
-                      .updateTimeSlot(item, timeSlotController.text);
+                  wishlistController.updateTimeSlot(item, timeSlotController.text);
                   Navigator.of(context).pop();
                 }
               },
@@ -75,8 +75,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            return Consumer<WishlistController>(
-              builder: (context, wishlistController, child) {
+            return Obx(
+              () {
                 if (wishlistController.wishlistItems.isEmpty) {
                   return Center(child: Text('No items in your wishlist.'));
                 } else {

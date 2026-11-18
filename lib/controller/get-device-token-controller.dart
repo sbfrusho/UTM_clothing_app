@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:your_shop/core/utils/app_logger.dart';
 
 class GetDeviceTokenController extends GetxController{
 
@@ -20,11 +21,11 @@ class GetDeviceTokenController extends GetxController{
         deviceToken = token;
         update();
       }
-      print(deviceToken);
+      AppLogger.debug(deviceToken);
 
     
     } catch (e) {
-      print("Error getting device token: $e");
+      AppLogger.debug("Error getting device token: $e");
     }
 
   }

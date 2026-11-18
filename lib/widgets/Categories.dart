@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/controller/cart-controller.dart';
-import 'package:shopping_app/models/Category-model.dart';
-import 'package:shopping_app/screens/user/single-category-product-screen.dart';
+import 'package:your_shop/controller/cart-controller.dart';
+import 'package:your_shop/models/Category-model.dart';
+import 'package:your_shop/screens/user/single-category-product-screen.dart';
 
 
 class Categories extends StatelessWidget {

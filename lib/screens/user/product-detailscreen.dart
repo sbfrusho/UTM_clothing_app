@@ -5,32 +5,33 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/controller/cart-controller.dart';
-import 'package:shopping_app/models/product-model.dart';
-import 'package:shopping_app/models/wishlist-model.dart';
-import 'package:shopping_app/screens/user/all-category.dart';
-import 'package:shopping_app/screens/user/home-screen.dart';
-import 'package:shopping_app/screens/user/settings.dart';
-import 'package:shopping_app/screens/user/wish-list.dart';
-import 'package:shopping_app/widgets/check-quantity.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/controller/cart-controller.dart';
+import 'package:your_shop/models/product-model.dart';
+import 'package:your_shop/models/wishlist-model.dart';
+import 'package:your_shop/screens/user/all-category.dart';
+import 'package:your_shop/screens/user/home-screen.dart';
+import 'package:your_shop/screens/user/settings.dart';
+import 'package:your_shop/screens/user/wish-list.dart';
+import 'package:your_shop/widgets/check-quantity.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../My Cart/my_cart_view.dart';
+import 'package:your_shop/screens/user/my-cart-screen.dart';
 import '../../controller/cart-model-controller.dart';
 import '../../controller/wishlist-controller.dart';
+import 'package:your_shop/core/utils/app_logger.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final ProductModel productModel;
 
-  ProductDetailScreen({Key? key, required this.productModel}) : super(key: key);
+  const ProductDetailScreen({super.key, required this.productModel});
 
   @override
   _ProductDetailScreenState createState() => _ProductDetailScreenState();
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  CartController cartController = Get.put(CartController());
-  WishlistController wishlistController = Get.put(WishlistController());
+  final CartController cartController = Get.find<CartController>();
+  final WishlistController wishlistController = Get.find<WishlistController>();
   bool isInWishlist = false;
   bool _isButtonPressed = false;
   QuantityChecker quantityChecker = QuantityChecker();
@@ -177,7 +178,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       Fluttertoast.showToast(msg: "Product is unavailable");
     } else {
       cartController.email(widget.productModel.sellerEmail);
-      print("Seller Email : ${widget.productModel.sellerEmail}");
+      AppLogger.debug("Seller Email : ${widget.productModel.sellerEmail}");
       cartController.addToCart(
         CartItem(
           productId: widget.productModel.productId,
@@ -283,7 +284,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           Expanded(
             child: ElevatedButton.icon(
               onPressed: sendWhatsAp,
-              icon: Icon(FontAwesomeIcons.whatsapp, color: Colors.white),
+              icon: const FaIcon(FontAwesomeIcons.whatsapp, color: Colors.white),
               label: Text(
                 "Contact Us",
                 style: TextStyle(color: Colors.white),

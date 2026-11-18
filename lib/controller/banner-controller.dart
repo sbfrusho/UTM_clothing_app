@@ -3,6 +3,7 @@
 //ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables , unused_import , unused_field, file_names
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:your_shop/core/utils/app_logger.dart';
 
 class BannerController extends GetxController {
   RxList<String> bannerUrls = RxList<String>([]);
@@ -26,7 +27,7 @@ class BannerController extends GetxController {
             .toList();
       }
     } catch (e) {
-      print("Error: $e");
+      AppLogger.debug("Error: $e");
     }
   }
 }

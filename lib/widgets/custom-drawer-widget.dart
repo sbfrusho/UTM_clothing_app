@@ -4,15 +4,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/My%20Cart/my_cart_view.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/controller/get-user-data-controller.dart';
-import 'package:shopping_app/screens/auth-ui/forgot-password-screen.dart';
-import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
-import 'package:shopping_app/screens/user/order-screen.dart';
-import 'package:shopping_app/screens/user/settings.dart';
-import 'package:shopping_app/screens/user/user-details-screen.dart';
-import 'package:shopping_app/screens/user/wish-list.dart';
+import 'package:your_shop/screens/user/my-cart-screen.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/core/services/biometric_service.dart';
+import 'package:your_shop/controller/get-user-data-controller.dart';
+import 'package:your_shop/screens/auth-ui/forgot-password-screen.dart';
+import 'package:your_shop/screens/auth-ui/welcome-screen.dart';
+import 'package:your_shop/screens/user/order-screen.dart';
+import 'package:your_shop/screens/user/settings.dart';
+import 'package:your_shop/screens/user/user-details-screen.dart';
+import 'package:your_shop/screens/user/wish-list.dart';
 
 class DrawerWidget extends StatelessWidget {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -21,16 +22,7 @@ class DrawerWidget extends StatelessWidget {
 
   User? user = FirebaseAuth.instance.currentUser;
 
-  Future<String> fetchPasswordFromFirestore(String uid) async {
-    try {
-      // Fetch password from Firestore
-      DocumentSnapshot snapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
-      return snapshot['password']; // Assuming 'password' is a field in your 'users' collection
-    } catch (e) {
-      print('Error fetching password: $e');
-      return ''; // Handle error as per your app's requirements
-    }
-  }
+  DrawerWidget({super.key});
 
   Future<Map<String, dynamic>> fetchUserData() async {
     if (user == null) {
@@ -38,7 +30,7 @@ class DrawerWidget extends StatelessWidget {
     }
 
     DocumentSnapshot snapshot = await _firestore.collection('users').doc(user!.uid).get();
-    return snapshot.data() as Map<String, dynamic>;
+    return snapshot.data() as Map<String, dynamic>? ?? {};
   }
 
   @override
@@ -154,21 +146,28 @@ class DrawerWidget extends StatelessWidget {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsScreen(email: user!.email.toString())));
                   },
                 ),
+                Obx(
+                  () => SwitchListTile(
+                    secondary: Icon(Icons.fingerprint),
+                    title: Text('App lock'),
+                    subtitle: Text('Require biometrics to open the app'),
+                    value: Get.find<BiometricService>().isLockEnabled.value,
+                    onChanged: (enabled) async {
+                      final applied = await Get.find<BiometricService>()
+                          .setLockEnabled(enabled);
+                      if (!applied && enabled) {
+                        Get.snackbar('App lock',
+                            'Biometrics are not available or were not confirmed.');
+                      }
+                    },
+                  ),
+                ),
                 ListTile(
                   leading: Icon(Icons.logout),
                   title: Text('Log out'),
                   onTap: () async {
-                    // Fetch the password from Firestore or any secure storage
-                    String password = await fetchPasswordFromFirestore(user!.uid);
-
-                    // Navigate to WelcomeScreen with user and password
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => WelcomeScreen(user: user, password: password)),
-                    );
-
-                    // Sign out of Firebase
-                    auth.signOut();
+                    await auth.signOut();
+                    Get.offAll(() => const WelcomeScreen());
                   },
                 ),
                 // Add more ListTiles for additional items

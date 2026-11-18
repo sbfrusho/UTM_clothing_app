@@ -1,195 +1,89 @@
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shopping_app/models/wishlist-model.dart';
+import 'package:get/get.dart';
+import 'package:your_shop/core/utils/app_logger.dart';
+import 'package:your_shop/models/wishlist-model.dart';
 
-class WishlistController extends ChangeNotifier {
-  List<WishListModel> _wishlistItems = [];
+/// Wishlist state (GetX). Firestore is the source of truth; its offline
+/// cache covers no-network use. Moves to `users/{uid}/wishlist` in Sprint 6.
+class WishlistController extends GetxController {
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final RxList<WishListModel> wishlistItems = <WishListModel>[].obs;
+  StreamSubscription<User?>? _authSub;
 
-  List<WishListModel> get wishlistItems => _wishlistItems;
-
-  WishlistController() {
-    _loadWishlist();
+  DocumentReference<Map<String, dynamic>>? get _doc {
+    final email = FirebaseAuth.instance.currentUser?.email;
+    if (email == null || email.isEmpty) return null;
+    return _db.collection('wishlist').doc(email);
   }
 
-  void addToWishlist(WishListModel item) {
-    final isAlreadyAdded = _wishlistItems
-        .any((wishlistItem) => wishlistItem.productId == item.productId);
-    if (!isAlreadyAdded) {
-      _wishlistItems.clear(); // Clear existing items
-      _wishlistItems.add(item); // Add the new item
-      _saveWishlist();
-      notifyListeners();
-      _uploadWishlist(); // Upload to Firestore after adding to local list
-    } else {
-      print('Product already exists in the wishlist.');
-    }
+  @override
+  void onInit() {
+    super.onInit();
+    // Reload for whoever is signed in; clears on sign-out.
+    _authSub = FirebaseAuth.instance
+        .authStateChanges()
+        .listen((_) => fetchWishlist().catchError((_) {}));
   }
 
-  void removeFromWishlistById(String productId) async {
-    _wishlistItems.removeWhere((item) => item.productId == productId);
-    _saveWishlist();
-    // clearWishlist();
-    notifyListeners();
-
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw Exception('User is not logged in');
-    }
-    final userEmail = user.email ?? '';
-
-    try {
-      final DocumentSnapshot doc = await FirebaseFirestore.instance
-          .collection('wishlist')
-          .doc(userEmail)
-          .get();
-
-      if (!doc.exists) {
-        throw Exception('Wishlist document does not exist');
-      }
-
-      List<dynamic> wishlistJson = doc['wishlist'];
-      List<WishListModel> wishlist =
-          wishlistJson.map((json) => WishListModel.fromMap(json)).toList();
-
-      wishlist.removeWhere((item) => item.productId == productId);
-
-      await FirebaseFirestore.instance
-          .collection('wishlist')
-          .doc(userEmail)
-          .update({
-        'wishlist': wishlist.map((item) => item.toMap()).toList(),
-      });
-
-      print('Item removed from wishlist in Firestore.');
-    } catch (error) {
-      print('Error removing item from wishlist in Firestore: $error');
-    }
+  @override
+  void onClose() {
+    _authSub?.cancel();
+    super.onClose();
   }
 
-  Future<void> _saveWishlist() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> wishlistJson =
-        _wishlistItems.map((item) => json.encode(item.toMap())).toList();
-    prefs.setStringList('wishlist', wishlistJson);
+  bool contains(String productId) =>
+      wishlistItems.any((item) => item.productId == productId);
+
+  Future<void> addToWishlist(WishListModel item) async {
+    if (contains(item.productId)) return;
+    wishlistItems.add(item);
+    await _persist();
   }
 
-  Future<void> _loadWishlist() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String>? wishlistJson = prefs.getStringList('wishlist');
-    if (wishlistJson != null) {
-      _wishlistItems = wishlistJson
-          .map((item) => WishListModel.fromMap(json.decode(item)))
-          .toList();
-      notifyListeners();
-    }
-  }
-
-  Future<void> _uploadWishlist() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw Exception('User is not logged in');
-    }
-    final userEmail = user.email ?? '';
-
-    try {
-      final DocumentSnapshot doc = await FirebaseFirestore.instance
-          .collection('wishlist')
-          .doc(userEmail)
-          .get();
-
-      List<WishListModel> currentWishlist = [];
-      if (doc.exists) {
-        List<dynamic> wishlistJson = doc['wishlist'];
-        currentWishlist =
-            wishlistJson.map((item) => WishListModel.fromMap(item)).toList();
-      }
-
-      // Add the current local wishlist items to the fetched wishlist
-      currentWishlist.addAll(_wishlistItems);
-
-      // Remove duplicates (if any)
-      final updatedWishlist = currentWishlist.toSet().toList();
-
-      await FirebaseFirestore.instance
-          .collection('wishlist')
-          .doc(userEmail)
-          .set({
-        'wishlist': updatedWishlist.map((item) => item.toMap()).toList(),
-      });
-
-      print('Wishlist uploaded successfully.');
-    } catch (error) {
-      print('Error uploading wishlist: $error');
-    }
+  Future<void> removeFromWishlistById(String productId) async {
+    wishlistItems.removeWhere((item) => item.productId == productId);
+    await _persist();
   }
 
   Future<void> fetchWishlist() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw Exception('User is not logged in');
+    final doc = _doc;
+    if (doc == null) {
+      wishlistItems.clear();
+      return;
     }
-    final userEmail = user.email ?? '';
-
     try {
-      final DocumentSnapshot doc = await FirebaseFirestore.instance
-          .collection('wishlist')
-          .doc(userEmail)
-          .get();
-      if (!doc.exists) {
-        _wishlistItems = [];
-        notifyListeners();
-        return;
-      }
-
-      List<dynamic> wishlistJson = doc['wishlist'];
-      _wishlistItems =
-          wishlistJson.map((item) => WishListModel.fromMap(item)).toList();
-      notifyListeners();
-    } catch (error) {
-      throw Exception('Error fetching wishlist: $error');
+      final snapshot = await doc.get();
+      final raw = (snapshot.data()?['wishlist'] as List<dynamic>?) ?? const [];
+      wishlistItems.assignAll(raw
+          .map((json) => WishListModel.fromMap(Map<String, dynamic>.from(json)))
+          .toList());
+    } catch (e, st) {
+      AppLogger.error('Error fetching wishlist', e, st);
+      rethrow;
     }
   }
 
   Future<void> updateTimeSlot(WishListModel item, String newTimeSlot) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw Exception('User is not logged in');
-    }
-    final userEmail = user.email ?? '';
+    final index =
+        wishlistItems.indexWhere((w) => w.productId == item.productId);
+    if (index == -1) return;
+    wishlistItems[index].timeSlot = newTimeSlot;
+    wishlistItems.refresh();
+    await _persist();
+  }
 
+  Future<void> _persist() async {
+    final doc = _doc;
+    if (doc == null) return;
     try {
-      final DocumentSnapshot doc = await FirebaseFirestore.instance
-          .collection('wishlist')
-          .doc(userEmail)
-          .get();
-      if (!doc.exists) {
-        throw Exception('Wishlist document does not exist');
-      }
-
-      List<dynamic> wishlistJson = doc['wishlist'];
-      List<WishListModel> wishlist =
-          wishlistJson.map((json) => WishListModel.fromMap(json)).toList();
-
-      for (var wishlistItem in wishlist) {
-        if (wishlistItem.productId == item.productId) {
-          wishlistItem.timeSlot = newTimeSlot;
-          break;
-        }
-      }
-
-      await FirebaseFirestore.instance
-          .collection('wishlist')
-          .doc(userEmail)
-          .update({
-        'wishlist': wishlist.map((item) => item.toMap()).toList(),
+      await doc.set({
+        'wishlist': wishlistItems.map((item) => item.toMap()).toList(),
       });
-
-      await fetchWishlist(); // Refresh the list
-    } catch (error) {
-      throw Exception('Error updating time slot: $error');
+    } catch (e, st) {
+      AppLogger.error('Error saving wishlist', e, st);
     }
   }
 }

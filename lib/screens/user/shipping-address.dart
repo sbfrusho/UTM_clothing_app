@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/models/address-model.dart';
-import 'package:shopping_app/screens/user/all-category.dart';
-import 'package:shopping_app/screens/user/home-screen.dart';
-import 'package:shopping_app/screens/user/settings.dart';
-import 'package:shopping_app/screens/user/user-details-screen.dart';
-import 'package:shopping_app/screens/user/wish-list.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/models/address-model.dart';
+import 'package:your_shop/screens/user/all-category.dart';
+import 'package:your_shop/screens/user/home-screen.dart';
+import 'package:your_shop/screens/user/settings.dart';
+import 'package:your_shop/screens/user/wish-list.dart';
 
-import '../../My Cart/my_cart_view.dart'; // Import the Address model
+import 'package:your_shop/screens/user/my-cart-screen.dart'; // Import the Address model
+import 'package:your_shop/core/utils/app_logger.dart';
 
 class AddAddressScreen extends StatefulWidget {
+  const AddAddressScreen({super.key});
+
   @override
   _AddAddressScreenState createState() => _AddAddressScreenState();
 }
@@ -96,7 +98,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
               snackPosition: SnackPosition.BOTTOM);
           Navigator.pop(context);
         } catch (e) {
-          print('Error uploading address: $e');
+          AppLogger.debug('Error uploading address: $e');
           // Show an error message to the user
           Get.snackbar('Error', 'Failed to add address. Please try again later.',
               snackPosition: SnackPosition.BOTTOM);

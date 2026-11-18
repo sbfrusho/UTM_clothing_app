@@ -6,23 +6,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/controller/cart-controller.dart';
-import 'package:shopping_app/controller/cart-model-controller.dart';
-import 'package:shopping_app/screens/user/all-category.dart';
-import 'package:shopping_app/screens/user/checkout-screen.dart';
-import 'package:shopping_app/screens/user/home-screen.dart';
-import 'package:shopping_app/screens/user/product-detailscreen.dart';
-import 'package:shopping_app/screens/user/settings.dart';
-import 'package:shopping_app/screens/user/wish-list.dart';
-import '../../My Cart/my_cart_view.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/controller/cart-controller.dart';
+import 'package:your_shop/controller/cart-model-controller.dart';
+import 'package:your_shop/screens/user/all-category.dart';
+import 'package:your_shop/screens/user/home-screen.dart';
+import 'package:your_shop/screens/user/product-detailscreen.dart';
+import 'package:your_shop/screens/user/settings.dart';
+import 'package:your_shop/screens/user/wish-list.dart';
+import 'package:your_shop/screens/user/my-cart-screen.dart';
 import '../../controller/wishlist-controller.dart';
 import '../../models/product-model.dart';
 
 class SingleProductView extends StatelessWidget {
   final String categoryId;
   final String categoryName;
-  final CartController cartController = Get.put(CartController());
+  final CartController cartController = Get.find<CartController>();
   User? user = FirebaseAuth.instance.currentUser;
   SingleProductView({
     Key? key,
@@ -30,7 +29,7 @@ class SingleProductView extends StatelessWidget {
     required this.categoryName,
   }) : super(key: key);
 
-  WishlistController wishlistController = Get.put(WishlistController());
+  final WishlistController wishlistController = Get.find<WishlistController>();
 
   void addToCartWithSize(ProductModel product, String selectedSize) {
     if (cartController.cartItems.any((element) => element.productId == product.productId)) {

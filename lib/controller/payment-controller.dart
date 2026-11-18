@@ -1,90 +1,20 @@
-// ignore_for_file: avoid_print
-
-import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:http/http.dart' as http;
+import 'package:your_shop/core/config/app_config.dart';
+import 'package:your_shop/core/services/payment/demo_payment_gateway.dart';
+import 'package:your_shop/core/services/payment/payment_gateway.dart';
+import 'package:your_shop/core/services/payment/stripe_payment_gateway.dart';
 
+/// Chooses the active gateway. Stripe is used only when a server-side
+/// PaymentIntent backend is configured; otherwise the demo gateway runs.
 class PaymentController extends GetxController {
-  Map<String, dynamic>? paymentIntent;
+  PaymentController({PaymentGateway? gateway})
+      : gateway = gateway ??
+            (AppConfig.isStripeConfigured
+                ? StripePaymentGateway()
+                : DemoPaymentGateway());
 
-  Future<bool> makePayment(String amount) async {
-    try {
-      // Create payment intent data
-      paymentIntent = await createPaymentIntent(
-          double.parse(amount), 'MYR'); // Changed to MYR
-      // Initialise the payment sheet setup
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          // Client secret key from payment data
-          paymentIntentClientSecret: paymentIntent!['client_secret'],
-          googlePay: const PaymentSheetGooglePay(
-            testEnv: true,
-            currencyCode: "MYR", // Changed to MYR
-            merchantCountryCode: "MY", // Changed to Malaysia
-          ),
-          merchantDisplayName: 'Flutterwings',
-          // returnURL: 'flutterstripe://redirect',
-        ),
-      );
-      // Display payment sheet
-      await displayPaymentSheet();
-      return true;
-    } catch (e) {
-      print("exception $e");
-      if (e is StripeConfigException) {
-        print("Stripe exception ${e.message}");
-      } else {
-        print("exception $e");
-      }
-    }
-    return false;
-  }
+  final PaymentGateway gateway;
 
-  Future<void> displayPaymentSheet() async {
-    try {
-      await Stripe.instance.presentPaymentSheet();
-      Get.snackbar("Success", "Paid successfully");
-      paymentIntent = null;
-    } on StripeException catch (e) {
-      print('Error: $e');
-      Get.snackbar("Error", "Payment Cancelled");
-    } catch (e) {
-      print("Error in displaying");
-      print('$e');
-    }
-  }
-
-  Future<Map<String, dynamic>> createPaymentIntent(
-      double amount, String currency) async {
-    try {
-      // Convert the amount to the smallest currency unit (e.g., cents for USD)
-
-      print("This is a double value :$amount");
-      int amountInCents = (amount * 100).toInt();
-
-      Map<String, dynamic> body = {
-        'amount': amountInCents.toString(),
-        'currency': currency,
-        'payment_method_types[]': 'card',
-      };
-
-      var secretKey ="sk_test_51PRaUxIaAXWjCICDPDZn5yl9lBFJqP0tmvRBpEW9IGvymvcrDvUFAGWTqTOqRJOpk5j6wRZhyu62BhwN1R67RpLx00RkVntVWa";
-          // "sk_test_51PGXvy06xtEbkBYxTTHTZWSoJDHDj9d8EH6ru6dqmVBpLCrNUohWeMsPZw31SPN3EbdL1rBRH4JGbGhGKZfZbmeL00HI8Zv3T2";
-      var response = await http.post(
-        Uri.parse('https://api.stripe.com/v1/payment_intents'),
-        headers: {
-          'Authorization': 'Bearer $secretKey',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: body,
-      );
-
-      print('Payment Intent Body: ${response.body.toString()}');
-      return jsonDecode(response.body.toString());
-    } catch (err) {
-      print('Error charging user: ${err.toString()}');
-      rethrow;
-    }
-  }
+  Future<PaymentResult> makePayment(double amount) =>
+      gateway.pay(amount: amount, currency: AppConfig.currency);
 }

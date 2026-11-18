@@ -2,23 +2,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/models/product-model.dart';
-import 'package:shopping_app/screens/user/settings.dart';
-import 'package:shopping_app/screens/user/single-category-product-screen.dart';
-import 'package:shopping_app/screens/user/wish-list.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/screens/user/settings.dart';
+import 'package:your_shop/screens/user/single-category-product-screen.dart';
+import 'package:your_shop/screens/user/wish-list.dart';
 import '../../controller/wishlist-controller.dart';
 import '../../models/Category-model.dart';
-import '../../My Cart/my_cart_view.dart';
+import 'package:your_shop/screens/user/my-cart-screen.dart';
 import 'home-screen.dart';
 
 class AllCategoriesScreen extends StatelessWidget {
-  AllCategoriesScreen({Key? key}) : super(key: key);
+  AllCategoriesScreen({super.key});
 
-  WishlistController wishlistController = Get.put(WishlistController());
+  final WishlistController wishlistController = Get.find<WishlistController>();
   User? user = FirebaseAuth.instance.currentUser;
 
   @override

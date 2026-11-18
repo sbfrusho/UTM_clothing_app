@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/screens/auth-ui/login-screen.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/screens/auth-ui/login-screen.dart';
 
 import '../../controller/forgot-password-controller.dart';
 

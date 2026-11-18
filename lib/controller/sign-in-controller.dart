@@ -2,9 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:local_auth/local_auth.dart';
 
 class SignInController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -17,19 +15,31 @@ class SignInController extends GetxController {
     String userEmail,
     String userPassword,
   ) async {
-    print(userEmail);
-    print(userPassword);
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: userEmail,
         password: userPassword,
       );
 
+      await _removeLegacyPasswordField(userCredential.user!.uid);
       return userCredential;
     } on FirebaseAuthException catch (e) {
       Get.snackbar("Error", e.message.toString());
     }
     return null;
+  }
+
+  /// Earlier versions stored the plain-text password in `users/{uid}`.
+  /// Remove it on every sign-in so existing accounts get cleaned up.
+  Future<void> _removeLegacyPasswordField(String uid) async {
+    try {
+      await colRef.doc(uid).update({
+        'password': FieldValue.delete(),
+        'biometricEnabled': FieldValue.delete(),
+      });
+    } catch (_) {
+      // Document may not exist yet; nothing to clean.
+    }
   }
 
   Future<DocumentSnapshot> getUserData(String uid) async {
@@ -38,24 +48,5 @@ class SignInController extends GetxController {
 
   void email(String email) {
     user = email;
-  }
-
-  Future<bool> signInWithBiometric(BuildContext context) async {
-    bool canChecBiometrics = await LocalAuthentication().canCheckBiometrics;
-    if (canChecBiometrics) {
-      List<BiometricType> availableBiometrics =
-          await LocalAuthentication().getAvailableBiometrics();
-      if (availableBiometrics.contains(BiometricType.fingerprint)) {
-        try {
-          bool isAuthenticated = await LocalAuthentication().authenticate(
-            localizedReason: "Authenticate to login",
-          );
-          return isAuthenticated;
-        } catch (e) {
-          Get.snackbar("Error", e.toString());
-        }
-      }
-    }
-    return false;
   }
 }

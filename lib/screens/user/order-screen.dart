@@ -150,16 +150,14 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/screens/user/all-category.dart';
-import 'package:shopping_app/screens/user/home-screen.dart';
-import 'package:shopping_app/screens/user/order-detail-screen.dart';
-import 'package:shopping_app/screens/user/settings.dart';
-import 'package:shopping_app/screens/user/user-details-screen.dart';
-import 'package:shopping_app/screens/user/wish-list.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/screens/user/all-category.dart';
+import 'package:your_shop/screens/user/home-screen.dart';
+import 'package:your_shop/screens/user/order-detail-screen.dart';
+import 'package:your_shop/screens/user/settings.dart';
+import 'package:your_shop/screens/user/wish-list.dart';
 
-import '../../My Cart/my_cart_view.dart';
+import 'package:your_shop/screens/user/my-cart-screen.dart';
 
 class OrderScreen extends StatelessWidget {
   const OrderScreen({super.key});

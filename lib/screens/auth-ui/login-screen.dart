@@ -3,11 +3,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/controller/get-user-data-controller.dart';
-import 'package:shopping_app/screens/auth-ui/welcome-screen.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/controller/get-user-data-controller.dart';
 
 import '../../controller/sign-in-controller.dart';
 import '../user/home-screen.dart';
@@ -179,37 +177,20 @@ class _LoginFormState extends State<LoginForm> {
                     } else {
                       UserCredential? userCredential =
                           await signInController.signInMethod(email, password);
+                      if (userCredential == null) return; // error shown
 
                       var userData = await getUserDataController
-                          .getUserData(userCredential!.user!.uid);
+                          .getUserData(userCredential.user!.uid);
 
                       if (userCredential.user!.emailVerified) {
-                        if (userData[0]['isAdmin'] == true) {
-                          // Navigator.of(context).push(MaterialPageRoute(
-                          //     builder: (context) => AdminScreen()));
-
-                          print("Moved to admin screen");
-
-                          Fluttertoast.showToast(
-                              msg: "Welcome Admin",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.red,
-                              textColor: Colors.white,
-                              fontSize: 16.0);
+                        if (userData.isNotEmpty &&
+                            userData[0]['isAdmin'] == true) {
+                          // Admins use the separate admin app.
+                          await FirebaseAuth.instance.signOut();
+                          showToast(context,
+                              "Admin accounts must use the admin app.");
                         } else {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => HomeScreen()));
-
-                          Fluttertoast.showToast(
-                              msg: "Welcome User",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                              backgroundColor: Colors.red,
-                              textColor: Colors.white,
-                              fontSize: 16.0);
+                          Get.offAll(() => const HomeScreen());
                         }
 
                         return; // Return here to prevent showing unnecessary toasts or snackbar

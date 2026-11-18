@@ -3,8 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/screens/auth-ui/register-screen.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/screens/auth-ui/register-screen.dart';
+import 'package:your_shop/core/utils/app_logger.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -18,7 +19,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final bool _obscureText = true;
 
-  signUp()async{
+  Future<void> signUp()async{
     Fluttertoast.showToast(msg: "Clicked");
     try {
       Fluttertoast.showToast(msg: "try block");
@@ -27,7 +28,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           password: _passwordController.text
       );
       var authCredential = userCredential.user;
-      // print(authCredential!.uid);
+      // AppLogger.debug(authCredential!.uid);
       if(authCredential!.uid.isNotEmpty){
         Navigator.push(context, MaterialPageRoute(builder: (context)=>const RegisterScreen()));
       }
@@ -44,7 +45,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       }
     } catch (e) {
-      print(e);
+      AppLogger.debug(e);
     }
   }
 

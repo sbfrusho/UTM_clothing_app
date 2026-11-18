@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_app/const/app-colors.dart';
+import 'package:your_shop/const/app-colors.dart';
 
 class CircularConatiner extends StatelessWidget {
   const CircularConatiner({

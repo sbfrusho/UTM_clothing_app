@@ -2,11 +2,10 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/controller/banner-controller.dart';
-import 'package:shopping_app/widgets/slider-image.dart';
+import 'package:your_shop/controller/banner-controller.dart';
+import 'package:your_shop/widgets/slider-image.dart';
 
 class BannerWidget extends StatefulWidget {
   // ignore: use_super_parameters

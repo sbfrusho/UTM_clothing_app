@@ -1,12 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:local_auth/local_auth.dart';
-import 'package:shopping_app/const/app-colors.dart';
-import 'package:shopping_app/controller/get-device-token-controller.dart';
-import 'package:shopping_app/controller/sign-up-controller.dart';
-import 'package:shopping_app/screens/auth-ui/login-screen.dart';
+import 'package:your_shop/core/utils/app_logger.dart';
+import 'package:your_shop/const/app-colors.dart';
+import 'package:your_shop/controller/get-device-token-controller.dart';
+import 'package:your_shop/controller/sign-up-controller.dart';
+import 'package:your_shop/screens/auth-ui/login-screen.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -81,7 +80,6 @@ class RegisterForm extends StatelessWidget {
 
     Future<void> handleRegister() async {
       final GetDeviceTokenController getDeviceTokenController = Get.put(GetDeviceTokenController());
-      final LocalAuthentication auth = LocalAuthentication();
       
       String name = nameController.text.trim();
       String email = emailController.text.trim();
@@ -89,61 +87,38 @@ class RegisterForm extends StatelessWidget {
       String password = passwordController.text.trim();
       String deviceToken = getDeviceTokenController.deviceToken.toString();
 
-      print("this is $deviceToken");
-
       if (name.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty) {
         showToast(context, 'All fields are required');
         return;
       }
 
       try {
-        bool canCheckBiometrics = await auth.canCheckBiometrics;
-        bool isBiometricAvailable = await auth.isDeviceSupported();
+        final credential = await registerController.signUpMethod(
+          name,
+          email,
+          phone,
+          password,
+          deviceToken,
+        );
+        if (credential == null) return; // error already shown by controller
 
-        if (!canCheckBiometrics || !isBiometricAvailable) {
-          showToast(context, 'Biometric authentication is not available');
-          return;
-        }
+        showToast(context, "Registration successful. Verify your email to login.");
 
-        // Authenticate the user with biometrics
-        bool authenticated = await auth.authenticate(
-          localizedReason: 'Please authenticate to register',
-          options: const AuthenticationOptions(
-            biometricOnly: true,
-            stickyAuth: true,
+        nameController.clear();
+        emailController.clear();
+        phoneController.clear();
+        passwordController.clear();
+
+        await FirebaseAuth.instance.signOut();
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LoginScreen(),
           ),
         );
-
-        if (authenticated) {
-          await registerController.signUpMethod(
-            name,
-            email,
-            phone,
-            password,
-            deviceToken,
-            password,
-          );
-
-          showToast(context, "Registration successful. Verify your email to login.");
-
-          nameController.clear();
-          emailController.clear();
-          phoneController.clear();
-          passwordController.clear();
-
-          await FirebaseAuth.instance.signOut();
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const LoginScreen(),
-            ),
-          );
-        } else {
-          showToast(context, 'Biometric authentication failed');
-        }
       } catch (e) {
-        print("Registration failed: $e");
+        AppLogger.error("Registration failed", e);
         showToast(context, "Registration failed. Please try again later.");
       }
     }

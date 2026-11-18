@@ -1,92 +1,70 @@
-# E-commerce User App
+# Your Shop
 
-## 📌 Overview
-The **E-commerce User App** is a Flutter-based mobile application that provides a seamless online shopping experience. The app integrates **Firebase** for backend services, **Stripe API** for secure payments, and real-time updates to ensure a smooth user experience.
+A Flutter e-commerce app for clothing and merchandise, built on Firebase with GetX for state management, dependency injection and routing.
 
-## 🚀 Features
-- 🔐 **User Authentication** (Email/Password, Google Sign-In)
-- 🛍 **Product Listing with Search & Filtering**
-- 🛒 **Cart Management & Wishlist**
-- 💳 **Secure Payment via Stripe**
-- 📦 **Order Tracking & History**
+> Status: being moved from a university project to a production Play Store release. See [docs/ROADMAP.md](docs/ROADMAP.md) for the sprint plan.
 
-## 🖥 Tech Stack
-- **Frontend:** Flutter, Dart
-- **Backend:** Firebase (Authentication, Firestore, Storage, Cloud Functions)
-- **Payment Gateway:** Stripe API
-- **State Management:** Provider / GetX
-- **Other Tools:** Git, REST API
+## Features
+- Email/password authentication with email verification and password reset
+- Optional biometric app lock (fingerprint / Face ID)
+- Product catalogue by category, search and product details
+- Cart and wishlist
+- Checkout with Cash on Delivery or card (test-mode gateway)
+- Order history
 
-## 📸 Screenshots
-# E-commerce User App
+## Tech stack
+| Layer | Choice |
+|-------|--------|
+| UI | Flutter (Material 3) |
+| State, DI, routing | GetX |
+| Backend | Firebase Auth, Cloud Firestore, Cloud Messaging |
+| Payments | Pluggable `PaymentGateway`: demo gateway now; Stripe, bKash or SSLCommerz through a server backend |
 
-## 📌 Overview
-The **E-commerce User App** is a Flutter-based mobile application that provides a seamless online shopping experience. The app integrates **Firebase** for backend services, **Stripe API** for secure payments, and real-time updates to ensure a smooth user experience.
+## Screenshots
+<p>
+  <img src="docs/screenshots/Screenshot_20250223_182800.png" width="200">
+  <img src="docs/screenshots/Screenshot_20250223_182812.png" width="200">
+  <img src="docs/screenshots/Screenshot_20250223_182843.png" width="200">
+  <img src="docs/screenshots/Screenshot_20250223_183915.png" width="200">
+</p>
 
-## 🚀 Features
-- 🔐 **User Authentication** (Email/Password, Google Sign-In)
-- 🛍 **Product Listing with Search & Filtering**
-- 🛒 **Cart Management & Wishlist**
-- 💳 **Secure Payment via Stripe**
-- 📦 **Order Tracking & History**
+## Getting started
 
-## 🖥 Tech Stack
-- **Frontend:** Flutter, Dart
-- **Backend:** Firebase (Authentication, Firestore, Storage, Cloud Functions)
-- **Payment Gateway:** Stripe API
-- **State Management:** Provider / GetX
-- **Other Tools:** Git, REST API
+Requirements: Flutter stable (3.47 or later), JDK 17 or later, Android SDK 36.
 
-## 📸 Screenshots
+```sh
+git clone https://github.com/sbfrusho/UTM_clothing_app.git
+cd UTM_clothing_app
+flutter pub get
+cp env/example.json env/dev.json   # then fill in values if needed
+flutter run --dart-define-from-file=env/dev.json
+```
 
-![Home](Screenshot_20250223_182800.png)
-![Categories](Screenshot_20250223_182812.png)
-![Product Details](Screenshot_20250223_182843.png)
-![abc](Screenshot_20250223_183915.png)
-![def](Screenshot_20250223_183922.png)
-![ghi](Screenshot_20250223_183926.png)
-![jkl](Screenshot_20250223_183944.png)
-![mno](Screenshot_20250223_184015.png)
-![pqr](Screenshot_20250223_184042.png)
-![stu](Screenshot_20250223_184046.png)
-![vwx](Screenshot_20250223_184054.png)
-## 🛠 Setup & Installation
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/sbfrusho/UTM_clothing_app.git
-   cd UTM_clothing_app
-   ```
-2. Install dependencies:
-   ```sh
-   flutter pub get
-   ```
-3. Configure Firebase:
-   - Create a Firebase project.
-   - Enable Authentication & Firestore.
-   - Download and place `google-services.json` (Android) & `GoogleService-Info.plist` (iOS) in respective directories.
-4. Run the app:
-   ```sh
-   flutter run
-   ```
+In VS Code, choose the **Your Shop (dev)** launch configuration.
 
-## 💡 Challenges & Solutions
-### 🔄 Real-time Inventory Management
-- **Issue:** Keeping product stock updated in real-time.
-- **Solution:** Used Firestore triggers and Cloud Functions to update stock immediately after an order is placed.
+### Environment values (`env/*.json`)
+| Key | Purpose |
+|-----|---------|
+| `APP_ENV` | `dev`, `staging` or `prod` |
+| `CURRENCY` / `CURRENCY_SYMBOL` | Pricing currency, e.g. `MYR` / `RM` |
+| `STRIPE_PUBLISHABLE_KEY` | Stripe `pk_...` key (publishable only) |
+| `PAYMENT_BACKEND_URL` | Server endpoint that creates PaymentIntents |
 
-### 🛒 Optimizing Checkout Flow
-- **Issue:** Users dropping off before completing purchases.
-- **Solution:** Reduced steps, pre-filled address info, and added a "Buy Now" option.
+If `STRIPE_PUBLISHABLE_KEY` or `PAYMENT_BACKEND_URL` is empty, card payments use the **demo gateway**: a simulated payment that charges nothing.
 
-### 🔐 Secure Payment Handling
-- **Issue:** Ensuring safe and fast payment processing.
-- **Solution:** Integrated Stripe API with tokenized transactions and PCI-compliant workflows.
+> **Never put secret keys** (Stripe `sk_...`, SMTP passwords, service accounts) in the app or in `env/`. Anything compiled into an APK can be extracted. Secrets belong in Cloud Functions.
 
-## 👨‍💻 Author
-Developed by **Sakib Bin Faruque Rusho**
+### Firebase
+The Android app ID is `com.sbfrusho.yourshop`. Register it in the Firebase console, then download `google-services.json` into `android/app/` (or run `flutterfire configure`).
 
-📧 Contact: [rushocseru28@gmail.com](mailto:rushocseru28@gmail.com)
+## Testing
+```sh
+flutter analyze
+flutter test
+```
 
-🔗 GitHub: [sbfrusho](https://github.com/sbfrusho)
+## Release
+See [docs/RELEASE.md](docs/RELEASE.md).
 
-Feel free to contribute and report any issues! 🚀
+## Author
+Developed by **Sakib Bin Faruque Rusho**: [rushocseru28@gmail.com](mailto:rushocseru28@gmail.com) · [GitHub](https://github.com/sbfrusho)

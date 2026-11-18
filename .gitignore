@@ -41,3 +41,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Environment config (copy env/example.json). Publishable keys only, but
+# keep per-developer / production values out of git.
+/env/*.json
+!/env/example.json

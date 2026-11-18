@@ -2,10 +2,10 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:get/get.dart';
-// import 'package:shopping_app/screens/user/all-category.dart';
-// import 'package:shopping_app/screens/user/home-screen.dart';
+// import 'package:your_shop/screens/user/all-category.dart';
+// import 'package:your_shop/screens/user/home-screen.dart';
 
-// import '../../My Cart/my_cart_view.dart';
+// import 'package:your_shop/screens/user/my-cart-screen.dart';
 // import '../../models/address-model.dart';
 // import 'wish-list.dart'; // Adjust the import as needed
 

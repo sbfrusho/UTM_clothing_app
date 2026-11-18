@@ -1,12 +1,31 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/controller/cart-model-controller.dart';
+import 'package:your_shop/controller/cart-model-controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:your_shop/core/utils/app_logger.dart';
 
 class CartController extends GetxController {
   final CartModelController _cartModel = CartModelController();
   late String sellerEmail = "";
+  StreamSubscription<User?>? _authSub;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // The cart is in-memory until Sprint 6; never leak it across accounts.
+    _authSub = FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user == null) clearCart();
+    });
+  }
+
+  @override
+  void onClose() {
+    _authSub?.cancel();
+    super.onClose();
+  }
 
   List<CartItem> get cartItems => _cartModel.cartItems;
 
@@ -33,37 +52,39 @@ class CartController extends GetxController {
   }
 
   Future<bool> updateProductQuantity(String productId, int orderedQuantity) async {
-    print('Updating product $productId quantity to $orderedQuantity');
+    AppLogger.debug('Updating product $productId quantity to $orderedQuantity');
     try {
       DocumentReference productRef = FirebaseFirestore.instance.collection('products').doc(productId);
       DocumentSnapshot productDoc = await productRef.get();
       if (productDoc.exists) {
         int currentQuantity = int.parse(productDoc['quantity']);
-        print(currentQuantity);
+        AppLogger.debug(currentQuantity);
         if (currentQuantity == 0) {
-          print('Product $productId is unavailable');
+          AppLogger.debug('Product $productId is unavailable');
           return false; // Product is unavailable
         }
         int newQuantity = currentQuantity - orderedQuantity;
         if (newQuantity < 0) {
-          print('Insufficient quantity for product $productId');
+          AppLogger.debug('Insufficient quantity for product $productId');
           return false; // Not enough quantity
         }
         String update = newQuantity.toString();
         await productRef.update({'quantity': update});
-        print('Updated product $productId quantity to $update');
+        AppLogger.debug('Updated product $productId quantity to $update');
         return true; // Quantity updated successfully
       } else {
-        print('Product $productId does not exist');
+        AppLogger.debug('Product $productId does not exist');
         return false; // Product does not exist
       }
     } catch (error) {
-      print('Error updating product quantity: $error');
+      AppLogger.debug('Error updating product quantity: $error');
       return false; // Error occurred
     }
   }
 
-  Future<void> placeOrder(
+  /// Returns `true` only when the order document was written.
+  /// Replaced by a Firestore transaction / Cloud Function in Sprint 7.
+  Future<bool> placeOrder(
     List<CartItem> cartItems,
     double totalPrice,
     String customerId,
@@ -71,29 +92,31 @@ class CartController extends GetxController {
     String customerPhone,
     String customerAddress,
     String paymentMethod,
-    String deliveryTime,
-  ) async {
+    String deliveryTime, {
+    String paymentStatus = 'unpaid',
+    String? paymentReference,
+  }) async {
     try {
       // Get the current user's email
       User? user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         // Handle the case where there is no logged-in user
-        throw Exception("No logged-in user");
+        return false;
       }
       String userEmail = user.email!;
 
-      print("cartItems: $cartItems");
-      print("totalPrice: $totalPrice");
-      print("customerId: $customerId");
-      print("customerName: $customerName");
-      print("userEmail: $userEmail");
-      print("Seller ID : $sellerEmail");
+      AppLogger.debug("cartItems: $cartItems");
+      AppLogger.debug("totalPrice: $totalPrice");
+      AppLogger.debug("customerId: $customerId");
+      AppLogger.debug("customerName: $customerName");
+      AppLogger.debug("userEmail: $userEmail");
+      AppLogger.debug("Seller ID : $sellerEmail");
 
       // Check product availability and update quantities
       for (var item in cartItems) {
         bool updated = await updateProductQuantity(item.productId, item.quantity);
         if (!updated) {
-          print('Order not placed due to product unavailability');
+          AppLogger.debug('Order not placed due to product unavailability');
           Get.snackbar(
             'Error',
             'Product ${item.productName} is unavailable or insufficient quantity',
@@ -101,7 +124,7 @@ class CartController extends GetxController {
             backgroundColor: Colors.red,
             colorText: Colors.white,
           );
-          return; // Exit the method if any product is unavailable
+          return false; // Exit the method if any product is unavailable
         }
       }
 
@@ -119,8 +142,10 @@ class CartController extends GetxController {
         'createdAt': Timestamp.now(),
         'uniqueId': userEmail,
         'sellerId': sellerEmail,
+        'paymentStatus': paymentStatus,
+        'paymentReference': paymentReference,
       });
-      print("Order placed successfully");
+      AppLogger.debug("Order placed successfully");
 
       // Add cart items to the order
       for (var item in cartItems) {
@@ -134,11 +159,10 @@ class CartController extends GetxController {
 
       // Clear the cart after placing order
       clearCart();
-
-      // You can show a success message here
+      return true;
     } catch (error) {
-      print("Error placing order: $error");
-      // Handle any errors
+      AppLogger.debug("Error placing order: $error");
+      return false;
     }
   }
 }

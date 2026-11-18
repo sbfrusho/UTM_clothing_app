@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shopping_app/const/app-colors.dart';
+import 'package:your_shop/const/app-colors.dart';
 
 class SignUpController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -16,7 +16,6 @@ class SignUpController extends GetxController {
     String userPhone,
     String userPassword,
     String userDeviceToken,
-    String password,
   ) async {
     try {
       UserCredential userCredential =
@@ -34,13 +33,12 @@ class SignUpController extends GetxController {
         'phone': userPhone,
         'isAdmin': false,
         'deviceToken': userDeviceToken,
-        'biometricEnabled': true,
-        'password' : password // Set the biometric enabled flag
+        // Never store passwords: Firebase Auth owns credentials.
       });
 
       return userCredential;
     } on FirebaseAuthException catch (e) {
-      Get.snackbar("Error", "$e",
+      Get.snackbar("Error", e.message ?? "Registration failed",
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: AppColor().colorRed,
           colorText: Colors.white);

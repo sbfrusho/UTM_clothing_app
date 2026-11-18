@@ -3,21 +3,20 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mailer/mailer.dart';
-import 'package:mailer/smtp_server.dart';
-import 'package:shopping_app/controller/address-controller.dart';
-import 'package:shopping_app/controller/cart-controller.dart';
-import 'package:shopping_app/controller/payment-controller.dart';
+import 'package:your_shop/controller/address-controller.dart';
+import 'package:your_shop/controller/cart-controller.dart';
+import 'package:your_shop/controller/payment-controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shopping_app/screens/user/all-category.dart';
-import 'package:shopping_app/screens/user/home-screen.dart';
-import 'package:shopping_app/screens/user/order-confirmation-screen.dart';
-import 'package:shopping_app/screens/user/settings.dart';
-import 'package:shopping_app/screens/user/shipping-address.dart';
-import 'package:shopping_app/screens/user/wish-list.dart';
-import '../../My Cart/my_cart_view.dart';
+import 'package:your_shop/screens/user/all-category.dart';
+import 'package:your_shop/screens/user/home-screen.dart';
+import 'package:your_shop/screens/user/order-confirmation-screen.dart';
+import 'package:your_shop/screens/user/settings.dart';
+import 'package:your_shop/screens/user/shipping-address.dart';
+import 'package:your_shop/screens/user/wish-list.dart';
+import 'package:your_shop/screens/user/my-cart-screen.dart';
 import '../../const/app-colors.dart';
-import '../../controller/get-customer-device-token-controller.dart';
+import 'package:your_shop/core/services/payment/payment_gateway.dart';
+import 'package:your_shop/core/utils/app_logger.dart';
 
 class CheckoutScreen extends StatefulWidget {
 
@@ -112,7 +111,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: DropdownButtonFormField<String>(
-                value: selectOrderType,
+                initialValue: selectOrderType,
                 items: [
                   DropdownMenuItem<String>(
                     value: 'Normal Delivery',
@@ -162,7 +161,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.all(20.0),
-              child: Container(
+              child: SizedBox(
                 height: 55.0,
                 child: TextFormField(
                   controller: timeController,
@@ -196,7 +195,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: DropdownButtonFormField<String>(
-                value: selectedPaymentMethod,
+                initialValue: selectedPaymentMethod,
                 items: [
                   DropdownMenuItem<String>(
                     value: 'Card',
@@ -235,85 +234,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: ElevatedButton(
-                onPressed: () async {
-                  if (cartController.totalPrice == 0) {
-                    Get.snackbar("Error", "Your cart is empty!");
-                    return;
-                  }
-
-                  setState(() {
-                    isSubmittingOrder = true; // Show circular indicator
-                  });
-
-                  String name = nameController.text.trim();
-                  String address = addressController.text.trim();
-                  String phone = phoneController.text.trim();
-                  String time = timeController.text.trim();
-                  String total = cartController.totalPrice.toString();
-                  String paymentMethod = selectedPaymentMethod;
-
-                  String? customerToken = await getCustomerDeviceToken();
-
-                  print('Customer Token: $customerToken');
-                  print('Name: $name');
-                  print('Phone: $phone');
-                  print('Address: $address');
-                  print('Time: $time');
-                  print('Payment Method: $paymentMethod');
-                  print("Total price: $total");
-
-                  if (paymentMethod == 'Cash on Delivery') {
-                    await cartController.placeOrder(
-                      cartController.cartItems,
-                      cartController.totalPrice,
-                      user!.uid,
-                      name,
-                      phone,
-                      address,
-                      paymentMethod,
-                      time
-                    );
-
-                    await sendEmail(
-                      user!.email!,
-                      'Order Confirmation',
-                      'Your order has been placed successfully. Order will be delivered within 3 days by $time.\nTotal amount: $total RM',
-                    );
-
-                    setState(() {
-                      isPaymentCompleted = true;
-                      isSubmittingOrder = false; // Hide circular indicator
-                    });
-
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => OrderConfirmationScreen()));
-                  } else if (paymentMethod == 'Card') {
-                    if (await payment.makePayment(total)) {
-                      await cartController.placeOrder(
-                        cartController.cartItems,
-                        cartController.totalPrice,
-                        user!.uid,
-                        name,
-                        phone,
-                        address,
-                        paymentMethod,
-                        time,
-                      );
-
-                      await sendEmail(
-                        user!.email!,
-                        'Order Confirmation',
-                        'Your order has been placed successfully. Order will be delivered by $time.\nTotal amount: $total RM',
-                      );
-
-                      setState(() {
-                        isPaymentCompleted = true;
-                        isSubmittingOrder = false; // Hide circular indicator
-                      });
-
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => OrderConfirmationScreen()));
-                    }
-                  }
-                },
+                onPressed: isSubmittingOrder ? null : _submitOrder,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor().colorRed,
                   padding: EdgeInsets.symmetric(
@@ -406,17 +327,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         .then((QuerySnapshot querySnapshot) {
       if (querySnapshot.docs.isNotEmpty) {
         final userData = querySnapshot.docs.first.data() as Map<String, dynamic>;
-        print('User data: $userData');
+        AppLogger.debug('User data: $userData');
         setState(() {
           nameController.text = userData['name'] ?? '';
           phoneController.text = userData['phone'] ?? '';
           emailController.text = user!.email ?? '';
         });
       } else {
-        print('No data found for this user');
+        AppLogger.debug('No data found for this user');
       }
     }).catchError((error) {
-      print('Error fetching address data: $error');
+      AppLogger.debug('Error fetching address data: $error');
     });
   }
 
@@ -428,40 +349,76 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         .then((QuerySnapshot querySnapshot) {
       if (querySnapshot.docs.isNotEmpty) {
         final addressData = querySnapshot.docs.first.data() as Map<String, dynamic>;
-        print('Address data: $addressData');
+        AppLogger.debug('Address data: $addressData');
         setState(() {
           addressController.text = addressData['address'] ?? '';
         });
       } else {
-        print('No data found for this address');
+        AppLogger.debug('No data found for this address');
       }
     }).catchError((error) {
-      print('Error fetching address data: $error');
+      AppLogger.debug('Error fetching address data: $error');
     });
   }
 
-  Future<void> sendEmail(String recipient, String subject, String body) async {
-    String username = "ealumnimobileapp@gmail.com";
-    String password = "NABIL112233";
+  Future<void> _submitOrder() async {
+    if (cartController.cartItems.isEmpty) {
+      Get.snackbar('Error', 'Your cart is empty!');
+      return;
+    }
+    final name = nameController.text.trim();
+    final address = addressController.text.trim();
+    final phone = phoneController.text.trim();
+    final time = timeController.text.trim();
+    if (name.isEmpty || phone.isEmpty || address.isEmpty || time.isEmpty) {
+      Get.snackbar('Missing details',
+          'Please fill in name, phone, address and delivery date.');
+      return;
+    }
 
-    print('Sending email to $recipient');
-
-    final smtpServer = gmail(username, password);
-
-    final message = Message()
-      ..from = Address(username, 'UTM E-COMMERCE APP')
-      ..recipients.add(recipient)
-      ..subject = subject
-      ..text = body;
-
+    setState(() => isSubmittingOrder = true);
     try {
-      final sendReport = await send(message, smtpServer);
-      print('Message sent: ' + sendReport.toString());
-    } on MailerException catch (e) {
-      print('Message not sent. \n' + e.toString());
-      for (var p in e.problems) {
-        print('Problem: ${p.code}: ${p.msg}');
+      final total = cartController.totalPrice;
+      final isCard = selectedPaymentMethod == 'Card';
+      String? paymentReference;
+
+      if (isCard) {
+        final result = await payment.makePayment(total);
+        if (!result.isSuccess) {
+          // Cancelled or failed: never place the order.
+          if (result.status == PaymentStatus.failed) {
+            Get.snackbar('Payment failed', result.message ?? 'Please try again.');
+          }
+          return;
+        }
+        paymentReference = result.reference;
       }
+
+      final placed = await cartController.placeOrder(
+        cartController.cartItems,
+        total,
+        user!.uid,
+        name,
+        phone,
+        address,
+        selectedPaymentMethod,
+        time,
+        paymentStatus: isCard ? 'paid' : 'unpaid',
+        paymentReference: paymentReference,
+      );
+      if (!placed) {
+        Get.snackbar('Order failed', 'We could not place your order. Please try again.');
+        return;
+      }
+      // Confirmation e-mails are sent server-side (Cloud Function, Sprint 7).
+      if (!mounted) return;
+      setState(() => isPaymentCompleted = true);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => OrderConfirmationScreen()),
+      );
+    } finally {
+      if (mounted) setState(() => isSubmittingOrder = false);
     }
   }
 }
