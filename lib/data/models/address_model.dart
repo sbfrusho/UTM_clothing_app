@@ -1,56 +1,87 @@
 import '../../core/utils/json_parsing.dart';
 
-/// Shipping address in `addresses/{id}` (linked to the user by email).
+/// A saved delivery address at `users/{uid}/addresses/{id}`.
 class AddressModel {
   const AddressModel({
     this.id,
-    required this.email,
+    this.label = '',
+    required this.fullName,
+    required this.phone,
     required this.address,
-    required this.street,
+    this.street = '',
     required this.city,
-    required this.state,
+    this.state = '',
     required this.postalCode,
     required this.country,
+    this.isDefault = false,
   });
 
   final String? id;
-  final String email;
+
+  /// "Home", "Work"… optional.
+  final String label;
+  final String fullName;
+  final String phone;
+
+  /// House / building / unit.
   final String address;
   final String street;
   final String city;
   final String state;
   final String postalCode;
   final String country;
+  final bool isDefault;
 
-  /// One-line form used on orders.
+  String get displayLabel => label.trim().isEmpty ? fullName : label.trim();
+
+  /// One-line form stored on orders.
   String get formatted => [
     address,
     street,
-    city,
+    '$postalCode $city'.trim(),
     state,
-    postalCode,
     country,
   ].where((part) => part.trim().isNotEmpty).join(', ');
 
   factory AddressModel.fromMap(Map<String, dynamic> map, {String? id}) =>
       AddressModel(
         id: id,
-        email: asString(map['email']),
+        label: asString(map['label']),
+        fullName: asString(map['fullName']),
+        phone: asString(map['phone']),
         address: asString(map['address']),
         street: asString(map['street']),
         city: asString(map['city']),
         state: asString(map['state']),
         postalCode: asString(map['postalCode']),
         country: asString(map['country']),
+        isDefault: asBool(map['isDefault']),
       );
 
   Map<String, dynamic> toMap() => {
-    'email': email,
+    'label': label,
+    'fullName': fullName,
+    'phone': phone,
     'address': address,
     'street': street,
     'city': city,
     'state': state,
     'postalCode': postalCode,
     'country': country,
+    'isDefault': isDefault,
   };
+
+  AddressModel copyWith({String? id, bool? isDefault}) => AddressModel(
+    id: id ?? this.id,
+    label: label,
+    fullName: fullName,
+    phone: phone,
+    address: address,
+    street: street,
+    city: city,
+    state: state,
+    postalCode: postalCode,
+    country: country,
+    isDefault: isDefault ?? this.isDefault,
+  );
 }

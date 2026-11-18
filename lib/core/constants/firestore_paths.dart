@@ -7,7 +7,12 @@ abstract final class FirestorePaths {
   static const banners = 'banners';
   static const orders = 'orders';
   static const orderItems = 'items';
-  static const addresses = 'addresses';
+
+  /// Legacy `addresses/{id}` (queried by email). Read once to migrate.
+  static const legacyAddresses = 'addresses';
+
+  /// `users/{uid}/addresses/{id}`.
+  static const userAddresses = 'addresses';
 
   /// Legacy `wishlist/{email}` document with a `wishlist` array. Read once to
   /// migrate into [userWishlist]; never written by this app any more.

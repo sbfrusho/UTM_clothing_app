@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../data/models/order_model.dart';
 import 'payment_gateway.dart';
 
 /// Simulated card payment used until a real gateway backend is deployed.
 /// No money moves and no network call is made.
 class DemoPaymentGateway implements PaymentGateway {
   @override
-  String get id => 'demo';
+  String get id => GatewayId.demo;
 
   @override
   Future<PaymentResult> pay({
+    required String orderId,
     required double amount,
     required String currency,
   }) async {

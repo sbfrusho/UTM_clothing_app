@@ -9,8 +9,8 @@ A Flutter e-commerce app for clothing and merchandise, built on Firebase with Ge
 - Optional biometric app lock (fingerprint / Face ID)
 - Product catalogue: categories, sort and filters, ranked search, zoomable gallery, related products
 - Cart and wishlist synced to the account (offline-ready, checked against live price and stock)
-- Checkout with Cash on Delivery or card (test-mode gateway)
-- Order history
+- Address book; checkout with Cash on Delivery or card (Stripe through Cloud Functions, or the test gateway)
+- Live order history with status timeline, payment retry and cancellation
 
 ## Tech stack
 | Layer | Choice |
@@ -77,6 +77,9 @@ Fonts: Manrope and Playfair Display (SIL OFL, bundled in `assets/fonts`).
 flutter analyze
 flutter test
 ```
+
+## Backend
+Cloud Functions for payments, order expiry and emails: see [docs/BACKEND.md](docs/BACKEND.md).
 
 ## Release
 See [docs/RELEASE.md](docs/RELEASE.md).

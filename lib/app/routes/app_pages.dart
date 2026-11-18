@@ -19,7 +19,8 @@ import '../../modules/product/bindings/product_detail_binding.dart';
 import '../../modules/product/views/product_detail_view.dart';
 import '../../modules/product/views/product_gallery_view.dart';
 import '../../modules/profile/bindings/profile_bindings.dart';
-import '../../modules/profile/views/address_view.dart';
+import '../../modules/profile/views/address_book_view.dart';
+import '../../modules/profile/views/address_form_view.dart';
 import '../../modules/profile/views/edit_profile_view.dart';
 import '../../modules/search/bindings/search_binding.dart';
 import '../../modules/search/views/search_view.dart';
@@ -134,8 +135,14 @@ abstract final class AppPages {
     ),
     GetPage(
       name: AppRoutes.address,
-      page: AddressView.new,
-      binding: AddressBinding(),
+      page: AddressBookView.new,
+      binding: AddressBookBinding(),
+      middlewares: _auth,
+    ),
+    GetPage(
+      name: AppRoutes.addressForm,
+      page: AddressFormView.new,
+      binding: AddressFormBinding(),
       middlewares: _auth,
     ),
   ];

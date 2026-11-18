@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
-import '../view_models/address_view_model.dart';
+import '../view_models/address_book_view_model.dart';
+import '../view_models/address_form_view_model.dart';
 import '../view_models/edit_profile_view_model.dart';
 
 class EditProfileBinding extends Bindings {
@@ -9,8 +10,16 @@ class EditProfileBinding extends Bindings {
       Get.lazyPut(() => EditProfileViewModel(Get.find(), Get.find()));
 }
 
-class AddressBinding extends Bindings {
+class AddressBookBinding extends Bindings {
   @override
-  void dependencies() =>
-      Get.lazyPut(() => AddressViewModel(Get.find(), Get.find()));
+  void dependencies() => Get.lazyPut(
+    () => AddressBookViewModel(Get.find(), Get.find(), Get.find()),
+  );
+}
+
+class AddressFormBinding extends Bindings {
+  @override
+  void dependencies() => Get.lazyPut(
+    () => AddressFormViewModel(Get.find(), Get.find(), Get.find()),
+  );
 }

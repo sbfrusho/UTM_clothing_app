@@ -112,6 +112,7 @@ void main() {
         deliveryDate: '01/01/2027',
         deliveryType: 'Normal Delivery',
         paymentMethod: PaymentMethod.cashOnDelivery,
+        paymentGateway: GatewayId.cod,
         sellerIds: [],
         items: [
           OrderItemModel(productId: 'a', name: 'A', unitPrice: 10, quantity: 2),

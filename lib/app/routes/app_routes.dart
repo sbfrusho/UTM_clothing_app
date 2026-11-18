@@ -20,5 +20,8 @@ abstract final class AppRoutes {
   static const orders = '/orders';
   static const orderDetail = '/orders/detail';
   static const editProfile = '/profile/edit';
+
+  /// Address book; pass `AddressBookArgs.select` to pick one.
   static const address = '/profile/address';
+  static const addressForm = '/profile/address/edit';
 }

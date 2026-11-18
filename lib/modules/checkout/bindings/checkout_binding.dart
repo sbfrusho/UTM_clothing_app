@@ -8,7 +8,6 @@ class CheckoutBinding extends Bindings {
     Get.lazyPut(
       () => CheckoutViewModel(
         auth: Get.find(),
-        users: Get.find(),
         addresses: Get.find(),
         orders: Get.find(),
         payments: Get.find(),

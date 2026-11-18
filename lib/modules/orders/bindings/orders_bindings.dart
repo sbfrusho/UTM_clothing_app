@@ -12,6 +12,11 @@ class OrdersBinding extends Bindings {
 class OrderDetailBinding extends Bindings {
   @override
   void dependencies() => Get.lazyPut(
-    () => OrderDetailViewModel(Get.find(), Get.arguments as String),
+    () => OrderDetailViewModel(
+      Get.find(),
+      Get.find(),
+      Get.find(),
+      Get.arguments as String,
+    ),
   );
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import '../../../app/routes/app_routes.dart';
@@ -14,8 +13,8 @@ import '../../../data/models/address_model.dart';
 import '../../../data/models/order_model.dart';
 import '../../../data/repositories/address_repository.dart';
 import '../../../data/repositories/order_repository.dart';
-import '../../../data/repositories/user_repository.dart';
 import '../../cart/view_models/cart_view_model.dart';
+import '../../profile/view_models/address_book_view_model.dart';
 
 enum DeliveryType {
   normal('Normal Delivery'),
@@ -26,175 +25,163 @@ enum DeliveryType {
   final String label;
 }
 
+/// Checkout. Orders are created **first** (stock reserved, cart emptied in
+/// one transaction); card payment then pays for that stored order.
 class CheckoutViewModel extends GetxController {
   CheckoutViewModel({
     required AuthService auth,
-    required UserRepository users,
     required AddressRepository addresses,
     required OrderRepository orders,
     required PaymentService payments,
     required this.cart,
   }) : _auth = auth,
-       _users = users,
        _addresses = addresses,
        _orders = orders,
        _payments = payments;
 
   final AuthService _auth;
-  final UserRepository _users;
   final AddressRepository _addresses;
   final OrderRepository _orders;
   final PaymentService _payments;
   final CartViewModel cart;
 
-  final formKey = GlobalKey<FormState>();
-  final nameController = TextEditingController();
-  final phoneController = TextEditingController();
-  final addressController = TextEditingController();
-
+  final Rxn<AddressModel> address = Rxn<AddressModel>();
   final Rxn<DateTime> deliveryDate = Rxn<DateTime>();
   final Rx<DeliveryType> deliveryType = DeliveryType.normal.obs;
   final Rx<PaymentMethod> paymentMethod = PaymentMethod.cashOnDelivery.obs;
-  final RxBool isLoadingProfile = true.obs;
+  final RxBool isLoadingAddress = true.obs;
   final RxBool isSubmitting = false.obs;
 
+  /// Shown on the button while the order is being written or paid.
+  final RxString stage = ''.obs;
+
   String get deliveryDateLabel => Formatters.date(deliveryDate.value);
+  bool get isTestPayments => _payments.isTestMode;
 
   @override
   void onInit() {
     super.onInit();
-    _prefill();
+    _loadDefaultAddress();
   }
 
-  /// Pre-fills contact details from the profile and saved address.
-  Future<void> _prefill() async {
+  Future<void> _loadDefaultAddress() async {
     final uid = _auth.uid;
-    final email = _auth.email;
     try {
       if (uid != null) {
-        final profile = await _users.fetch(uid);
-        nameController.text = profile?.name ?? '';
-        phoneController.text = profile?.phone ?? '';
-      }
-      if (email != null) {
-        final address = await _addresses.fetchForUser(email);
-        addressController.text = address?.formatted ?? '';
+        final book = await _addresses.fetchAll(uid);
+        address.value = book.isEmpty ? null : book.first; // default first
       }
     } on AppException catch (e) {
-      AppLogger.error('Checkout prefill failed', e);
+      AppLogger.error('Checkout address load failed', e);
     } finally {
-      isLoadingProfile.value = false;
+      isLoadingAddress.value = false;
     }
   }
 
-  Future<void> openAddressBook() async {
-    final result = await Get.toNamed(AppRoutes.address);
-    if (result is AddressModel) addressController.text = result.formatted;
+  Future<void> chooseAddress() async {
+    final picked = await Get.toNamed<AddressModel>(
+      AppRoutes.address,
+      arguments: AddressBookArgs.select,
+    );
+    if (picked != null) address.value = picked;
+  }
+
+  Future<void> addAddress() async {
+    final saved = await Get.toNamed<AddressModel>(AppRoutes.addressForm);
+    if (saved != null) address.value = saved;
   }
 
   void setDeliveryDate(DateTime date) => deliveryDate.value = date;
   void setDeliveryType(DeliveryType type) => deliveryType.value = type;
   void setPaymentMethod(PaymentMethod method) => paymentMethod.value = method;
 
-  Future<void> placeOrder() async {
+  /// What's missing before an order can be placed, or null.
+  String? get blocker {
     if (!cart.canCheckout) {
-      AppSnackbar.error(
-        cart.hasUnavailable
-            ? 'Remove unavailable items from your cart first.'
-            : 'Your cart is empty.',
-      );
-      return;
+      return cart.hasUnavailable
+          ? 'Remove unavailable items from your cart first.'
+          : 'Your cart is empty.';
     }
-    if (!(formKey.currentState?.validate() ?? false)) return;
-    if (deliveryDate.value == null) {
-      AppSnackbar.info(
-        'Please choose a delivery date.',
-        title: 'Delivery date',
-      );
+    if (address.value == null) return 'Add a delivery address.';
+    if (deliveryDate.value == null) return 'Choose a delivery date.';
+    return null;
+  }
+
+  Future<void> placeOrder() async {
+    if (isSubmitting.value) return;
+    final problem = blocker;
+    if (problem != null) {
+      AppSnackbar.info(problem);
       return;
     }
     final uid = _auth.uid;
     final email = _auth.email;
-    if (uid == null || email == null) {
-      Get.offAllNamed(AppRoutes.welcome);
-      return;
-    }
+    final to = address.value!;
+    if (uid == null || email == null) return;
 
     isSubmitting.value = true;
+    final lines = cart.availableItems;
+    final isCard = paymentMethod.value == PaymentMethod.card;
     try {
-      final cartItems = cart.availableItems;
+      // 1. Re-check stock and prices against the server.
+      stage.value = 'Checking stock…';
+      await _orders.verifyCart(lines);
 
-      // 1. Re-check stock and prices before any money moves.
-      await _orders.verifyCart(cartItems);
-
-      // 2. Take payment (card only).
-      String? paymentReference;
-      if (paymentMethod.value == PaymentMethod.card) {
-        final result = await _payments.pay(cart.total);
-        if (result.status == PaymentStatus.cancelled) return;
-        if (!result.isSuccess) {
-          AppSnackbar.error(result.message ?? 'Payment failed.');
-          return;
-        }
-        paymentReference = result.reference;
-      }
-
-      // 3. Write the order and decrement stock atomically.
+      // 2. Create the order: stock reserved, cart emptied, atomically.
+      stage.value = 'Placing order…';
       final draft = OrderDraft(
         customerId: uid,
         customerEmail: email,
-        customerName: nameController.text.trim(),
-        customerPhone: phoneController.text.trim(),
-        customerAddress: addressController.text.trim(),
+        customerName: to.fullName,
+        customerPhone: to.phone,
+        customerAddress: to.formatted,
         deliveryDate: Formatters.date(deliveryDate.value),
         deliveryType: deliveryType.value.label,
         paymentMethod: paymentMethod.value,
-        paymentReference: paymentReference,
+        paymentGateway: isCard ? _payments.gatewayId : GatewayId.cod,
         deviceToken: await PushTokenService.getToken(),
         sellerIds: cart.sellerIds,
-        items: cartItems
-            .map(
-              (i) => OrderItemModel(
-                productId: i.productId,
-                name: i.name,
-                unitPrice: i.unitPrice,
-                quantity: i.quantity,
-                size: i.size,
-                imageUrl: i.imageUrl,
-              ),
-            )
-            .toList(),
+        items: [
+          for (final i in lines)
+            OrderItemModel(
+              productId: i.productId,
+              name: i.name,
+              unitPrice: i.unitPrice,
+              quantity: i.quantity,
+              size: i.size,
+              imageUrl: i.imageUrl,
+            ),
+        ],
       );
+      final orderId = await _orders.placeOrder(draft, lines);
+      cart.clear();
 
-      try {
-        final orderId = await _orders.placeOrder(draft, cartItems);
-        cart.clear();
-        Get.offNamed(AppRoutes.orderSuccess, arguments: orderId);
-      } on AppException catch (e) {
-        if (paymentReference != null) {
-          // Paid but stock changed in between: needs a refund (Sprint 7
-          // moves this server-side so it cannot happen).
-          AppLogger.error('Order failed after payment $paymentReference', e);
-          AppSnackbar.error(
-            '${e.message}\nYour payment ($paymentReference) will be refunded.',
-            title: 'Order not placed',
-          );
-          return;
-        }
-        rethrow;
+      if (!isCard) {
+        Get.offNamed<void>(AppRoutes.orderSuccess, arguments: orderId);
+        return;
+      }
+
+      // 3. Pay for the stored order.
+      stage.value = 'Waiting for payment…';
+      final result = await _payments.payForOrder(orderId, draft.total);
+      if (result.isSuccess) {
+        Get.offNamed<void>(AppRoutes.orderSuccess, arguments: orderId);
+      } else {
+        // The order stays reserved; it can be paid or cancelled from its
+        // page, and is released automatically after the payment window.
+        Get.offNamed<void>(AppRoutes.orderDetail, arguments: orderId);
+        AppSnackbar.info(
+          '${result.status == PaymentStatus.cancelled ? 'Payment cancelled.' : result.message ?? 'Payment failed.'} '
+          'Your items are reserved for '
+          '${OrderModel.paymentWindow.inMinutes} minutes.',
+          title: 'Order not paid yet',
+        );
       }
     } on AppException catch (e) {
       AppSnackbar.error(e.message, title: 'Order not placed');
     } finally {
       isSubmitting.value = false;
+      stage.value = '';
     }
-  }
-
-  @override
-  void onClose() {
-    nameController.dispose();
-    phoneController.dispose();
-    addressController.dispose();
-    super.onClose();
   }
 }

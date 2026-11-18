@@ -96,7 +96,7 @@ class ProfileView extends GetView<ProfileViewModel> {
                 ),
                 _Tile(
                   icon: Icons.location_on_outlined,
-                  title: 'Shipping address',
+                  title: 'Addresses',
                   onTap: () => Get.toNamed<void>(AppRoutes.address),
                 ),
               ],

@@ -34,6 +34,11 @@ class OrderRepository {
   /// Atomically checks and decrements stock, writes the order with its
   /// items and removes the purchased lines from the customer's cart.
   /// Either everything is written or nothing is.
+  ///
+  /// Card orders are created **before** payment with
+  /// `paymentStatus: awaiting_payment`: stock is reserved, the server
+  /// charges exactly the stored total, and nobody can pay for an order that
+  /// failed to be created.
   Future<String> placeOrder(OrderDraft draft, List<CartItemModel> cart) async {
     try {
       return await _db.runTransaction((tx) async {
@@ -62,14 +67,16 @@ class OrderRepository {
           'customerAddress': draft.customerAddress,
           'customerDeviceToken': draft.deviceToken ?? '',
           'paymentMethod': draft.paymentMethod.label,
-          'paymentStatus': draft.paymentMethod == PaymentMethod.card
-              ? 'paid'
-              : 'unpaid',
-          'paymentReference': draft.paymentReference,
+          'paymentStatus': draft.initialPaymentStatus,
+          'paymentGateway': draft.paymentGateway,
+          'paymentReference': null,
           'deliveryTime': draft.deliveryDate,
           'deliveryType': draft.deliveryType,
           'totalPrice': draft.total,
-          'status': 'Pending',
+          'status': OrderStatus.pending.label,
+          'statusHistory': {
+            OrderStatus.pending.label: FieldValue.serverTimestamp(),
+          },
           'sellerId': draft.sellerIds.isEmpty ? '' : draft.sellerIds.first,
           'sellerIds': draft.sellerIds,
           'createdAt': FieldValue.serverTimestamp(),
@@ -96,21 +103,44 @@ class OrderRepository {
     }
   }
 
-  /// Newest first. Sorted on the client so no composite index is needed;
-  /// pagination + index arrive with Sprint 8's `firestore.indexes.json`.
-  Future<List<OrderModel>> fetchForCustomer(String uid) async {
-    try {
-      final snapshot = await _orders.where('customerId', isEqualTo: uid).get();
-      final orders =
-          snapshot.docs
-              .map((d) => OrderModel.fromMap(d.data(), id: d.id))
-              .toList()
-            ..sort(
-              (a, b) => (b.createdAt ?? DateTime(0)).compareTo(
-                a.createdAt ?? DateTime(0),
+  /// Live list, newest first. Sorted on the client so no composite index
+  /// is needed (Sprint 8 adds indexes and pagination).
+  Stream<List<OrderModel>> watchForCustomer(String uid) => _orders
+      .where('customerId', isEqualTo: uid)
+      .snapshots()
+      .map(
+        (s) =>
+            s.docs.map((d) => OrderModel.fromMap(d.data(), id: d.id)).toList()
+              ..sort(
+                (a, b) => (b.createdAt ?? DateTime(9999)).compareTo(
+                  a.createdAt ?? DateTime(9999),
+                ),
               ),
-            );
-      return orders;
+      )
+      .handleError((Object e) => throw AppException.from(e));
+
+  /// Live order with its (immutable) items.
+  Stream<OrderModel?> watchOrder(String id) async* {
+    final items = await _items(id);
+    yield* _orders
+        .doc(id)
+        .snapshots()
+        .map((doc) {
+          final data = doc.data();
+          return data == null
+              ? null
+              : OrderModel.fromMap(data, id: doc.id, items: items);
+        })
+        .handleError((Object e) => throw AppException.from(e));
+  }
+
+  Future<List<OrderItemModel>> _items(String orderId) async {
+    try {
+      final s = await _orders
+          .doc(orderId)
+          .collection(FirestorePaths.orderItems)
+          .get();
+      return s.docs.map((d) => OrderItemModel.fromMap(d.data())).toList();
     } catch (e) {
       throw AppException.from(e);
     }
@@ -121,14 +151,86 @@ class OrderRepository {
       final doc = await _orders.doc(id).get();
       final data = doc.data();
       if (data == null) return null;
-      final items = await doc.reference
-          .collection(FirestorePaths.orderItems)
-          .get();
-      return OrderModel.fromMap(
-        data,
-        id: doc.id,
-        items: items.docs.map((d) => OrderItemModel.fromMap(d.data())).toList(),
-      );
+      return OrderModel.fromMap(data, id: doc.id, items: await _items(id));
+    } catch (e) {
+      throw AppException.from(e);
+    }
+  }
+
+  /// Settles a **test** payment. Real (Stripe) payments are settled only
+  /// by the server webhook.
+  Future<void> markTestPaid(String orderId, String reference) async {
+    try {
+      await _db.runTransaction((tx) async {
+        final ref = _orders.doc(orderId);
+        final order = await tx.get(ref);
+        final data = order.data();
+        if (data == null ||
+            data['paymentGateway'] != GatewayId.demo ||
+            data['paymentStatus'] != PaymentStatusValue.awaitingPayment) {
+          throw const AppException('This order can no longer be paid.');
+        }
+        tx.update(ref, {
+          'paymentStatus': PaymentStatusValue.paid,
+          'paymentReference': reference,
+          'paidAt': FieldValue.serverTimestamp(),
+        });
+      });
+    } catch (e) {
+      throw AppException.from(e);
+    }
+  }
+
+  /// Cancels a pending order and puts its stock back, atomically.
+  ///
+  /// Allowed for the owner while the order is still pending and no real
+  /// money was taken ([OrderModel.canCancel]). Sprint 8 moves this into a
+  /// Cloud Function once security rules stop clients writing stock.
+  Future<void> cancel(String orderId, {required String uid}) async {
+    try {
+      final items = await _items(orderId);
+      final needed = <String, int>{};
+      for (final i in items) {
+        needed.update(
+          i.productId,
+          (q) => q + i.quantity,
+          ifAbsent: () => i.quantity,
+        );
+      }
+      await _db.runTransaction((tx) async {
+        final ref = _orders.doc(orderId);
+        final snap = await tx.get(ref);
+        final data = snap.data();
+        if (data == null) throw const AppException('Order not found.');
+        final order = OrderModel.fromMap(data, id: orderId);
+        if (order.customerId != uid) {
+          throw const AppException('You can only cancel your own orders.');
+        }
+        if (!order.canCancel) {
+          throw const AppException(
+            'This order can no longer be cancelled. Please contact us.',
+          );
+        }
+        final products = {
+          for (final id in needed.keys) id: await tx.get(_products.doc(id)),
+        };
+        for (final MapEntry(key: id, value: qty) in needed.entries) {
+          final p = products[id]!;
+          if (!p.exists) continue; // removed product: nothing to restock
+          final stock = asInt(p.data()?['quantity']);
+          tx.update(p.reference, {'quantity': '${stock + qty}'});
+        }
+        tx.update(ref, {
+          'status': OrderStatus.cancelled.label,
+          'statusHistory.${OrderStatus.cancelled.label}':
+              FieldValue.serverTimestamp(),
+          'cancelledBy': 'customer',
+          'paymentStatus': order.paymentStatus == PaymentStatusValue.paid
+              ? PaymentStatusValue
+                    .refunded // test payments only
+              : PaymentStatusValue.voided,
+        });
+      });
     } catch (e) {
       throw AppException.from(e);
     }

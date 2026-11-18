@@ -165,7 +165,7 @@ class _Cart extends Fake implements CartRepository {
 
 class _Orders extends Fake implements OrderRepository {
   @override
-  Future<List<OrderModel>> fetchForCustomer(String uid) async => [
+  Stream<List<OrderModel>> watchForCustomer(String uid) => Stream.value([
     OrderModel.fromMap({
       'totalPrice': 118,
       'status': 'Shipped',
@@ -176,12 +176,34 @@ class _Orders extends Fake implements OrderRepository {
       'status': 'Delivered',
       'createdAt': DateTime(2026, 10, 2, 9, 10),
     }, id: 'f9e8d7c6'),
-  ];
+  ]);
 }
 
 class _Addresses extends Fake implements AddressRepository {
+  static const home = AddressModel(
+    id: 'a1',
+    label: 'Home',
+    fullName: 'Aisha Rahman',
+    phone: '012-345 6789',
+    address: '12 Jalan Bunga',
+    city: 'Johor Bahru',
+    state: 'Johor',
+    postalCode: '81310',
+    country: 'Malaysia',
+    isDefault: true,
+  );
+
   @override
-  Future<AddressModel?> fetchForUser(String email) async => null;
+  Future<List<AddressModel>> fetchAll(String uid) async => const [home];
+  @override
+  Stream<List<AddressModel>> watch(String uid) => Stream.value(const [home]);
+  @override
+  Future<void> migrateLegacy({
+    required String uid,
+    required String email,
+    required String fullName,
+    required String phone,
+  }) async {}
 }
 
 class _AuthRepo extends Fake implements AuthRepository {}
@@ -365,4 +387,12 @@ void main() {
     (t) => _shot(t, '11_product_list', route: AppRoutes.productList),
   );
   testWidgets('search', (t) => _shot(t, '12_search', route: AppRoutes.search));
+  testWidgets(
+    'checkout',
+    (t) => _shot(t, '13_checkout', route: AppRoutes.checkout, before: fillCart),
+  );
+  testWidgets(
+    'addresses',
+    (t) => _shot(t, '14_addresses', route: AppRoutes.address),
+  );
 }

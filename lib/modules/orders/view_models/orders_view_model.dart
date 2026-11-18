@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
 
 import '../../../core/errors/app_exception.dart';
@@ -5,6 +7,7 @@ import '../../../core/services/auth_service.dart';
 import '../../../data/models/order_model.dart';
 import '../../../data/repositories/order_repository.dart';
 
+/// Live order history: status changes made by the shop appear at once.
 class OrdersViewModel extends GetxController {
   OrdersViewModel(this._auth, this._orders);
 
@@ -15,6 +18,8 @@ class OrdersViewModel extends GetxController {
   final RxBool isLoading = true.obs;
   final RxnString error = RxnString();
 
+  StreamSubscription<List<OrderModel>>? _sub;
+
   @override
   void onInit() {
     super.onInit();
@@ -24,14 +29,25 @@ class OrdersViewModel extends GetxController {
   Future<void> load() async {
     final uid = _auth.uid;
     if (uid == null) return;
-    isLoading.value = true;
+    await _sub?.cancel();
     error.value = null;
-    try {
-      orders.assignAll(await _orders.fetchForCustomer(uid));
-    } on AppException catch (e) {
-      error.value = e.message;
-    } finally {
-      isLoading.value = false;
-    }
+    _sub = _orders
+        .watchForCustomer(uid)
+        .listen(
+          (list) {
+            orders.assignAll(list);
+            isLoading.value = false;
+          },
+          onError: (Object e) {
+            error.value = AppException.from(e).message;
+            isLoading.value = false;
+          },
+        );
+  }
+
+  @override
+  void onClose() {
+    _sub?.cancel();
+    super.onClose();
   }
 }

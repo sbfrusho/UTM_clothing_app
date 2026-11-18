@@ -1,0 +1,23 @@
+{
+  "name": "your-shop-functions",
+  "private": true,
+  "description": "Server side of Your Shop: payments, order expiry, order history and emails.",
+  "main": "lib/src/index.js",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "tsc && node --test lib/test/",
+    "deploy": "firebase deploy --only functions"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0",
+    "firebase-functions": "^6.1.0",
+    "stripe": "^17.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}

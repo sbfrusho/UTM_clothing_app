@@ -149,13 +149,15 @@ lib/
 - Badges: cart (available units) and Saved (count).
 - **Sprint 8:** security rules must allow each user to read and write only their own `users/{uid}/cart` and `users/{uid}/wishlist`.
 
-### Sprint 7: Checkout, payments and orders
-- Address book (CRUD, default address).
-- **Cloud Functions**: `createPaymentIntent` (server-side amount from Firestore prices), Stripe webhook that confirms payment.
-- `placeOrder` as a Firestore **transaction** that checks and decrements stock atomically (fixes B1, B2).
-- Cash on Delivery flow.
-- Order history, order details, status timeline (Pending → Confirmed → Shipped → Delivered / Cancelled), cancel order.
-- Order confirmation email from a Cloud Function (Firebase "Trigger Email" extension), not from the client.
+### Sprint 7: Checkout, payments and orders ✅
+- Address book in `users/{uid}/addresses` (add, edit, delete, one default, picked at checkout). One-time migration from the legacy `addresses` collection, flagged with `addressesMigrated`.
+- **Order-first checkout:** one transaction verifies stock and prices, reserves stock, writes the order and empties the cart. Card orders start as `awaiting_payment` and are paid afterwards, so a customer can never pay for an order that failed to be created (closes the old "refund needed" gap).
+- Payment gateway pays a stored order. Stripe uses the `createPaymentIntent` function (amount computed on the server from live prices) and the webhook marks the order paid. The demo gateway records test payments in the app.
+- Unpaid card orders: the order page offers **Pay** and **Cancel** for 30 minutes; after that `expireUnpaidOrders` releases the stock.
+- Orders: live list and detail (status changes appear at once), status timeline from `statusHistory`, customer cancellation with restock while Pending and no real money taken.
+- Cloud Functions in `functions/` (TypeScript, 8 unit tests): `createPaymentIntent`, `stripeWebhook` (refunds late payments for released orders), `expireUnpaidOrders`, `onOrderWritten` (status history and order emails via the Trigger Email extension). **Not deployed yet:** needs the Blaze plan. See [BACKEND.md](BACKEND.md).
+- App and server share the same money rounding (`toMinorUnits`), tested on both sides.
+- bKash and SSLCommerz are deferred: both need merchant or sandbox credentials. The `PaymentGateway` interface is ready for them.
 
 ### Sprint 8: Backend hardening and notifications
 - `firestore.rules` (users read/write only their own data; products read-only for customers) and `firestore.indexes.json`, both in the repo.
