@@ -65,11 +65,16 @@ class OrderRepository {
           snapshots[id] = await tx.get(_products.doc(id));
         }
 
-        // 2. Validate and decrement stock (stored as string by admin app).
+        // 2. Validate every product, then decrement stock (stored as a
+        //    string by the admin app). No write happens if any check fails.
+        final stocks = {
+          for (final entry in needed.entries)
+            entry.key: _checkProduct(snapshots[entry.key]!, entry.value, cart),
+        };
         for (final entry in needed.entries) {
-          final doc = snapshots[entry.key]!;
-          final stock = _checkProduct(doc, entry.value, cart);
-          tx.update(doc.reference, {'quantity': '${stock - entry.value}'});
+          tx.update(snapshots[entry.key]!.reference, {
+            'quantity': '${stocks[entry.key]! - entry.value}',
+          });
         }
 
         // 3. Order document + items (legacy field names kept for admin app).

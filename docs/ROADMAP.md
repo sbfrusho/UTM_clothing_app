@@ -176,7 +176,17 @@ lib/
 - Theme toggle, language (English / Bahasa Melayu via GetX translations).
 - Offline banner (connectivity), accessibility pass (contrast, semantics, text scaling).
 
-### Sprint 10: Testing and CI
+### Sprint 10: Testing and CI ✅
+- Repository tests on `fake_cloud_firestore`: orders (place, stock checks, price changes, cancel and restock, test payments, server request body via `mocktail`), cart, wishlist migration, address defaults, profile tokens and data deletion.
+- Purchase-flow test (`test/flows/`): real cart, checkout and payment view models on fake Firestore and Auth, covering cash on delivery, card paid and card cancelled.
+- Widget tests: login (validation, success routing, error) and delete account (confirmation, password, Google cancel).
+- Order placement now validates every product before writing any stock.
+- GitHub Actions (`.github/workflows/ci.yml`) on every PR and push to main:
+  - App: format, analyze, tests with coverage, release app bundle.
+  - Cloud Functions: build and test.
+  - Security rules: tests on the Firestore emulator.
+- Goldens in `tool/` stay local, because Linux renders fonts differently.
+- An on-device `integration_test` against a real Firebase project is left for after Sprint 11, once the release Firebase app exists.
 - Unit tests for controllers and repositories (`fake_cloud_firestore`, `firebase_auth_mocks`, `mocktail`).
 - Widget tests for key screens; one integration test for the purchase flow.
 - GitHub Actions: analyze, test, build an appbundle on each PR.
