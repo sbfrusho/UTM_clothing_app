@@ -7,7 +7,7 @@ A Flutter e-commerce app for clothing and merchandise, built on Firebase with Ge
 ## Features
 - Email/password and Google sign-in, with an email verification gate and password reset
 - Optional biometric app lock (fingerprint / Face ID)
-- Product catalogue by category, search and product details
+- Product catalogue: categories, sort and filters, ranked search, zoomable gallery, related products
 - Cart and wishlist
 - Checkout with Cash on Delivery or card (test-mode gateway)
 - Order history

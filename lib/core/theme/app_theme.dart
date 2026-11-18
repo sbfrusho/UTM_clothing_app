@@ -217,7 +217,16 @@ abstract final class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: scheme.surfaceContainerLowest,
         selectedColor: scheme.primary,
-        labelStyle: text.labelLarge,
+        // Chips resolve only the label *colour* by state (selected etc.).
+        labelStyle: text.labelLarge?.copyWith(
+          color: WidgetStateColor.resolveWith(
+            (states) => states.contains(WidgetState.disabled)
+                ? scheme.onSurface.withValues(alpha: 0.38)
+                : states.contains(WidgetState.selected)
+                ? scheme.onPrimary
+                : scheme.onSurface,
+          ),
+        ),
         secondaryLabelStyle: text.labelLarge?.copyWith(color: scheme.onPrimary),
         side: BorderSide(color: scheme.outline),
         shape: RoundedRectangleBorder(

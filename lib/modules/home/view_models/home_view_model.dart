@@ -16,7 +16,8 @@ class HomeViewModel extends GetxController {
 
   final RxList<String> banners = <String>[].obs;
   final RxList<CategoryModel> categories = <CategoryModel>[].obs;
-  final RxList<ProductModel> latestProducts = <ProductModel>[].obs;
+  final RxList<ProductModel> onSale = <ProductModel>[].obs;
+  final RxList<ProductModel> newArrivals = <ProductModel>[].obs;
   final RxString firstName = ''.obs;
   final RxBool isLoading = true.obs;
   final RxnString error = RxnString();
@@ -35,18 +36,22 @@ class HomeViewModel extends GetxController {
     _loadName();
   }
 
-  Future<void> load() async {
+  /// Pull-to-refresh reloads the catalogue from the server.
+  Future<void> refreshHome() => load(refresh: true);
+
+  Future<void> load({bool refresh = false}) async {
     isLoading.value = true;
     error.value = null;
     try {
       final results = await Future.wait<Object>([
         _catalog.fetchBannerUrls(),
-        _catalog.fetchCategories(),
-        _catalog.fetchLatest(),
+        _catalog.fetchCategories(refresh: refresh),
+        _catalog.allProducts(refresh: refresh),
       ]);
       banners.assignAll(results[0] as List<String>);
       categories.assignAll(results[1] as List<CategoryModel>);
-      latestProducts.assignAll(results[2] as List<ProductModel>);
+      onSale.assignAll(await _catalog.onSale(limit: 10));
+      newArrivals.assignAll(await _catalog.newArrivals(limit: 8));
     } on AppException catch (e) {
       error.value = e.message;
     } finally {

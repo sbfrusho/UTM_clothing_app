@@ -132,12 +132,13 @@ lib/
 - Profile shows the sign-in method; "Change password" only appears for password accounts.
 - **To enable Google:** in Firebase, enable the Google provider, add the debug and release SHA-1 for `com.sbfrusho.yourshop`, download the new `google-services.json`, and put the Web client ID into `env/*.json`.
 
-### Sprint 5: Catalogue (home, categories, product, search)
-- Home: banners, categories, featured, on sale, new arrivals.
-- Paginated product lists (Firestore cursors), sort and filter (price, category, size).
-- Product details: image gallery with zoom, size selector, stock indicator, related products.
-- Search: indexed `searchKeywords` field (or Algolia/Typesense), debounced.
-- `cached_network_image` everywhere, pull-to-refresh.
+### Sprint 5: Catalogue (home, categories, product, search) ✅
+- Home: banners, categories, **On sale** rail, new arrivals, "See all" into filtered lists.
+- Product list (`/products`, replaces `/category`): any category, all products or a preset; sort (newest, price, discount, name) and a filter sheet (price range, sizes, on sale, in stock) with a live result count; infinite scroll; pull-to-refresh.
+- Product details: full-screen gallery (swipe, pinch and double-tap zoom), sizes in wearing order, stock indicator, "You may also like".
+- Search: ranked, tokenised (prefix and plural matching across name, category and description), debounced, recent searches, category shortcuts.
+- **Catalogue snapshot:** the admin app stores prices as strings and writes no search keywords, so Firestore can't sort by price or search text. `CatalogRepository` keeps a 5-minute cached snapshot (read in pages of 200, up to 2,000 products) and filters, sorts and searches in the app. `CatalogSource` isolates Firestore. **Revisit** when the catalogue nears 2,000 products, or when the admin app writes a numeric `price` and `searchKeywords`: switch `browse` to cursor queries and `search` to Algolia/Typesense. Screens don't change.
+- Fixes: selected chip labels were unreadable (dark on dark), the filter sheet had a duplicate handle, and a literal `"null"` from the admin app is now read as empty.
 
 ### Sprint 6: Cart and wishlist
 - Cart persisted in Firestore `users/{uid}/cart` (local cache for offline use), keyed by `productId + size`.

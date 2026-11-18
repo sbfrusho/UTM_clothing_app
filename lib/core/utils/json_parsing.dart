@@ -18,9 +18,12 @@ int asInt(Object? value, {int fallback = 0}) {
   return fallback;
 }
 
+/// The admin app has written the literal text "null" for missing values,
+/// so that is treated as missing too.
 String asString(Object? value, {String fallback = ''}) {
   if (value == null) return fallback;
-  return value is String ? value : value.toString();
+  final s = value is String ? value : value.toString();
+  return s.trim().toLowerCase() == 'null' ? fallback : s;
 }
 
 bool asBool(Object? value, {bool fallback = false}) {

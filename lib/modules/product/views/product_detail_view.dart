@@ -6,6 +6,8 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/app_network_image.dart';
 import '../../../core/widgets/app_top_bar.dart';
+import '../../../core/widgets/product_rail.dart';
+import '../../../core/widgets/section_header.dart';
 import '../../../data/models/product_model.dart';
 import '../view_models/product_detail_view_model.dart';
 
@@ -20,6 +22,7 @@ class ProductDetailView extends GetView<ProductDetailViewModel> {
       final product = controller.product.value;
       return Scaffold(
         body: CustomScrollView(
+          controller: controller.scrollController,
           slivers: [
             SliverToBoxAdapter(
               child: Stack(
@@ -30,12 +33,22 @@ class ProductDetailView extends GetView<ProductDetailViewModel> {
                       color: palette.imageBackground,
                       child: product.images.isEmpty
                           ? const AppNetworkImage(null)
-                          : PageView.builder(
-                              itemCount: product.images.length,
-                              onPageChanged: (i) =>
-                                  controller.imageIndex.value = i,
-                              itemBuilder: (_, i) =>
-                                  AppNetworkImage(product.images[i]),
+                          : GestureDetector(
+                              onTap: controller.openGallery,
+                              child: PageView.builder(
+                                // New product, new pager at page 0.
+                                key: ValueKey(product.id),
+                                itemCount: product.images.length,
+                                onPageChanged: (i) =>
+                                    controller.imageIndex.value = i,
+                                itemBuilder: (_, i) => Semantics(
+                                  image: true,
+                                  label:
+                                      '${product.name}, photo ${i + 1}. '
+                                      'Double tap to zoom.',
+                                  child: AppNetworkImage(product.images[i]),
+                                ),
+                              ),
                             ),
                     ),
                   ),
@@ -64,9 +77,20 @@ class ProductDetailView extends GetView<ProductDetailViewModel> {
                       ],
                     ),
                   ),
+                  if (product.images.isNotEmpty)
+                    Positioned(
+                      right: 16,
+                      bottom: 12,
+                      child: AppIconButton(
+                        icon: Icons.zoom_out_map_rounded,
+                        tooltip: 'View full screen',
+                        size: 40,
+                        onPressed: controller.openGallery,
+                      ),
+                    ),
                   if (product.images.length > 1)
                     Positioned(
-                      bottom: 16,
+                      bottom: 28,
                       left: 0,
                       right: 0,
                       child: Row(
@@ -92,7 +116,7 @@ class ProductDetailView extends GetView<ProductDetailViewModel> {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
               sliver: SliverList.list(
                 children: [
                   if (product.categoryName.isNotEmpty)
@@ -133,7 +157,7 @@ class ProductDetailView extends GetView<ProductDetailViewModel> {
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
-                      children: product.sizes
+                      children: controller.sizes
                           .map(
                             (size) => ChoiceChip(
                               label: SizedBox(
@@ -169,6 +193,20 @@ class ProductDetailView extends GetView<ProductDetailViewModel> {
                 ],
               ),
             ),
+            if (controller.related.isNotEmpty) ...[
+              const SliverToBoxAdapter(
+                child: SectionHeader(title: 'You may also like'),
+              ),
+              SliverToBoxAdapter(
+                child: ProductRail(
+                  products: controller.related.toList(),
+                  onTap: controller.openRelated,
+                  wishlistedIds: controller.wishlistedIds,
+                  onToggleWishlist: controller.toggleRelatedWishlist,
+                ),
+              ),
+            ],
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
           ],
         ),
         bottomNavigationBar: DecoratedBox(

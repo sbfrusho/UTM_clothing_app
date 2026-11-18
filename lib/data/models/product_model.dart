@@ -43,6 +43,9 @@ class ProductModel {
   /// Price the customer pays.
   double get price => salePrice > 0 ? salePrice : fullPrice;
   bool get hasDiscount => fullPrice > price && price > 0;
+
+  /// Flagged as a sale by the admin, or simply priced below full price.
+  bool get isOnSale => isSale || hasDiscount;
   int get discountPercent =>
       hasDiscount ? ((fullPrice - price) / fullPrice * 100).round() : 0;
 

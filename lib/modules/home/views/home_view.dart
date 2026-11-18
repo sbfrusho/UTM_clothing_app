@@ -7,10 +7,13 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/brand/app_logo.dart';
 import '../../../core/widgets/product_card.dart';
+import '../../../core/widgets/product_rail.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/skeleton.dart';
 import '../../../core/widgets/state_views.dart';
+import '../../../data/catalog/product_filter.dart';
 import '../../cart/view_models/cart_view_model.dart';
+import '../../catalog/view_models/product_list_view_model.dart';
 import '../../shell/view_models/shell_view_model.dart';
 import '../../wishlist/view_models/wishlist_view_model.dart';
 import '../view_models/home_view_model.dart';
@@ -30,13 +33,13 @@ class HomeView extends GetView<HomeViewModel> {
           if (controller.error.value != null && controller.categories.isEmpty) {
             return ErrorView(
               message: controller.error.value!,
-              onRetry: controller.load,
+              onRetry: controller.refreshHome,
             );
           }
           final loading =
               controller.isLoading.value && controller.categories.isEmpty;
           return RefreshIndicator(
-            onRefresh: controller.load,
+            onRefresh: controller.refreshHome,
             child: CustomScrollView(
               slivers: [
                 const SliverToBoxAdapter(child: _HomeHeader()),
@@ -64,18 +67,53 @@ class HomeView extends GetView<HomeViewModel> {
                     child: CategoryStrip(
                       categories: controller.categories.toList(),
                       onTap: (c) => Get.toNamed<void>(
-                        AppRoutes.categoryProducts,
+                        AppRoutes.productList,
                         arguments: c,
                       ),
                     ),
                   ),
-                  const SliverToBoxAdapter(
+                  if (controller.onSale.isNotEmpty) ...[
+                    SliverToBoxAdapter(
+                      child: SectionHeader(
+                        title: 'On sale',
+                        subtitle: 'Limited-time prices',
+                        onAction: () => Get.toNamed<void>(
+                          AppRoutes.productList,
+                          arguments: const ProductListArgs(
+                            title: 'On sale',
+                            filter: ProductFilter(
+                              onSaleOnly: true,
+                              sort: ProductSort.biggestDiscount,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Obx(
+                        () => ProductRail(
+                          products: controller.onSale.toList(),
+                          wishlistedIds: wishlist.ids,
+                          onToggleWishlist: wishlist.toggle,
+                          onTap: (p) => Get.toNamed<void>(
+                            AppRoutes.productDetail,
+                            arguments: p,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  SliverToBoxAdapter(
                     child: SectionHeader(
                       title: 'New arrivals',
-                      subtitle: 'Fresh in this week',
+                      subtitle: 'Fresh in the shop',
+                      onAction: () => Get.toNamed<void>(
+                        AppRoutes.productList,
+                        arguments: const ProductListArgs(title: 'New arrivals'),
+                      ),
                     ),
                   ),
-                  if (controller.latestProducts.isEmpty)
+                  if (controller.newArrivals.isEmpty)
                     const SliverToBoxAdapter(
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 32),
@@ -90,9 +128,9 @@ class HomeView extends GetView<HomeViewModel> {
                       padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
                       sliver: SliverGrid.builder(
                         gridDelegate: productGridDelegate,
-                        itemCount: controller.latestProducts.length,
+                        itemCount: controller.newArrivals.length,
                         itemBuilder: (context, index) {
-                          final product = controller.latestProducts[index];
+                          final product = controller.newArrivals[index];
                           return Obx(
                             () => ProductCard(
                               product: product,

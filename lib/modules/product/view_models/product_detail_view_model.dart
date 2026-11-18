@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -5,6 +6,7 @@ import '../../../app/routes/app_routes.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/errors/app_exception.dart';
 import '../../../core/utils/app_snackbar.dart';
+import '../../../data/catalog/product_filter.dart';
 import '../../../data/models/product_model.dart';
 import '../../../data/repositories/catalog_repository.dart';
 import '../../cart/view_models/cart_view_model.dart';
@@ -27,8 +29,15 @@ class ProductDetailViewModel extends GetxController {
   final Rx<ProductModel> product;
   final RxString selectedSize = ''.obs;
   final RxInt imageIndex = 0.obs;
+  final RxList<ProductModel> related = <ProductModel>[].obs;
+  final scrollController = ScrollController();
+
+  /// Sizes in wearing order (S, M, L…), whatever order the admin saved.
+  List<String> get sizes => CatalogFacets.sortSizes(product.value.sizes);
 
   bool get isWishlisted => _wishlist.isWishlisted(product.value.id);
+  Set<String> get wishlistedIds => _wishlist.ids;
+  void toggleRelatedWishlist(ProductModel p) => _wishlist.toggle(p);
   bool get canContactSupport => AppConfig.supportWhatsApp.isNotEmpty;
 
   @override
@@ -38,12 +47,57 @@ class ProductDetailViewModel extends GetxController {
       selectedSize.value = product.value.sizes.first;
     }
     _refresh();
+    _loadRelated();
+  }
+
+  Future<void> _loadRelated() async {
+    try {
+      final id = product.value.id;
+      final list = await _catalog.related(product.value);
+      if (product.value.id == id) related.assignAll(list);
+    } on AppException {
+      // Optional section.
+    }
+  }
+
+  /// Full-screen, zoomable gallery starting at the visible image.
+  void openGallery() {
+    if (product.value.images.isEmpty) return;
+    Get.toNamed<void>(
+      AppRoutes.productGallery,
+      arguments: GalleryArgs(product.value.images, imageIndex.value),
+    );
+  }
+
+  /// Shows another product from "You may also like" on this same page,
+  /// so the back stack does not grow without bound.
+  void openRelated(ProductModel other) {
+    product.value = other;
+    imageIndex.value = 0;
+    selectedSize.value = other.sizes.length == 1 ? other.sizes.first : '';
+    related.clear();
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOutCubic,
+      );
+    }
+    _refresh();
+    _loadRelated();
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
   }
 
   Future<void> _refresh() async {
     try {
-      final fresh = await _catalog.fetchProduct(product.value.id);
-      if (fresh != null) product.value = fresh;
+      final id = product.value.id;
+      final fresh = await _catalog.fetchProduct(id);
+      if (fresh != null && product.value.id == id) product.value = fresh;
     } on AppException {
       // Keep showing the cached copy.
     }
@@ -91,4 +145,11 @@ class ProductDetailViewModel extends GetxController {
     final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!opened) AppSnackbar.error('Could not open WhatsApp.');
   }
+}
+
+class GalleryArgs {
+  const GalleryArgs(this.images, this.initialIndex);
+
+  final List<String> images;
+  final int initialIndex;
 }

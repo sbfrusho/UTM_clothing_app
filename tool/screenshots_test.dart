@@ -17,8 +17,10 @@ import 'package:your_shop/app/routes/app_routes.dart';
 import 'package:your_shop/core/services/auth_service.dart';
 import 'package:your_shop/core/services/biometric_service.dart';
 import 'package:your_shop/core/services/payment/payment_service.dart';
+import 'package:your_shop/core/services/session_service.dart';
 import 'package:your_shop/core/services/theme_service.dart';
 import 'package:your_shop/core/theme/app_theme.dart';
+import 'package:your_shop/data/catalog/catalog_source.dart';
 import 'package:your_shop/data/models/address_model.dart';
 import 'package:your_shop/data/models/category_model.dart';
 import 'package:your_shop/data/models/order_model.dart';
@@ -106,19 +108,17 @@ class _Auth extends GetxService implements AuthService {
   Future<void> signOut() async {}
 }
 
-class _Catalog extends Fake implements CatalogRepository {
+class _CatalogSource implements CatalogSource {
   @override
-  Future<List<String>> fetchBannerUrls() async => const [];
+  Future<List<String>> loadBannerUrls() async => const [];
   @override
-  Future<List<CategoryModel>> fetchCategories() async => _categories;
+  Future<List<CategoryModel>> loadCategories() async => _categories;
   @override
-  Future<List<ProductModel>> fetchLatest({int limit = 10}) async => _products;
-  @override
-  Future<ProductModel?> fetchProduct(String id) async =>
-      _products.firstWhere((p) => p.id == id);
-  @override
-  Future<List<ProductModel>> search(String q, {int scanLimit = 300}) async =>
+  Future<List<ProductModel>> loadProducts({required int max}) async =>
       _products;
+  @override
+  Future<ProductModel?> loadProduct(String id) async =>
+      _products.firstWhere((p) => p.id == id);
 }
 
 class _Users extends Fake implements UserRepository {
@@ -195,8 +195,12 @@ void _registerFakes() {
     ..put<AuthService>(_Auth(), permanent: true)
     ..put(ThemeService(), permanent: true)
     ..put(BiometricService(), permanent: true)
+    ..put(
+      SessionService(Get.find(), Get.find<BiometricService>()),
+      permanent: true,
+    )
     ..put(PaymentService(), permanent: true)
-    ..put<CatalogRepository>(_Catalog())
+    ..put<CatalogRepository>(CatalogRepository(source: _CatalogSource()))
     ..put<UserRepository>(_Users())
     ..put<WishlistRepository>(_Wishlist())
     ..put<OrderRepository>(_Orders())
@@ -331,4 +335,9 @@ void main() {
       dark: true,
     ),
   );
+  testWidgets(
+    'product list',
+    (t) => _shot(t, '11_product_list', route: AppRoutes.productList),
+  );
+  testWidgets('search', (t) => _shot(t, '12_search', route: AppRoutes.search));
 }

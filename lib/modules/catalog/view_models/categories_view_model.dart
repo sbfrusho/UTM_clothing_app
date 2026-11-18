@@ -19,11 +19,11 @@ class CategoriesViewModel extends GetxController {
     load();
   }
 
-  Future<void> load() async {
+  Future<void> load({bool refresh = false}) async {
     isLoading.value = true;
     error.value = null;
     try {
-      categories.assignAll(await _catalog.fetchCategories());
+      categories.assignAll(await _catalog.fetchCategories(refresh: refresh));
     } on AppException catch (e) {
       error.value = e.message;
     } finally {

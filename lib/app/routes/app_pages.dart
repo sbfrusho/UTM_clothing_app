@@ -7,8 +7,8 @@ import '../../modules/auth/views/login_view.dart';
 import '../../modules/auth/views/register_view.dart';
 import '../../modules/auth/views/verify_email_view.dart';
 import '../../modules/auth/views/welcome_view.dart';
-import '../../modules/catalog/bindings/category_products_binding.dart';
-import '../../modules/catalog/views/category_products_view.dart';
+import '../../modules/catalog/bindings/product_list_binding.dart';
+import '../../modules/catalog/views/product_list_view.dart';
 import '../../modules/checkout/bindings/checkout_binding.dart';
 import '../../modules/checkout/views/checkout_view.dart';
 import '../../modules/checkout/views/order_success_view.dart';
@@ -17,6 +17,7 @@ import '../../modules/orders/views/order_detail_view.dart';
 import '../../modules/orders/views/orders_view.dart';
 import '../../modules/product/bindings/product_detail_binding.dart';
 import '../../modules/product/views/product_detail_view.dart';
+import '../../modules/product/views/product_gallery_view.dart';
 import '../../modules/profile/bindings/profile_bindings.dart';
 import '../../modules/profile/views/address_view.dart';
 import '../../modules/profile/views/edit_profile_view.dart';
@@ -79,9 +80,9 @@ abstract final class AppPages {
       middlewares: _auth,
     ),
     GetPage(
-      name: AppRoutes.categoryProducts,
-      page: CategoryProductsView.new,
-      binding: CategoryProductsBinding(),
+      name: AppRoutes.productList,
+      page: ProductListView.new,
+      binding: ProductListBinding(),
       middlewares: _auth,
     ),
     GetPage(
@@ -89,6 +90,12 @@ abstract final class AppPages {
       page: ProductDetailView.new,
       binding: ProductDetailBinding(),
       middlewares: _auth,
+    ),
+    GetPage(
+      name: AppRoutes.productGallery,
+      page: ProductGalleryView.new,
+      middlewares: _auth,
+      transition: Transition.fadeIn,
     ),
     GetPage(
       name: AppRoutes.search,

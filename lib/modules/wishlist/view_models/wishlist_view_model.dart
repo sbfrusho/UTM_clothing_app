@@ -27,6 +27,9 @@ class WishlistViewModel extends GetxController {
     load();
   }
 
+  /// Read inside an `Obx` to subscribe; for lazily built lists.
+  Set<String> get ids => items.map((i) => i.productId).toSet();
+
   bool isWishlisted(String productId) =>
       items.any((i) => i.productId == productId);
 

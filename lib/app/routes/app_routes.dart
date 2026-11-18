@@ -9,8 +9,11 @@ abstract final class AppRoutes {
 
   /// Bottom-navigation shell: home, categories, wishlist, cart, profile.
   static const shell = '/main';
-  static const categoryProducts = '/category';
+
+  /// Product grid: a category, everything, or a preset filter.
+  static const productList = '/products';
   static const productDetail = '/product';
+  static const productGallery = '/product/gallery';
   static const search = '/search';
   static const checkout = '/checkout';
   static const orderSuccess = '/order-success';
