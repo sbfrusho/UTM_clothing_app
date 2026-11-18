@@ -22,6 +22,7 @@ import 'package:your_shop/core/services/theme_service.dart';
 import 'package:your_shop/core/theme/app_theme.dart';
 import 'package:your_shop/data/catalog/catalog_source.dart';
 import 'package:your_shop/data/models/address_model.dart';
+import 'package:your_shop/data/models/cart_item_model.dart';
 import 'package:your_shop/data/models/category_model.dart';
 import 'package:your_shop/data/models/order_model.dart';
 import 'package:your_shop/data/models/product_model.dart';
@@ -29,6 +30,7 @@ import 'package:your_shop/data/models/user_model.dart';
 import 'package:your_shop/data/models/wishlist_item_model.dart';
 import 'package:your_shop/data/repositories/address_repository.dart';
 import 'package:your_shop/data/repositories/auth_repository.dart';
+import 'package:your_shop/data/repositories/cart_repository.dart';
 import 'package:your_shop/data/repositories/catalog_repository.dart';
 import 'package:your_shop/data/repositories/order_repository.dart';
 import 'package:your_shop/data/repositories/user_repository.dart';
@@ -133,10 +135,32 @@ class _Users extends Fake implements UserRepository {
 
 class _Wishlist extends Fake implements WishlistRepository {
   @override
-  Future<List<WishlistItemModel>> fetch(String email) async =>
-      [_products[0], _products[2]].map(WishlistItemModel.fromProduct).toList();
+  Stream<List<WishlistItemModel>> watch(String uid) => Stream.value(
+    [_products[0], _products[2]].map(WishlistItemModel.fromProduct).toList(),
+  );
   @override
-  Future<void> save(String email, List<WishlistItemModel> items) async {}
+  Future<void> migrateLegacy({
+    required String uid,
+    required String email,
+  }) async {}
+  @override
+  Future<void> add(String uid, WishlistItemModel item) async {}
+  @override
+  Future<void> remove(String uid, String productId) async {}
+}
+
+/// In-memory cart: the stream replays whatever was saved.
+class _Cart extends Fake implements CartRepository {
+  @override
+  Stream<List<CartItemModel>> watch(String uid) => const Stream.empty();
+  @override
+  Future<void> save(
+    String uid,
+    CartItemModel item, {
+    bool isNew = false,
+  }) async {}
+  @override
+  Future<void> remove(String uid, String key) async {}
 }
 
 class _Orders extends Fake implements OrderRepository {
@@ -203,6 +227,7 @@ void _registerFakes() {
     ..put<CatalogRepository>(CatalogRepository(source: _CatalogSource()))
     ..put<UserRepository>(_Users())
     ..put<WishlistRepository>(_Wishlist())
+    ..put<CartRepository>(_Cart())
     ..put<OrderRepository>(_Orders())
     ..put<AddressRepository>(_Addresses())
     ..put<AuthRepository>(_AuthRepo())

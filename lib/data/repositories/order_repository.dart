@@ -31,8 +31,9 @@ class OrderRepository {
     }
   }
 
-  /// Atomically checks and decrements stock and writes the order with its
-  /// items. Either everything is written or nothing is.
+  /// Atomically checks and decrements stock, writes the order with its
+  /// items and removes the purchased lines from the customer's cart.
+  /// Either everything is written or nothing is.
   Future<String> placeOrder(OrderDraft draft, List<CartItemModel> cart) async {
     try {
       return await _db.runTransaction((tx) async {
@@ -78,6 +79,15 @@ class OrderRepository {
             orderRef.collection(FirestorePaths.orderItems).doc(),
             item.toMap(),
           );
+        }
+        // 4. Empty the purchased cart lines in the same commit, so a
+        //    retry can never order the same cart twice.
+        final cartRef = _db
+            .collection(FirestorePaths.users)
+            .doc(draft.customerId)
+            .collection(FirestorePaths.userCart);
+        for (final line in cart) {
+          tx.delete(cartRef.doc(line.key));
         }
         return orderRef.id;
       });

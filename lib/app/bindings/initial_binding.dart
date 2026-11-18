@@ -5,6 +5,7 @@ import '../../core/services/payment/payment_service.dart';
 import '../../core/services/session_service.dart';
 import '../../data/repositories/address_repository.dart';
 import '../../data/repositories/auth_repository.dart';
+import '../../data/repositories/cart_repository.dart';
 import '../../data/repositories/catalog_repository.dart';
 import '../../data/repositories/order_repository.dart';
 import '../../data/repositories/user_repository.dart';
@@ -28,6 +29,7 @@ class InitialBinding extends Bindings {
     Get.lazyPut(UserRepository.new, fenix: true);
     Get.lazyPut(CatalogRepository.new, fenix: true);
     Get.lazyPut(WishlistRepository.new, fenix: true);
+    Get.lazyPut(CartRepository.new, fenix: true);
     Get.lazyPut(AddressRepository.new, fenix: true);
     Get.lazyPut(OrderRepository.new, fenix: true);
 

@@ -97,8 +97,12 @@ class CheckoutViewModel extends GetxController {
   void setPaymentMethod(PaymentMethod method) => paymentMethod.value = method;
 
   Future<void> placeOrder() async {
-    if (cart.isEmpty) {
-      AppSnackbar.error('Your cart is empty.');
+    if (!cart.canCheckout) {
+      AppSnackbar.error(
+        cart.hasUnavailable
+            ? 'Remove unavailable items from your cart first.'
+            : 'Your cart is empty.',
+      );
       return;
     }
     if (!(formKey.currentState?.validate() ?? false)) return;
@@ -118,7 +122,7 @@ class CheckoutViewModel extends GetxController {
 
     isSubmitting.value = true;
     try {
-      final cartItems = cart.items.toList();
+      final cartItems = cart.availableItems;
 
       // 1. Re-check stock and prices before any money moves.
       await _orders.verifyCart(cartItems);

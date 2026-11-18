@@ -1,8 +1,8 @@
 import '../../core/utils/json_parsing.dart';
 import 'product_model.dart';
 
-/// Entry in `wishlist/{email}.wishlist[]`. Keeps the legacy field names so
-/// existing wishlists keep working.
+/// A saved product at `users/{uid}/wishlist/{productId}`. Uses the legacy
+/// field names of `wishlist/{email}.wishlist[]` so old entries migrate as-is.
 class WishlistItemModel {
   const WishlistItemModel({
     required this.productId,
@@ -15,6 +15,7 @@ class WishlistItemModel {
     this.description = '',
     this.deliveryTime = '',
     this.isSale = false,
+    this.savedAt,
   });
 
   factory WishlistItemModel.fromProduct(ProductModel p) => WishlistItemModel(
@@ -40,6 +41,7 @@ class WishlistItemModel {
   final String description;
   final String deliveryTime;
   final bool isSale;
+  final DateTime? savedAt;
 
   String? get thumbnail => images.isEmpty ? null : images.first;
   double get price => salePrice > 0 ? salePrice : fullPrice;
@@ -56,6 +58,7 @@ class WishlistItemModel {
         description: asString(map['productDescription']),
         deliveryTime: asString(map['deliveryTime']),
         isSale: asBool(map['isSale']),
+        savedAt: asDateTime(map['savedAt']),
       );
 
   Map<String, dynamic> toMap() => {

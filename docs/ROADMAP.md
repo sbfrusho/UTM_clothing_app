@@ -140,11 +140,14 @@ lib/
 - **Catalogue snapshot:** the admin app stores prices as strings and writes no search keywords, so Firestore can't sort by price or search text. `CatalogRepository` keeps a 5-minute cached snapshot (read in pages of 200, up to 2,000 products) and filters, sorts and searches in the app. `CatalogSource` isolates Firestore. **Revisit** when the catalogue nears 2,000 products, or when the admin app writes a numeric `price` and `searchKeywords`: switch `browse` to cursor queries and `search` to Algolia/Typesense. Screens don't change.
 - Fixes: selected chip labels were unreadable (dark on dark), the filter sheet had a duplicate handle, and a literal `"null"` from the admin app is now read as empty.
 
-### Sprint 6: Cart and wishlist
-- Cart persisted in Firestore `users/{uid}/cart` (local cache for offline use), keyed by `productId + size`.
-- Quantity limited by stock; merge duplicates; per-item seller.
-- Wishlist in `users/{uid}/wishlist`, toggle from any card (fixes B3).
-- Badges on nav icons driven by reactive counts.
+### Sprint 6: Cart and wishlist ✅
+- Cart in `users/{uid}/cart/{productId__size}` (Firestore offline cache: works offline and syncs between devices). Edits apply instantly and are written in the background.
+- On open (and on pull-to-refresh) the cart is checked against the live catalogue: prices and names are updated, quantities are lowered to stock (shared across sizes), and removed or sold-out products are flagged. A banner says what changed. Checkout is blocked until unavailable lines are removed.
+- The order transaction deletes the purchased cart lines in the same atomic commit, so an order can't be placed twice.
+- Wishlist in `users/{uid}/wishlist/{productId}` (one document per item, so a toggle can't wipe the list). Toggles are optimistic with undo, flicker-free while syncing. The Saved tab shows live price, "Price dropped", sold-out and removed products, and "Add to cart".
+- One-time migration from the legacy `wishlist/{email}` document, flagged with `wishlistMigrated` on the profile. The legacy document is left untouched for the admin app.
+- Badges: cart (available units) and Saved (count).
+- **Sprint 8:** security rules must allow each user to read and write only their own `users/{uid}/cart` and `users/{uid}/wishlist`.
 
 ### Sprint 7: Checkout, payments and orders
 - Address book (CRUD, default address).

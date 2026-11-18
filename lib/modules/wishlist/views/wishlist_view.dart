@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/widgets/app_network_image.dart';
@@ -33,10 +34,14 @@ class WishlistView extends GetView<WishlistViewModel> {
         if (controller.items.isEmpty) {
           return const EmptyView(
             title: 'Nothing saved yet',
-            message: 'Tap the heart on any product to keep it here.',
+            message:
+                'Tap the heart on any product to keep it here, on any device.',
             icon: Icons.favorite_border_rounded,
           );
         }
+        // Read eagerly: rows are built lazily, outside Obx tracking.
+        final liveById = {...controller.live};
+        final liveLoaded = controller.liveLoaded.value;
         return RefreshIndicator(
           onRefresh: controller.load,
           child: ListView.separated(
@@ -45,6 +50,11 @@ class WishlistView extends GetView<WishlistViewModel> {
             separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final item = controller.items[index];
+              final live = liveById[item.productId];
+              final price = live?.price ?? item.price;
+              final soldOut = live != null && !live.inStock;
+              final removed = liveLoaded && live == null;
+              final dropped = live != null && live.price < item.price - 0.005;
               return Card(
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
@@ -74,17 +84,54 @@ class WishlistView extends GetView<WishlistViewModel> {
                                   style: theme.textTheme.bodySmall,
                                 ),
                               const SizedBox(height: 8),
-                              Text(
-                                Formatters.price(item.price),
-                                style: theme.textTheme.titleMedium,
+                              Wrap(
+                                spacing: 8,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Text(
+                                    Formatters.price(price),
+                                    style: theme.textTheme.titleMedium,
+                                  ),
+                                  if (dropped)
+                                    Text(
+                                      'Price dropped',
+                                      style: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                            color: context.palette.success,
+                                          ),
+                                    ),
+                                  if (soldOut || removed)
+                                    Text(
+                                      removed
+                                          ? 'No longer available'
+                                          : 'Sold out',
+                                      style: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                            color: theme.colorScheme.error,
+                                          ),
+                                    ),
+                                ],
                               ),
                             ],
                           ),
                         ),
-                        IconButton(
-                          tooltip: 'Remove from saved',
-                          onPressed: () => controller.remove(item.productId),
-                          icon: const Icon(Icons.favorite_rounded),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              tooltip: 'Remove from saved',
+                              onPressed: () =>
+                                  controller.remove(item.productId),
+                              icon: const Icon(Icons.favorite_rounded),
+                            ),
+                            IconButton(
+                              tooltip: 'Add to cart',
+                              onPressed: soldOut || live == null
+                                  ? null
+                                  : () => controller.moveToCart(item),
+                              icon: const Icon(Icons.add_shopping_cart_rounded),
+                            ),
+                          ],
                         ),
                       ],
                     ),

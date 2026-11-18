@@ -6,6 +6,7 @@ import '../../cart/views/cart_view.dart';
 import '../../catalog/views/categories_view.dart';
 import '../../home/views/home_view.dart';
 import '../../profile/views/profile_view.dart';
+import '../../wishlist/view_models/wishlist_view_model.dart';
 import '../../wishlist/views/wishlist_view.dart';
 import '../view_models/shell_view_model.dart';
 
@@ -23,6 +24,7 @@ class ShellView extends GetView<ShellViewModel> {
   @override
   Widget build(BuildContext context) {
     final cart = Get.find<CartViewModel>();
+    final wishlist = Get.find<WishlistViewModel>();
     final scheme = Theme.of(context).colorScheme;
     return Obx(
       () => Scaffold(
@@ -49,9 +51,17 @@ class ShellView extends GetView<ShellViewModel> {
                 selectedIcon: Icon(Icons.grid_view_rounded),
                 label: 'Shop',
               ),
-              const NavigationDestination(
-                icon: Icon(Icons.favorite_border_rounded),
-                selectedIcon: Icon(Icons.favorite_rounded),
+              NavigationDestination(
+                icon: Badge(
+                  isLabelVisible: wishlist.count > 0,
+                  label: Text('${wishlist.count}'),
+                  child: const Icon(Icons.favorite_border_rounded),
+                ),
+                selectedIcon: Badge(
+                  isLabelVisible: wishlist.count > 0,
+                  label: Text('${wishlist.count}'),
+                  child: const Icon(Icons.favorite_rounded),
+                ),
                 label: 'Saved',
               ),
               NavigationDestination(

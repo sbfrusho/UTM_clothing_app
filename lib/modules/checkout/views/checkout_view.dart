@@ -149,7 +149,7 @@ class CheckoutView extends GetView<CheckoutViewModel> {
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      ...controller.cart.items.map(
+                      ...controller.cart.availableItems.map(
                         (i) => Padding(
                           padding: const EdgeInsets.only(bottom: 8),
                           child: Row(
