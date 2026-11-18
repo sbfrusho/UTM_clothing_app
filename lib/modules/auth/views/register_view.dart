@@ -7,6 +7,7 @@ import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../view_models/register_view_model.dart';
 import 'auth_header.dart';
+import 'google_sign_in_button.dart';
 
 class RegisterView extends GetView<RegisterViewModel> {
   const RegisterView({super.key});
@@ -73,7 +74,8 @@ class RegisterView extends GetView<RegisterViewModel> {
                       validator: Validators.password,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        helperText: 'At least 8 characters',
+                        helperText:
+                            'At least 8 characters, with letters and numbers',
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
                         suffixIcon: IconButton(
                           tooltip: controller.obscurePassword.value
@@ -111,6 +113,7 @@ class RegisterView extends GetView<RegisterViewModel> {
                       onPressed: controller.register,
                     ),
                   ),
+                  const GoogleSignInSection(),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

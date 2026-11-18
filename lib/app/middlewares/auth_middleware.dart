@@ -4,11 +4,23 @@ import 'package:get/get.dart';
 import '../../core/services/auth_service.dart';
 import '../routes/app_routes.dart';
 
-/// Sends signed-out users to the welcome screen for protected routes.
+/// Guards signed-in routes.
+///
+/// Signed-out users go to the welcome screen. Unverified users go to the
+/// verify-email screen unless [requireVerified] is false (the verify-email
+/// route itself).
 class AuthMiddleware extends GetMiddleware {
+  AuthMiddleware({this.requireVerified = true});
+
+  final bool requireVerified;
+
   @override
   RouteSettings? redirect(String? route) {
-    final signedIn = Get.find<AuthService>().isSignedIn;
-    return signedIn ? null : const RouteSettings(name: AppRoutes.welcome);
+    final auth = Get.find<AuthService>();
+    if (!auth.isSignedIn) return const RouteSettings(name: AppRoutes.welcome);
+    if (requireVerified && !auth.isEmailVerified) {
+      return const RouteSettings(name: AppRoutes.verifyEmail);
+    }
+    return null;
   }
 }

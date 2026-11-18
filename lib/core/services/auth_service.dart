@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
 /// Single source of truth for the signed-in Firebase user.
-/// Controllers react to [user] instead of reading FirebaseAuth directly.
+/// View models react to [user] instead of reading FirebaseAuth directly.
 class AuthService extends GetxService {
   AuthService({FirebaseAuth? auth}) : _auth = auth ?? FirebaseAuth.instance;
 
@@ -16,6 +16,18 @@ class AuthService extends GetxService {
   String? get uid => _auth.currentUser?.uid;
   String? get email => _auth.currentUser?.email;
   bool get isSignedIn => _auth.currentUser != null;
+  bool get isEmailVerified => _auth.currentUser?.emailVerified ?? false;
+
+  /// Firebase provider IDs linked to the account, e.g. `password`,
+  /// `google.com`.
+  List<String> get providerIds =>
+      _auth.currentUser?.providerData.map((p) => p.providerId).toList() ??
+      const [];
+
+  /// Whether the account can sign in with a password (and so reset it).
+  bool get hasPassword => providerIds.contains('password');
+
+  bool get hasGoogle => providerIds.contains('google.com');
 
   @override
   void onInit() {

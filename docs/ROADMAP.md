@@ -122,12 +122,15 @@ lib/
 - Screenshot harness `tool/screenshots_test.dart` renders the real views with fake data; caught and fixed a skeleton overflow on 360 dp phones and a segmented-button wrap.
 - Found: product images in Firebase Storage return 402 because Storage now requires the Blaze plan. The UI falls back to placeholders; images return once the project is on Blaze.
 
-### Sprint 4: Authentication
-- Email/password sign up and sign in with validation, email verification gate, password reset.
-- Google Sign-In.
-- User profile document keyed by `uid` only (no email-keyed docs).
-- Biometric app lock toggle in settings.
-- Session handling, sign out, auth-state-driven routing.
+### Sprint 4: Authentication ✅
+- Email/password sign up and sign in with validation (8+ chars, letters and numbers), password reset.
+- Email verification gate: users stay signed in on a verify screen that polls every 5 s; resend has a 60 s cooldown.
+- Google Sign-In (`google_sign_in` 7), hidden until `GOOGLE_SERVER_CLIENT_ID` is set; creates the profile on first sign-in.
+- User profile document keyed by `uid` only. (Wishlist and addresses are still keyed by email; they move in Sprints 6 and 7.)
+- `SessionService`: one place for launch/sign-in routing, admin rejection, the device token, redirecting to welcome when the session ends from any screen, and re-locking after 30 s in the background.
+- `AuthMiddleware` also requires a verified email. Sign-out clears the device token and the app lock. Back can't bypass the lock screen.
+- Profile shows the sign-in method; "Change password" only appears for password accounts.
+- **To enable Google:** in Firebase, enable the Google provider, add the debug and release SHA-1 for `com.sbfrusho.yourshop`, download the new `google-services.json`, and put the Web client ID into `env/*.json`.
 
 ### Sprint 5: Catalogue (home, categories, product, search)
 - Home: banners, categories, featured, on sale, new arrivals.

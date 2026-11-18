@@ -7,6 +7,7 @@ import '../../../core/widgets/app_top_bar.dart';
 import '../../../core/widgets/loading_button.dart';
 import '../view_models/login_view_model.dart';
 import 'auth_header.dart';
+import 'google_sign_in_button.dart';
 
 class LoginView extends GetView<LoginViewModel> {
   const LoginView({super.key});
@@ -53,12 +54,14 @@ class LoginView extends GetView<LoginViewModel> {
                         labelText: 'Password',
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
                         suffixIcon: IconButton(
-                          tooltip: 'Show password',
+                          tooltip: controller.obscurePassword.value
+                              ? 'Show password'
+                              : 'Hide password',
                           onPressed: controller.obscurePassword.toggle,
                           icon: Icon(
                             controller.obscurePassword.value
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
                           ),
                         ),
                       ),
@@ -82,22 +85,7 @@ class LoginView extends GetView<LoginViewModel> {
                       onPressed: controller.signIn,
                     ),
                   ),
-                  Obx(
-                    () => controller.needsVerification.value
-                        ? Padding(
-                            padding: const EdgeInsets.only(top: 12),
-                            child: TextButton.icon(
-                              onPressed: controller.isLoading.value
-                                  ? null
-                                  : controller.resendVerification,
-                              icon: const Icon(
-                                Icons.mark_email_unread_outlined,
-                              ),
-                              label: const Text('Resend verification email'),
-                            ),
-                          )
-                        : const SizedBox.shrink(),
-                  ),
+                  const GoogleSignInSection(),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

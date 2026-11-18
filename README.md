@@ -5,7 +5,7 @@ A Flutter e-commerce app for clothing and merchandise, built on Firebase with Ge
 > Status: being moved from a university project to a production Play Store release. See [docs/ROADMAP.md](docs/ROADMAP.md) for the sprint plan.
 
 ## Features
-- Email/password authentication with email verification and password reset
+- Email/password and Google sign-in, with an email verification gate and password reset
 - Optional biometric app lock (fingerprint / Face ID)
 - Product catalogue by category, search and product details
 - Cart and wishlist
@@ -54,6 +54,7 @@ In VS Code, choose the **Your Shop (dev)** launch configuration.
 | `CURRENCY` / `CURRENCY_SYMBOL` | Pricing currency, e.g. `MYR` / `RM` |
 | `STRIPE_PUBLISHABLE_KEY` | Stripe `pk_...` key (publishable only) |
 | `PAYMENT_BACKEND_URL` | Server endpoint that creates PaymentIntents |
+| `GOOGLE_SERVER_CLIENT_ID` | Firebase OAuth **Web** client ID; empty hides Google sign-in |
 
 If `STRIPE_PUBLISHABLE_KEY` or `PAYMENT_BACKEND_URL` is empty, card payments use the **demo gateway**: a simulated payment that charges nothing.
 

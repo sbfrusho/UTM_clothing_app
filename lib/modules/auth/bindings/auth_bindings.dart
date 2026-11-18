@@ -4,16 +4,23 @@ import '../view_models/app_lock_view_model.dart';
 import '../view_models/forgot_password_view_model.dart';
 import '../view_models/login_view_model.dart';
 import '../view_models/register_view_model.dart';
+import '../view_models/social_sign_in_view_model.dart';
+import '../view_models/verify_email_view_model.dart';
 
 class LoginBinding extends Bindings {
   @override
-  void dependencies() =>
-      Get.lazyPut(() => LoginViewModel(Get.find(), Get.find()));
+  void dependencies() {
+    Get.lazyPut(() => LoginViewModel(Get.find(), Get.find()));
+    Get.lazyPut(() => SocialSignInViewModel(Get.find(), Get.find()));
+  }
 }
 
 class RegisterBinding extends Bindings {
   @override
-  void dependencies() => Get.lazyPut(() => RegisterViewModel(Get.find()));
+  void dependencies() {
+    Get.lazyPut(() => RegisterViewModel(Get.find()));
+    Get.lazyPut(() => SocialSignInViewModel(Get.find(), Get.find()));
+  }
 }
 
 class ForgotPasswordBinding extends Bindings {
@@ -21,8 +28,15 @@ class ForgotPasswordBinding extends Bindings {
   void dependencies() => Get.lazyPut(() => ForgotPasswordViewModel(Get.find()));
 }
 
+class VerifyEmailBinding extends Bindings {
+  @override
+  void dependencies() => Get.lazyPut(
+    () => VerifyEmailViewModel(Get.find(), Get.find(), Get.find()),
+  );
+}
+
 class AppLockBinding extends Bindings {
   @override
   void dependencies() =>
-      Get.lazyPut(() => AppLockViewModel(Get.find(), Get.find()));
+      Get.lazyPut(() => AppLockViewModel(Get.find(), Get.find(), Get.find()));
 }

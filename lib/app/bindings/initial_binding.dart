@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../core/services/auth_service.dart';
 import '../../core/services/payment/payment_service.dart';
+import '../../core/services/session_service.dart';
 import '../../data/repositories/address_repository.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../../data/repositories/catalog_repository.dart';
@@ -19,7 +20,8 @@ import '../../modules/wishlist/view_models/wishlist_view_model.dart';
 class InitialBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put(AuthService(), permanent: true);
+    final auth = Get.put(AuthService(), permanent: true);
+    Get.put(SessionService(auth, Get.find()), permanent: true);
     Get.put(PaymentService(), permanent: true);
 
     Get.lazyPut(AuthRepository.new, fenix: true);

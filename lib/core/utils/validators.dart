@@ -14,6 +14,10 @@ abstract final class Validators {
   static String? password(String? value) {
     if (value == null || value.isEmpty) return 'Password is required';
     if (value.length < 8) return 'Use at least 8 characters';
+    if (!value.contains(RegExp('[A-Za-z]')) ||
+        !value.contains(RegExp('[0-9]'))) {
+      return 'Use letters and numbers';
+    }
     return null;
   }
 

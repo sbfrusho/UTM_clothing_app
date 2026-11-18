@@ -37,6 +37,15 @@ class ProfileViewModel extends GetxController {
     return parts.take(2).map((p) => p.isEmpty ? '' : p[0].toUpperCase()).join();
   }
 
+  /// Google-only accounts have no password to reset.
+  bool get canChangePassword => _auth.hasPassword;
+
+  String get signInMethod => switch ((_auth.hasPassword, _auth.hasGoogle)) {
+    (true, true) => 'Email and Google',
+    (false, true) => 'Google',
+    _ => 'Email and password',
+  };
+
   Future<void> setThemeMode(ThemeMode mode) => _theme.setMode(mode);
   String get email => _auth.email ?? '';
   String get displayName {
@@ -87,8 +96,6 @@ class ProfileViewModel extends GetxController {
     }
   }
 
-  Future<void> signOut() async {
-    await _auth.signOut();
-    Get.offAllNamed(AppRoutes.welcome);
-  }
+  /// [SessionService] routes to the welcome screen once the session ends.
+  Future<void> signOut() => _authRepo.signOut();
 }

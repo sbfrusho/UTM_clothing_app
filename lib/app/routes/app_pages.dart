@@ -5,6 +5,7 @@ import '../../modules/auth/views/app_lock_view.dart';
 import '../../modules/auth/views/forgot_password_view.dart';
 import '../../modules/auth/views/login_view.dart';
 import '../../modules/auth/views/register_view.dart';
+import '../../modules/auth/views/verify_email_view.dart';
 import '../../modules/auth/views/welcome_view.dart';
 import '../../modules/catalog/bindings/category_products_binding.dart';
 import '../../modules/catalog/views/category_products_view.dart';
@@ -55,12 +56,21 @@ abstract final class AppPages {
       binding: ForgotPasswordBinding(),
     ),
 
-    // Signed-in only
+    // Signed in, email not yet verified
+    GetPage(
+      name: AppRoutes.verifyEmail,
+      page: VerifyEmailView.new,
+      binding: VerifyEmailBinding(),
+      middlewares: [AuthMiddleware(requireVerified: false)],
+    ),
+
+    // Signed in and verified
     GetPage(
       name: AppRoutes.appLock,
       page: AppLockView.new,
       binding: AppLockBinding(),
       middlewares: _auth,
+      popGesture: false,
     ),
     GetPage(
       name: AppRoutes.shell,

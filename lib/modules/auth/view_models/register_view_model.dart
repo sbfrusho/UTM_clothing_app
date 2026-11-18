@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 
 import '../../../app/routes/app_routes.dart';
 import '../../../core/errors/app_exception.dart';
-import '../../../core/services/push_token_service.dart';
 import '../../../core/utils/app_snackbar.dart';
 import '../../../data/repositories/auth_repository.dart';
+import 'verify_email_view_model.dart';
 
 class RegisterViewModel extends GetxController {
   RegisterViewModel(this._authRepo);
@@ -26,22 +26,20 @@ class RegisterViewModel extends GetxController {
       value != passwordController.text ? 'Passwords do not match' : null;
 
   Future<void> register() async {
+    if (isLoading.value) return;
     if (!(formKey.currentState?.validate() ?? false)) return;
     isLoading.value = true;
     try {
-      final email = emailController.text.trim();
       await _authRepo.register(
         name: nameController.text.trim(),
-        email: email,
+        email: emailController.text.trim(),
         phone: phoneController.text.trim(),
         password: passwordController.text,
-        deviceToken: await PushTokenService.getToken(),
       );
-      AppSnackbar.success(
-        'We sent a verification link to $email. Verify it, then log in.',
-        title: 'Account created',
+      Get.offAllNamed<void>(
+        AppRoutes.verifyEmail,
+        arguments: VerifyEmailArgs.justSent,
       );
-      Get.offNamed(AppRoutes.login);
     } on AppException catch (e) {
       AppSnackbar.error(e.message);
     } finally {

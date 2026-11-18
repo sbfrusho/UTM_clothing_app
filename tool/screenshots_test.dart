@@ -95,6 +95,14 @@ class _Auth extends GetxService implements AuthService {
   @override
   bool get isSignedIn => true;
   @override
+  bool get isEmailVerified => true;
+  @override
+  List<String> get providerIds => const ['password'];
+  @override
+  bool get hasPassword => true;
+  @override
+  bool get hasGoogle => false;
+  @override
   Future<void> signOut() async {}
 }
 

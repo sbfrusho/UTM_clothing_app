@@ -43,6 +43,15 @@ abstract final class AppConfig {
     'SUPPORT_WHATSAPP',
   );
 
+  /// OAuth **Web** client ID of the Firebase project (Firebase console >
+  /// Authentication > Sign-in method > Google > Web SDK configuration).
+  /// Public, not a secret. Empty hides "Continue with Google".
+  static const String googleServerClientId = String.fromEnvironment(
+    'GOOGLE_SERVER_CLIENT_ID',
+  );
+
+  static bool get isGoogleSignInEnabled => googleServerClientId.isNotEmpty;
+
   /// Real card payments need both the publishable key and a backend.
   /// Without them the app falls back to the demo gateway.
   static bool get isStripeConfigured =>

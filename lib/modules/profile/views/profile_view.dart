@@ -115,18 +115,9 @@ class ProfileView extends GetView<ProfileViewModel> {
                   ),
                 ),
                 segments: const [
-                  ButtonSegment(
-                    value: ThemeMode.system,
-                    label: Text('System'),
-                  ),
-                  ButtonSegment(
-                    value: ThemeMode.light,
-                    label: Text('Light'),
-                  ),
-                  ButtonSegment(
-                    value: ThemeMode.dark,
-                    label: Text('Dark'),
-                  ),
+                  ButtonSegment(value: ThemeMode.system, label: Text('System')),
+                  ButtonSegment(value: ThemeMode.light, label: Text('Light')),
+                  ButtonSegment(value: ThemeMode.dark, label: Text('Dark')),
                 ],
                 selected: {controller.themeMode.value},
                 onSelectionChanged: (s) => controller.setThemeMode(s.first),
@@ -136,12 +127,19 @@ class ProfileView extends GetView<ProfileViewModel> {
             _Group(
               children: [
                 _Tile(
-                  icon: Icons.lock_reset_rounded,
-                  title: 'Change password',
-                  subtitle: 'We will email you a reset link',
-                  onTap: controller.sendPasswordReset,
+                  icon: Icons.verified_user_outlined,
+                  title: 'Signed in with',
+                  subtitle: controller.signInMethod,
                   showChevron: false,
                 ),
+                if (controller.canChangePassword)
+                  _Tile(
+                    icon: Icons.lock_reset_rounded,
+                    title: 'Change password',
+                    subtitle: 'We will email you a reset link',
+                    onTap: controller.sendPasswordReset,
+                    showChevron: false,
+                  ),
                 Obx(
                   () => SwitchListTile(
                     secondary: const Icon(Icons.fingerprint_rounded),
@@ -219,7 +217,7 @@ class _Tile extends StatelessWidget {
   const _Tile({
     required this.icon,
     required this.title,
-    required this.onTap,
+    this.onTap,
     this.subtitle,
     this.showChevron = true,
   });
@@ -227,7 +225,7 @@ class _Tile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? subtitle;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final bool showChevron;
 
   @override

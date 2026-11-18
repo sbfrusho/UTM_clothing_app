@@ -37,6 +37,10 @@ class AppException implements Exception {
     'email-already-in-use' => 'An account already exists for that email.',
     'weak-password' => 'Please choose a stronger password.',
     'too-many-requests' => 'Too many attempts. Try again later.',
+    'account-exists-with-different-credential' =>
+      'This email is registered with a different sign-in method.',
+    'requires-recent-login' => 'Please sign in again to continue.',
+    'user-token-expired' => 'Your session has expired. Please sign in again.',
     'network-request-failed' => 'No connection. Please check your internet.',
     _ => e.message ?? 'Authentication failed.',
   };
